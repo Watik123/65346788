@@ -19,10 +19,10 @@ describe('parseFeedSearch', () => {
   })
 
   it('читає всі параметри', () => {
-    const f = parse('category=smartfony&shop=comfy,moyo&minDiscount=15&minPrice=5000&maxPrice=30000&minRating=4.5&sort=price&order=desc&page=3')
+    const f = parse('category=smartfony&shop=alfa,delta&minDiscount=15&minPrice=5000&maxPrice=30000&minRating=4.5&sort=price&order=desc&page=3')
     expect(f).toMatchObject({
       category: 'smartfony',
-      shops: ['comfy', 'moyo'],
+      shops: ['alfa', 'delta'],
       minDiscount: 15,
       minPrice: 5000,
       maxPrice: 30000,
@@ -34,14 +34,14 @@ describe('parseFeedSearch', () => {
   })
 
   it('відкидає сміття замість того, щоб ламати сторінку', () => {
-    const f = parse('sort=hack&order=sideways&minDiscount=abc&minPrice=-5&minRating=9&page=0&shop=,,comfy,comfy')
+    const f = parse('sort=hack&order=sideways&minDiscount=abc&minPrice=-5&minRating=9&page=0&shop=,,alfa,alfa')
     expect(f.sort).toBe('score')
     expect(f.order).toBeUndefined()
     expect(f.minDiscount).toBeUndefined()
     expect(f.minPrice).toBeUndefined()
     expect(f.minRating).toBeUndefined()
     expect(f.page).toBe(1)
-    expect(f.shops).toEqual(['comfy'])
+    expect(f.shops).toEqual(['alfa'])
   })
 })
 
@@ -52,7 +52,7 @@ describe('toSearchParams', () => {
   })
 
   it('туди й назад дає те саме', () => {
-    const q = 'category=pylososy&shop=comfy%2Cmoyo&minDiscount=10&maxPrice=20000&minRating=4.5&sort=discount&page=2'
+    const q = 'category=pylososy&shop=alfa%2Cdelta&minDiscount=10&maxPrice=20000&minRating=4.5&sort=discount&page=2'
     const f = parse(q)
     expect(parse(toSearchParams(f).toString())).toEqual(f)
   })

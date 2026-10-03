@@ -1,6 +1,7 @@
 /**
  * Каталог тестових даних. Бренди й моделі реальні, але ціни, оцінки,
- * кількість відгуків і наявність у магазинах ВИГАДАНІ. Не публікувати.
+ * кількість відгуків і наявність у магазинах ВИГАДАНІ, а магазини умовні
+ * (Альфа, Бета…), щоб не приписувати вигадані дані справжнім компаніям.
  */
 
 export interface SeedShopDef {
@@ -13,12 +14,12 @@ export interface SeedShopDef {
 }
 
 export const SHOPS: SeedShopDef[] = [
-  { slug: 'comfy', name: 'Comfy', baseUrl: 'https://example.com/comfy', rating: 4.5, priceFactor: 1.0 },
-  { slug: 'foxtrot', name: 'Foxtrot', baseUrl: 'https://example.com/foxtrot', rating: 4.4, priceFactor: 1.01 },
-  { slug: 'eldorado', name: 'Eldorado', baseUrl: 'https://example.com/eldorado', rating: 4.3, priceFactor: 1.02 },
-  { slug: 'moyo', name: 'MOYO', baseUrl: 'https://example.com/moyo', rating: 4.6, priceFactor: 0.99 },
-  { slug: 'citrus', name: 'Citrus', baseUrl: 'https://example.com/citrus', rating: 4.4, priceFactor: 1.0 },
-  { slug: 'rozetka', name: 'Rozetka', baseUrl: 'https://example.com/rozetka', rating: 4.5, priceFactor: 0.985 },
+  { slug: 'alfa', name: 'Магазин Альфа', baseUrl: 'https://example.com/alfa', rating: 4.5, priceFactor: 1.0 },
+  { slug: 'beta', name: 'Магазин Бета', baseUrl: 'https://example.com/beta', rating: 4.4, priceFactor: 1.01 },
+  { slug: 'hama', name: 'Магазин Гама', baseUrl: 'https://example.com/hama', rating: 4.3, priceFactor: 1.02 },
+  { slug: 'delta', name: 'Магазин Дельта', baseUrl: 'https://example.com/delta', rating: 4.6, priceFactor: 0.99 },
+  { slug: 'epsilon', name: 'Магазин Епсілон', baseUrl: 'https://example.com/epsilon', rating: 4.4, priceFactor: 1.0 },
+  { slug: 'zeta', name: 'Магазин Зета', baseUrl: 'https://example.com/zeta', rating: 4.5, priceFactor: 0.985 },
 ]
 
 export interface SeedCategoryDef {

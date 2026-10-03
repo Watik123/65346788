@@ -11,7 +11,7 @@ const csv = z
 export const feedQuerySchema = z
   .object({
     category: z.string().min(1).optional(),
-    /** Магазини, що мають товар у наявності, через кому: shop=comfy,moyo */
+    /** Магазини, що мають товар у наявності, через кому: shop=alfa,delta */
     shop: csv.optional(),
     minDiscount: z.coerce.number().min(0).max(100).optional(),
     minPrice: z.coerce.number().int().min(0).optional(),

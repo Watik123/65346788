@@ -124,16 +124,16 @@ describe('GET /api/feed', () => {
 
   it('фільтр за магазином: товари, що є в наявності у вибраному магазині', async () => {
     const all = (await feed()).total
-    const one = await feed('?shop=eldorado&limit=60')
+    const one = await feed('?shop=hama&limit=60')
     expect(one.total).toBeGreaterThan(0)
     expect(one.total).toBeLessThanOrEqual(all)
     for (const item of one.items) {
-      const offer = await prisma.offer.findFirst({ where: { productId: item.id, inStock: true, shop: { slug: 'eldorado' } } })
+      const offer = await prisma.offer.findFirst({ where: { productId: item.id, inStock: true, shop: { slug: 'hama' } } })
       expect(offer).not.toBeNull()
     }
     // Кілька магазинів — об'єднання
-    const two = await feed('?shop=eldorado,comfy&limit=60')
-    expect(two.total).toBeGreaterThanOrEqual(one.total)
+    const two = await feed('?shop=hama,alfa&limit=60')
+    expect(two.total).toBeGreaterThan(one.total)
     expect((await feed('?shop=nonexistent')).total).toBe(0)
   })
 
@@ -196,7 +196,7 @@ describe('GET /api/filters', () => {
     expect(body.categories.map((c) => c.slug)).toEqual(['elektronika', 'pobutova-tekhnika'])
     expect(body.categories.map((c) => c.dealCount)).toEqual([9, 8])
     expect(body.categories[0]?.children.map((c) => c.slug)).toEqual(['televizory', 'noutbuky', 'smartfony'])
-    expect(body.shops.map((s) => s.name)).toEqual(['Citrus', 'Comfy', 'Eldorado', 'Foxtrot', 'MOYO', 'Rozetka'])
+    expect(body.shops.map((s) => s.name)).toEqual(['Магазин Альфа', 'Магазин Бета', 'Магазин Гама', 'Магазин Дельта', 'Магазин Епсілон', 'Магазин Зета'])
     expect(body.shops.every((s) => s.dealCount > 0)).toBe(true)
     expect(body.priceRange?.min).toBeLessThan(body.priceRange?.max ?? 0)
     expect(body.maxDiscountPercent).toBeGreaterThan(20)
@@ -327,8 +327,8 @@ describe('знімок для сайту без сервера збігаєть�
     { category: 'elektronika' },
     { category: 'pobutova-tekhnika', sort: 'discount' },
     { category: 'nonexistent' },
-    { shop: ['eldorado'] },
-    { shop: ['comfy', 'moyo'], sort: 'price' },
+    { shop: ['hama'] },
+    { shop: ['alfa', 'delta'], sort: 'price' },
     { shop: ['nonexistent'] },
     { minDiscount: 15 },
     { minPrice: 10000, maxPrice: 30000 },

@@ -42,9 +42,9 @@ describe('FeedPage', () => {
   })
 
   it('читає фільтри з посилання', async () => {
-    renderPage('/?category=televizory&shop=comfy&minDiscount=15&sort=price&page=2')
+    renderPage('/?category=televizory&shop=alfa&minDiscount=15&sort=price&page=2')
     await screen.findByText('17 знижок')
-    expect(lastQuery()).toMatchObject({ category: 'televizory', shop: ['comfy'], minDiscount: 15, sort: 'price', page: 2 })
+    expect(lastQuery()).toMatchObject({ category: 'televizory', shop: ['alfa'], minDiscount: 15, sort: 'price', page: 2 })
     expect(screen.getByRole('button', { name: 'Прибрати фільтр: Телевізори' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Прибрати фільтр: знижка від 15%' })).toBeTruthy()
   })
@@ -66,8 +66,8 @@ describe('FeedPage', () => {
   it('вибір магазину додає його до фільтра', async () => {
     renderPage()
     await screen.findByText('17 знижок')
-    await userEvent.click((await screen.findAllByRole('checkbox', { name: /Comfy/ }))[0] as HTMLElement)
-    await waitFor(() => expect(lastQuery()).toMatchObject({ shop: ['comfy'] }))
+    await userEvent.click((await screen.findAllByRole('checkbox', { name: /Альфа/ }))[0] as HTMLElement)
+    await waitFor(() => expect(lastQuery()).toMatchObject({ shop: ['alfa'] }))
   })
 
   it('чіп фільтра прибирає його', async () => {
