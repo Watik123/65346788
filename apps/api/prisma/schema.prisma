@@ -25,6 +25,7 @@ model Shop {
 
   offers      Offer[]
   pricePoints PricePoint[]
+  scrapeRuns  ScrapeRun[]
 }
 
 /// Дерево категорій: "Електроніка" → "Телевізори".
@@ -86,7 +87,7 @@ model Offer {
   shop    Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
   @@unique([productId, shopId])
-  @@index([shopId])
+  @@index([shopId, externalId])
 }
 
 /// Історія цін: один запис на добу для пари товар × магазин.
@@ -136,4 +137,41 @@ model ProductDeal {
   @@index([status, score])
   @@index([discountPercent])
   @@index([bestPrice])
+}
+
+/// Один запуск збору цін з одного магазину.
+model ScrapeRun {
+  id              Int       @id @default(autoincrement())
+  shopId          Int
+  startedAt       DateTime  @default(now())
+  finishedAt      DateTime?
+  /// "running" | "completed" | "completed_with_errors" | "aborted"
+  status          String    @default("running")
+  /// Скільки сторінок було розібрано як товар
+  productsFound   Int       @default(0)
+  productsSaved   Int       @default(0)
+  /// Пропущено свідомо: чужий продавець, не товар тощо
+  productsSkipped Int       @default(0)
+  errorsCount     Int       @default(0)
+  note            String?
+
+  shop   Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  errors ScrapeError[]
+
+  @@index([shopId, startedAt])
+}
+
+/// Помилка під час збору: мережа, розбір сторінки, підозріла ціна.
+model ScrapeError {
+  id        Int      @id @default(autoincrement())
+  runId     Int
+  url       String?
+  /// "fetch" | "parse" | "robots" | "ingest" | "suspicious_price"
+  kind      String
+  message   String
+  createdAt DateTime @default(now())
+
+  run ScrapeRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
 }

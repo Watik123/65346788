@@ -15,6 +15,7 @@
     "db:studio": "prisma studio",
     "deals:recompute": "tsx src/cli/recompute-deals.ts",
     "snapshot:export": "tsx src/cli/export-snapshot.ts",
+    "scrape": "tsx src/cli/scrape.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },
@@ -22,6 +23,7 @@
     "@prisma/adapter-libsql": "^7.10.0",
     "@prisma/client": "7.10.0",
     "@znyzhky/shared": "*",
+    "cheerio": "^1.2.0",
     "dotenv": "^17.0.0",
     "fastify": "^5.12.5",
     "zod": "^4.6.5"
