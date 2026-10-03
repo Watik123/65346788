@@ -15,6 +15,12 @@ export const reasons = {
     text: `Це найнижча ціна ринку за останні ${days(windowDays)}.`,
   }),
 
+  nearLow: (abovePercent: number, lowest: number, windowDays: number): Reason => ({
+    code: 'near_low',
+    tone: 'positive',
+    text: `Ціна лише на ${formatPercent(abovePercent, 1)} вища за мінімум ринку за ${days(windowDays)}: ${formatPrice(lowest)}.`,
+  }),
+
   stableHistory: (): Reason => ({
     code: 'stable_history',
     tone: 'positive',

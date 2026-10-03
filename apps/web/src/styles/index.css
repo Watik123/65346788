@@ -1,0 +1,155 @@
+@import './fonts.css';
+@import 'tailwindcss';
+
+/*
+ * Вигляд: спокійний холодний нейтральний фон, один акцент (глибокий зелений:
+ * «перевірено»), червоний лише для відсіяного. Дані та числа в центрі,
+ * решта мовчить. Усі кольори це токени; темна тема перевизначає лише їх.
+ */
+:root {
+  --canvas: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #eceff3;
+  --line: #dfe3e8;
+  --ink: #12171c;
+  --ink-2: #4a535d;
+  --ink-3: #66707c;
+  --accent: #0a7466;
+  --accent-ink: #ffffff;
+  --accent-weak: #e0f2ef;
+  --bad: #b42318;
+  --bad-weak: #fdeceb;
+  --focus: #1f6feb;
+
+  /* Графіки: лінії магазинів (палітра перевірена валідатором) */
+  --c-shop-1: #2a78d6;
+  --c-shop-2: #eb6834;
+  --c-shop-3: #1baf7a;
+  --c-shop-4: #eda100;
+  --c-shop-5: #e87ba4;
+  --c-shop-6: #008300;
+
+  --font-sans: 'Onest Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --canvas: #0e1114;
+    --surface: #161a1e;
+    --surface-2: #1f252b;
+    --line: #2b323a;
+    --ink: #eef1f4;
+    --ink-2: #b6bec8;
+    --ink-3: #8c96a2;
+    --accent: #45c4af;
+    --accent-ink: #06201b;
+    --accent-weak: #11302b;
+    --bad: #ff8f85;
+    --bad-weak: #3a1f1d;
+    --focus: #6ea8ff;
+    --c-shop-1: #3987e5;
+    --c-shop-2: #d95926;
+    --c-shop-3: #199e70;
+    --c-shop-4: #c98500;
+    --c-shop-5: #d55181;
+    --c-shop-6: #008300;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --canvas: #0e1114;
+  --surface: #161a1e;
+  --surface-2: #1f252b;
+  --line: #2b323a;
+  --ink: #eef1f4;
+  --ink-2: #b6bec8;
+  --ink-3: #8c96a2;
+  --accent: #45c4af;
+  --accent-ink: #06201b;
+  --accent-weak: #11302b;
+  --bad: #ff8f85;
+  --bad-weak: #3a1f1d;
+  --focus: #6ea8ff;
+  --c-shop-1: #3987e5;
+  --c-shop-2: #d95926;
+  --c-shop-3: #199e70;
+  --c-shop-4: #c98500;
+  --c-shop-5: #d55181;
+  --c-shop-6: #008300;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-weak: var(--accent-weak);
+  --color-bad: var(--bad);
+  --color-bad-weak: var(--bad-weak);
+  --font-sans: var(--font-sans);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Видимий фокус для клавіатури */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Числа в стовпцях вирівнюються, великі ціни лишаються пропорційними */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Під час оновлення даних стрічка не стрибає, лише тьмяніє */
+.is-refetching {
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+@keyframes pulse-soft {
+  50% {
+    opacity: 0.55;
+  }
+}
+.skeleton {
+  background: var(--surface-2);
+  animation: pulse-soft 1.4s ease-in-out infinite;
+}

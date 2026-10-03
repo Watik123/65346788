@@ -3,11 +3,13 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { ApiErrorResponse, FeedResponse, FiltersResponse, ProductDetailResponse } from '@znyzhky/shared'
+import { snapshotFeed, snapshotProduct, type ApiErrorResponse, type FeedQueryParams, type FeedResponse, type FiltersResponse, type ProductDetailResponse, type RejectedResponse } from '@znyzhky/shared'
 import type { FastifyInstance } from 'fastify'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { seedDatabase } from '../prisma/seed/seed-database'
 import { buildApp } from './app'
+import { buildSnapshot } from './cli/export-snapshot'
+import { getFeed } from './services/feed'
 import type { PrismaClient } from './generated/prisma/client'
 import { REPO_ROOT } from './lib/database-url'
 import { createPrisma } from './lib/db'
@@ -281,5 +283,78 @@ describe('помилки', () => {
   it('інші HTTP-методи не відкриті', async () => {
     const res = await app.inject({ method: 'POST', url: '/api/feed' })
     expect(res.statusCode).toBe(404)
+  })
+})
+
+describe('GET /api/rejected', () => {
+  it('віддає відсіяні знижки: спершу ті, де магазин обіцяє найбільше', async () => {
+    const { status, body } = await get<RejectedResponse>('/api/rejected?limit=60')
+    expect(status).toBe(200)
+    expect(body.total).toBe(15)
+    expect(body.items).toHaveLength(15)
+
+    const claims = body.items.map((i) => i.claimedPercent)
+    const claimed = claims.filter((c): c is number => c !== null)
+    expect(claimed.length).toBeGreaterThan(8)
+    expect(claimed).toEqual([...claimed].sort((a, b) => b - a))
+    // Товари без закресленої ціни (нестабільні) — в кінці
+    expect(claims.slice(0, claimed.length).every((c) => c !== null)).toBe(true)
+
+    for (const i of body.items) {
+      expect(i.discountPercent).toBeLessThan(5)
+      expect(i.reasons.length).toBeGreaterThan(0)
+      expect(i.reasons.every((r) => r.tone === 'negative')).toBe(true)
+      expect(i.sparkline).toHaveLength(30)
+    }
+  })
+
+  it('обмежує кількість і перевіряє параметр', async () => {
+    expect((await get<RejectedResponse>('/api/rejected?limit=3')).body.items).toHaveLength(3)
+    expect((await get<ApiErrorResponse>('/api/rejected?limit=0')).status).toBe(400)
+  })
+})
+
+describe('знімок для сайту без сервера збігається з API', () => {
+  const queries: Partial<FeedQueryParams>[] = [
+    {},
+    { limit: 5, page: 2 },
+    { sort: 'discount' },
+    { sort: 'price' },
+    { sort: 'price', order: 'desc' },
+    { sort: 'popularity' },
+    { sort: 'popularity', order: 'asc' },
+    { category: 'televizory' },
+    { category: 'elektronika' },
+    { category: 'pobutova-tekhnika', sort: 'discount' },
+    { category: 'nonexistent' },
+    { shop: ['eldorado'] },
+    { shop: ['comfy', 'moyo'], sort: 'price' },
+    { shop: ['nonexistent'] },
+    { minDiscount: 15 },
+    { minPrice: 10000, maxPrice: 30000 },
+    { maxPrice: 8000 },
+    { minRating: 4.8 },
+    { minRating: 4.8, sort: 'popularity', limit: 4 },
+    { category: 'smartfony', minDiscount: 10, maxPrice: 25000, sort: 'price' },
+    { limit: 7, page: 3, sort: 'discount' },
+    { limit: 7, page: 9 },
+  ]
+
+  it('на кожному наборі параметрів дає ту саму відповідь, що й база', async () => {
+    const snapshot = await buildSnapshot(prisma)
+    for (const partial of queries) {
+      const q: FeedQueryParams = { sort: 'score', page: 1, limit: 24, ...partial }
+      expect(snapshotFeed(snapshot, q), JSON.stringify(partial)).toEqual(await getFeed(prisma, q))
+    }
+  })
+
+  it('сторінки товарів збігаються з API', async () => {
+    const snapshot = await buildSnapshot(prisma)
+    for (const model of ['QE55Q80DAUXUA', 'UE50DU7100UXUA', '55U7KQ']) {
+      const id = await productIdByModel(model)
+      const viaApi = (await get<ProductDetailResponse>(`/api/products/${id}`)).body
+      expect(snapshotProduct(snapshot, id)).toEqual(viaApi)
+    }
+    expect(snapshotProduct(snapshot, 999_999)).toBeNull()
   })
 })

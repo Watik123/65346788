@@ -97,8 +97,12 @@ export function scoreDeal(input: DealInput, overrides: ScoringOverrides = {}): D
     }
 
     const why: Reason[] = [reasons.belowTypical(percent, amount, basePrice, cfg.baselineDays)]
-    if (now <= min30 && hist.some((p) => p.age <= 30)) why.push(reasons.marketLow(30))
-    else why.push(reasons.marketLow(cfg.baselineDays))
+    // «Найнижча» кажемо лише тоді, коли це правда: інакше чесно показуємо, наскільки ціна вища за дно
+    const minPrev30 = hist.filter((p) => p.age <= 30).reduce((m, p) => Math.min(m, p.price), Infinity)
+    // Спершу сильніше твердження; період не перебільшуємо, якщо історія коротша за вікно
+    if (now <= minPrev) why.push(reasons.marketLow(Math.min(span, cfg.baselineDays)))
+    else if (now <= minPrev30) why.push(reasons.marketLow(30))
+    else why.push(reasons.nearLow(aboveLowPercent, minPrev, Math.min(span, cfg.baselineDays)))
     if (!spiked && swings <= 2) why.push(reasons.stableHistory())
     if (daysAtLevel <= cfg.freshDays) why.push(reasons.freshDrop(daysAtLevel))
     if (claimedPercent !== null && claimedPercent - percent >= cfg.claimOverstatedGap) {

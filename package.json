@@ -12,7 +12,9 @@
     "node": ">=22"
   },
   "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm run dev -w @znyzhky/api\" \"npm run dev -w @znyzhky/web\"",
     "dev:api": "npm run dev -w @znyzhky/api",
+    "dev:web": "npm run dev -w @znyzhky/web",
     "db:migrate": "npm run db:migrate -w @znyzhky/api",
     "db:setup": "npm run db:setup -w @znyzhky/api",
     "db:seed": "npm run db:seed -w @znyzhky/api",
@@ -20,10 +22,13 @@
     "db:studio": "npm run db:studio -w @znyzhky/api",
     "deals:recompute": "npm run deals:recompute -w @znyzhky/api",
     "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build -w @znyzhky/web",
+    "snapshot": "npm run snapshot:export -w @znyzhky/api && npm run build:snapshot -w @znyzhky/web"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "concurrently": "^9.2.4",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "vitest": "^3.2.4"

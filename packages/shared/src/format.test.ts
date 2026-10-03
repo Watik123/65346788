@@ -41,3 +41,21 @@ describe('pluralUk', () => {
     expect(days(0)).toBe('днів')
   })
 })
+
+describe('підписи для інтерфейсу', () => {
+  it('рейтинг, відгуки, магазини, дати', async () => {
+    const { formatRating, formatReviews, formatShops, formatDay } = await import('./format')
+    expect(formatRating(4.8)).toBe('4,8')
+    expect(formatRating(5)).toBe('5,0')
+    expect(formatReviews(214)).toBe('214 відгуків')
+    expect(formatReviews(1)).toBe('1 відгук')
+    expect(formatReviews(1270)).toBe('1 270 відгуків')
+    expect(formatReviews(23)).toBe('23 відгуки')
+    expect(formatReviews(0)).toBe('Немає відгуків')
+    expect(formatShops(1)).toBe('1 магазин')
+    expect(formatShops(3)).toBe('3 магазини')
+    expect(formatShops(6)).toBe('6 магазинів')
+    expect(formatDay('2026-10-03')).toBe('3 жовтня')
+    expect(formatDay('2026-01-21')).toBe('21 січня')
+  })
+})

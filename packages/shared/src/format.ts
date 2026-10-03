@@ -25,3 +25,25 @@ export function pluralUk(n: number, one: string, few: string, many: string): str
   if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few
   return many
 }
+
+/** 4.8 → «4,8» */
+export function formatRating(n: number): string {
+  return n.toFixed(1).replace('.', ',')
+}
+
+/** 214 → «214 відгуків», 1 → «1 відгук», 0 → «Немає відгуків» */
+export function formatReviews(n: number): string {
+  return n <= 0 ? 'Немає відгуків' : `${formatNumber(n)} ${pluralUk(n, 'відгук', 'відгуки', 'відгуків')}`
+}
+
+/** 6 → «6 магазинів» */
+export function formatShops(n: number): string {
+  return `${n} ${pluralUk(n, 'магазин', 'магазини', 'магазинів')}`
+}
+
+/** «2026-10-03» → «3 жовтня» (без року, якщо рік поточний у межах графіка) */
+const MONTHS_GENITIVE = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня']
+export function formatDay(isoDay: string): string {
+  const [, m, d] = isoDay.split('-')
+  return `${Number(d)} ${MONTHS_GENITIVE[Number(m) - 1] ?? ''}`
+}

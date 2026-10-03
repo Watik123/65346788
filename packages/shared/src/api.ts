@@ -27,6 +27,20 @@ export interface CategoryRefDto {
   name: string
 }
 
+/** Розібрані параметри стрічки; їх приймає і сервер, і режим «знімка» на сайті */
+export interface FeedQueryParams {
+  category?: string | undefined
+  shop?: string[] | undefined
+  minDiscount?: number | undefined
+  minPrice?: number | undefined
+  maxPrice?: number | undefined
+  minRating?: number | undefined
+  sort: SortKey
+  order?: SortOrder | undefined
+  page: number
+  limit: number
+}
+
 export interface FeedItemDto {
   id: number
   name: string
@@ -45,6 +59,28 @@ export interface FeedItemDto {
   score: number
   /** Найкраща ціна ринку за останні SPARKLINE_DAYS діб, від старих до нових */
   sparkline: number[]
+}
+
+/** Знижка, яку магазин показує, але ми не підтвердили */
+export interface RejectedItemDto {
+  id: number
+  name: string
+  brand: string
+  category: CategoryRefDto
+  bestPrice: number
+  bestShop: ShopRefDto
+  basePrice: number | null
+  /** Знижка від типової ціни (реальна) */
+  discountPercent: number
+  /** Знижка, яку обіцяє магазин */
+  claimedPercent: number | null
+  reasons: Reason[]
+  sparkline: number[]
+}
+
+export interface RejectedResponse {
+  items: RejectedItemDto[]
+  total: number
 }
 
 export interface FeedResponse {

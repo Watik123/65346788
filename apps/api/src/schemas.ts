@@ -29,6 +29,10 @@ export const feedQuerySchema = z
 
 export type FeedQuery = z.infer<typeof feedQuerySchema>
 
+export const rejectedQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(60).default(24),
+})
+
 export const productParamsSchema = z.object({
   id: z.coerce.number().int().positive(),
 })

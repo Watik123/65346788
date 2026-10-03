@@ -11,6 +11,7 @@ export const DEAL_STATUS_LABELS: Record<DealStatus, string> = {
 export type ReasonCode =
   | 'below_typical'
   | 'market_low'
+  | 'near_low'
   | 'stable_history'
   | 'fresh_drop'
   | 'claim_overstated'

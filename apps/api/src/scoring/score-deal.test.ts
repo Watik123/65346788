@@ -74,6 +74,33 @@ describe('scoreDeal: справжні знижки', () => {
     expect(codes(r)).toContain('claim_overstated')
   })
 
+  it('не каже «найнижча», якщо ціна трохи вища за мінімум, а показує на скільки', () => {
+    // Знижка 15% тримається 10 діб, у середині була ціна на 100 ₴ нижча, зараз 17 000
+    const r = scoreDeal(input({ series: history((age) => (age >= 3 && age <= 5 ? 16_900 : age < 10 ? 17_000 : BASE)), currentPrice: 17_000 }))
+    expect(r.status).toBe('real')
+    expect(codes(r)).toContain('near_low')
+    expect(codes(r)).not.toContain('market_low')
+    expect(r.reasons.find((x) => x.code === 'near_low')?.text).toBe('Ціна лише на 0,6% вища за мінімум ринку за 60 днів: 16\u00A0900\u00A0₴.')
+  })
+
+  it('найнижча за 60 днів, якщо нижчої ціни за весь період не було', () => {
+    const r = scoreDeal(withDrop(0.15, 5))
+    expect(r.reasons.find((x) => x.code === 'market_low')?.text).toBe('Це найнижча ціна ринку за останні 60 днів.')
+  })
+
+  it('найнижча за 30 днів, якщо нижча ціна була давніше, але ненабагато', () => {
+    // 40–45 діб тому було 16 900, зараз 17 000 після зниження: за останні 30 діб дешевше не було
+    const r = scoreDeal(input({ series: history((age) => (age >= 40 && age <= 45 ? 16_900 : age < 10 ? 17_000 : BASE)), currentPrice: 17_000 }))
+    expect(r.status).toBe('real')
+    expect(r.reasons.find((x) => x.code === 'market_low')?.text).toBe('Це найнижча ціна ринку за останні 30 днів.')
+  })
+
+  it('не перебільшує період, якщо історія коротша за 60 днів', () => {
+    const r = scoreDeal(input({ series: history((age) => (age < 4 ? 17_000 : BASE), { from: 20 }), currentPrice: 17_000 }))
+    expect(r.status).toBe('real')
+    expect(r.reasons.find((x) => x.code === 'market_low')?.text).toBe('Це найнижча ціна ринку за останні 20 днів.')
+  })
+
   it('мінімуми за 30 і 60 діб враховують поточну ціну', () => {
     const r = scoreDeal(withDrop(0.15, 3))
     expect(r.min30).toBe(17_000)
