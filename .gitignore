@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+*.log
+
+# локальна база та сирі відповіді парсерів
+data/*
+!data/.gitkeep
+
+# згенерований Prisma-клієнт
+apps/api/src/generated/

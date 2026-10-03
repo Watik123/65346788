@@ -1,0 +1,25 @@
+{
+  "name": "@znyzhky/api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev && prisma generate",
+    "db:setup": "prisma migrate deploy && npm run db:seed",
+    "db:seed": "tsx prisma/seed/index.ts",
+    "db:reset": "prisma migrate reset --force --skip-seed --skip-generate && prisma generate && npm run db:seed",
+    "db:studio": "prisma studio",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "dotenv": "^17.0.0"
+  },
+  "devDependencies": {
+    "prisma": "7.10.0"
+  }
+}

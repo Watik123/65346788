@@ -1,0 +1,137 @@
+// Схема написана так, щоб перехід SQLite → PostgreSQL зводився до заміни
+// provider і повторної міграції:
+//  - гроші лежать цілими гривнями (Int), без Decimal;
+//  - немає enum і Json: статуси — рядки, JSON — текст;
+//  - сирий SQL не використовується, лише Prisma Client.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Shop {
+  id       Int     @id @default(autoincrement())
+  slug     String  @unique
+  name     String
+  baseUrl  String
+  logoUrl  String?
+  /// Рейтинг магазину, 0–5
+  rating   Float?
+  isActive Boolean @default(true)
+
+  offers      Offer[]
+  pricePoints PricePoint[]
+}
+
+/// Дерево категорій: "Електроніка" → "Телевізори".
+model Category {
+  id       Int    @id @default(autoincrement())
+  slug     String @unique
+  name     String
+  parentId Int?
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  products Product[]
+
+  @@index([parentId])
+}
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  name        String
+  brand       String
+  /// Код моделі виробника (артикул)
+  modelCode   String?
+  /// Штрихкод, опціонально. Null не конфліктує з null в обох СУБД.
+  ean         String? @unique
+  categoryId  Int
+  imageUrl    String?
+  /// Середня оцінка, 0–5
+  ratingAvg   Float?
+  reviewCount Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category    Category     @relation(fields: [categoryId], references: [id])
+  offers      Offer[]
+  pricePoints PricePoint[]
+  deal        ProductDeal?
+
+  @@index([categoryId])
+  @@index([brand, modelCode])
+}
+
+/// Поточна пропозиція магазину по товару.
+model Offer {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  shopId     Int
+  /// Ідентифікатор товару в самому магазині
+  externalId String?
+  /// Ціна в цілих гривнях
+  price      Int
+  inStock    Boolean  @default(true)
+  url        String
+  /// Сирі дані зі сторінки, JSON-рядок
+  rawData    String?
+  /// Коли парсер востаннє бачив товар (для виявлення зниклих)
+  lastSeenAt DateTime
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shop    Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, shopId])
+  @@index([shopId])
+}
+
+/// Історія цін: один запис на добу для пари товар × магазин.
+model PricePoint {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  shopId    Int
+  /// Доба в UTC (північ)
+  date      DateTime
+  price     Int
+  inStock   Boolean  @default(true)
+  /// Магазин показував цю ціну як акційну
+  isPromo   Boolean  @default(false)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shop    Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, shopId, date])
+  @@index([productId, date])
+}
+
+/// Обчислена знижка (кеш). Перераховується після кожного збору цін,
+/// щоб стрічка з фільтрами й сортуванням працювала по індексах.
+model ProductDeal {
+  productId       Int      @id
+  bestPrice       Int
+  bestShopId      Int
+  /// Мінімум ринку (по всіх магазинах) за 30 і 60 діб до сьогодні
+  min30           Int?
+  min60           Int?
+  /// Ціна, з якою порівнювали
+  basePrice       Int?
+  discountPercent Float    @default(0)
+  discountAmount  Int      @default(0)
+  score           Float    @default(0)
+  /// "real" | "fake" | "insufficient_data" | "none"
+  status          String   @default("none")
+  /// Причини рішення, JSON-масив кодів
+  reasons         String   @default("[]")
+  shopsCount      Int      @default(0)
+  computedAt      DateTime
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([status, score])
+  @@index([discountPercent])
+  @@index([bestPrice])
+}

@@ -1,0 +1,29 @@
+{
+  "name": "znyzhky",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Агрегатор справжніх знижок для українського ринку",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "db:migrate": "npm run db:migrate -w @znyzhky/api",
+    "db:setup": "npm run db:setup -w @znyzhky/api",
+    "db:seed": "npm run db:seed -w @znyzhky/api",
+    "db:reset": "npm run db:reset -w @znyzhky/api",
+    "db:studio": "npm run db:studio -w @znyzhky/api",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.21.0",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
