@@ -28,7 +28,9 @@ export function getDatabaseUrl(): string {
   const url = process.env.DATABASE_URL ?? 'file:./data/app.db'
   if (url.startsWith('file:')) {
     const p = url.slice('file:'.length)
-    return 'file:' + (path.isAbsolute(p) ? p : path.resolve(REPO_ROOT, p))
+    const abs = path.isAbsolute(p) ? p : path.resolve(REPO_ROOT, p)
+    // На Windows шлях має зворотні скісні риски, в адресі file: потрібні прямі
+    return 'file:' + abs.replace(/\\/g, '/')
   }
   return url
 }
