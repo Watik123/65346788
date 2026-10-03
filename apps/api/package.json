@@ -4,6 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev && prisma generate",
@@ -19,7 +21,9 @@
     "@prisma/adapter-libsql": "^7.10.0",
     "@prisma/client": "7.10.0",
     "@znyzhky/shared": "*",
-    "dotenv": "^17.0.0"
+    "dotenv": "^17.0.0",
+    "fastify": "^5.12.5",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "prisma": "7.10.0"

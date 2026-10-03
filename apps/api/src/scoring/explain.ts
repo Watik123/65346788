@@ -1,5 +1,4 @@
-import { formatPercent, formatPrice, pluralUk } from '@znyzhky/shared'
-import type { Reason } from './types'
+import { formatPercent, formatPrice, pluralUk, type Reason } from '@znyzhky/shared'
 
 const days = (n: number) => `${n} ${pluralUk(n, 'день', 'дні', 'днів')}`
 

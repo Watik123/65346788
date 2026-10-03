@@ -12,6 +12,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "dev:api": "npm run dev -w @znyzhky/api",
     "db:migrate": "npm run db:migrate -w @znyzhky/api",
     "db:setup": "npm run db:setup -w @znyzhky/api",
     "db:seed": "npm run db:seed -w @znyzhky/api",

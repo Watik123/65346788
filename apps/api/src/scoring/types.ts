@@ -1,26 +1,6 @@
-export type DealStatus = 'real' | 'fake' | 'insufficient_data' | 'none'
+import type { DealStatus, Reason } from '@znyzhky/shared'
 
-export type ReasonCode =
-  | 'below_typical'
-  | 'market_low'
-  | 'stable_history'
-  | 'fresh_drop'
-  | 'claim_overstated'
-  | 'insufficient_history'
-  | 'recent_price_spike'
-  | 'unstable_prices'
-  | 'store_claim_not_confirmed'
-  | 'above_recent_low'
-  | 'below_threshold'
-
-export type ReasonTone = 'positive' | 'negative' | 'neutral'
-
-/** Причина рішення: код для логіки й готовий український текст для людей */
-export interface Reason {
-  code: ReasonCode
-  tone: ReasonTone
-  text: string
-}
+export type { DealStatus, Reason, ReasonCode, ReasonTone } from '@znyzhky/shared'
 
 /** Найкраща ціна ринку за добу (мінімум по магазинах, лише товари в наявності) */
 export interface DailyPrice {
