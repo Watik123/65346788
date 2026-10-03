@@ -1,4 +1,5 @@
 import { CATEGORIES, PRODUCTS, SHOPS, type Scenario, type SeedProductDef } from './catalog'
+import { startOfUtcDay } from '../../src/lib/dates'
 import { Rng, hashString } from './prng'
 
 export const HISTORY_DAYS = 90
@@ -38,9 +39,7 @@ export interface SeedData {
   pricePoints: GeneratedPricePoint[]
 }
 
-export function startOfUtcDay(d: Date): Date {
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
-}
+export { startOfUtcDay }
 
 /** Ціна в "магазинному" вигляді: 12 499, 4 599. Завжди ціле й закінчується на 99. */
 export function nice(x: number): number {

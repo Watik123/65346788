@@ -11,12 +11,14 @@
     "db:seed": "tsx prisma/seed/index.ts",
     "db:reset": "prisma migrate reset --force --skip-seed --skip-generate && prisma generate && npm run db:seed",
     "db:studio": "prisma studio",
+    "deals:recompute": "tsx src/cli/recompute-deals.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@prisma/adapter-libsql": "^7.10.0",
     "@prisma/client": "7.10.0",
+    "@znyzhky/shared": "*",
     "dotenv": "^17.0.0"
   },
   "devDependencies": {

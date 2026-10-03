@@ -121,6 +121,8 @@ model ProductDeal {
   basePrice       Int?
   discountPercent Float    @default(0)
   discountAmount  Int      @default(0)
+  /// Знижка, яку обіцяє сам магазин (від його закресленої ціни)
+  claimedPercent  Float?
   score           Float    @default(0)
   /// "real" | "fake" | "insufficient_data" | "none"
   status          String   @default("none")

@@ -17,6 +17,7 @@
     "db:seed": "npm run db:seed -w @znyzhky/api",
     "db:reset": "npm run db:reset -w @znyzhky/api",
     "db:studio": "npm run db:studio -w @znyzhky/api",
+    "deals:recompute": "npm run deals:recompute -w @znyzhky/api",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },

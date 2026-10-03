@@ -1,3 +1,4 @@
+import { recomputeDeals } from '../../src/jobs/recompute-deals'
 import { createPrisma } from '../../src/lib/db'
 import { CATEGORIES, SHOPS } from './catalog'
 import { generateSeed, startOfUtcDay } from './generate'
@@ -92,6 +93,8 @@ async function main() {
       { timeout: 120_000, maxWait: 30_000 },
     )
 
+    const deals = await recomputeDeals(prisma, { today: data.today })
+
     const [shops, categories, products, offers, points] = await Promise.all([
       prisma.shop.count(),
       prisma.category.count(),
@@ -102,6 +105,10 @@ async function main() {
     console.log(`Сид готовий (дата «сьогодні»: ${data.today.toISOString().slice(0, 10)})`)
     console.log(`  магазинів: ${shops}, категорій: ${categories}, товарів: ${products}`)
     console.log(`  пропозицій: ${offers}, записів історії цін: ${points}`)
+    const count = (status: string) => deals.filter((d) => d.status === status).length
+    console.log(
+      `  знижки: справжні ${count('real')}, фейкові ${count('fake')}, замало даних ${count('insufficient_data')}, без знижки ${count('none')}`,
+    )
   } finally {
     await prisma.$disconnect()
   }

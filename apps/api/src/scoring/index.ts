@@ -1,0 +1,5 @@
+export { DEFAULT_SCORING_CONFIG, mergeConfig, type ScoringConfig, type ScoringOverrides } from './config'
+export { scoreDeal } from './score-deal'
+export { bayesianRating, popularityFactor, qualityFactor } from './rating'
+export { marketSeries, type PriceObservation } from './series'
+export type { DailyPrice, DealInput, DealResult, DealStatus, Reason, ReasonCode, ReasonTone } from './types'
