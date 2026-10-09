@@ -1,35 +1,35 @@
 # Статистика цін на 2026-10-09
 
-Історія: 1 день. Пропозицій магазинів сьогодні: **12041**, у наявності: 11979, різних товарів: 6935.
+Історія: 1 день. Пропозицій магазинів сьогодні: **12154**, у наявності: 11916, різних товарів: 7008.
 
 ## Магазини
 
 | Магазин | Товарів | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Ябко | 2645 | 2645 | 2072 (78%) | −9% |
-| Foxtrot | 2227 | 2227 | 751 (34%) | −15% |
-| Цитрус | 2077 | 2077 | 608 (29%) | −15% |
-| MOYO | 1491 | 1491 | 651 (44%) | −14% |
-| KTC | 1471 | 1409 | 433 (29%) | −13% |
-| Artline | 863 | 863 | 6 (1%) | −7% |
-| TTT | 844 | 844 | 114 (14%) | −11% |
-| Vencon | 344 | 344 | 32 (9%) | −10% |
-| iSpace | 79 | 79 | 15 (19%) | −16% |
+| Ябко | 2745 | 2745 | 2130 (78%) | −9% |
+| Foxtrot | 2212 | 2212 | 752 (34%) | −15% |
+| Цитрус | 2072 | 2072 | 597 (29%) | −16% |
+| KTC | 1511 | 1273 | 443 (29%) | −13% |
+| MOYO | 1505 | 1505 | 682 (45%) | −14% |
+| Artline | 867 | 867 | 6 (1%) | −7% |
+| TTT | 812 | 812 | 115 (14%) | −11% |
+| Vencon | 350 | 350 | 37 (11%) | −11% |
+| iSpace | 80 | 80 | 15 (19%) | −16% |
 
 ## Категорії
 
 | Категорія | Пропозицій | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Ноутбуки | 5641 | 5608 | 1897 (34%) | −9% |
-| Смартфони | 2233 | 2204 | 884 (40%) | −9% |
-| Пилососи | 1838 | 1838 | 918 (50%) | −22% |
-| Телевізори | 1375 | 1375 | 750 (55%) | −12% |
-| Холодильники | 574 | 574 | 99 (17%) | −6% |
-| Пральні машини | 380 | 380 | 134 (35%) | −8% |
+| Ноутбуки | 5655 | 5581 | 1936 (34%) | −9% |
+| Смартфони | 2356 | 2293 | 923 (39%) | −9% |
+| Пилососи | 1799 | 1734 | 923 (51%) | −22% |
+| Телевізори | 1394 | 1358 | 763 (55%) | −12% |
+| Холодильники | 570 | 570 | 97 (17%) | −6% |
+| Пральні машини | 380 | 380 | 135 (36%) | −8% |
 
 ## Знижки, які показує магазин
 
-Закреслена ціна є в **4682** з 12041 пропозицій (39%). Медіанна заявлена знижка: −7%.
+Закреслена ціна є в **4777** з 12154 пропозицій (39%). Медіанна заявлена знижка: −7%.
 
 Найбільші заявлені знижки (перевіримо їх, щойно буде 14 днів історії):
 
@@ -48,29 +48,29 @@
 
 ## Один товар у кількох магазинах
 
-Знайдено в 2+ магазинах: **2169** товарів, у 3+: 1390. Схожих пар, які треба перевірити вручну: 444.
+Знайдено в 2+ магазинах: **2143** товарів, у 3+: 1363. Схожих пар, які треба перевірити вручну: 437.
 
 Найсхожіші пари на перевірку (`npm run match:review`):
 
 | № | Товар | Можливо, той самий | Схожість |
 |---:|---|---|---:|
-| 64 | Пилосос PHILIPS FC9550 / 09 (Foxtrot) | Пилосос Philips FC9550/09 (Цитрус, Ябко, TTT, Vencon) | 1.00 |
-| 1 | Ноутбук Dell Pro 16 Silver (BTO105_PC16250_UA_UBU) (Цитрус) | Ноутбук Dell Pro 16 (BTO105_PC16250_UA) (Artline) | 0.90 |
-| 2 | Ноутбук Dell Pro 16 Silver (BTO108_PC16250_UA) (Цитрус) | Ноутбук Dell Pro 16 (BTO108PC16250UA_W11P) (Artline, Цитрус, Foxtrot, MOYO) | 0.90 |
-| 10 | Смартфон Samsung Galaxy A57 A576B 8/128GB Awesome Icyblue (SM-A576BLBBEUC0 (Цитрус) | Смартфон Samsung Galaxy A57 8/128GB Awesome Icyblue (SM-A576BLBBEUC) (Artline, Foxtrot, MOYO, TTT) | 0.90 |
-| 13 | Ноутбук DREAM MACHINES RG3050-15UA84 Black (Foxtrot) | Ноутбук Dream Machines RG3050-15 Black (RG3050-15UA71) (Цитрус, MOYO) | 0.90 |
-| 14 | Ноутбук VINGA Iron S151 (S151-133416512S) (Foxtrot) | Ноутбук Vinga Iron S151 Grey (S151-133416512SWP) (Цитрус) | 0.90 |
-| 17 | Смартфон OPPO Reno16F 12/256GB Dual Sim Twilight Violet (Foxtrot) | Смартфон OPPO Reno16 F 5G 12/256GB Twilight Violet (CPH2859) (Цитрус, Foxtrot, KTC) | 0.90 |
-| 18 | Смартфон OPPO Reno16F 12/256GB Dual Sim Twilight Violet (Foxtrot) | Смартфон OPPO Reno16 5G 12/256GB Twilight Violet (CPH2865) (Цитрус) | 0.90 |
-| 24 | Смартфон OPPO Reno16F 8/256GB Dual Sim Twilight Violet (Foxtrot) | Смартфон OPPO Reno16 F 5G 8/256GB Twilight Violet (CPH2859) (Цитрус, KTC) | 0.90 |
-| 30 | Смартфон OPPO Reno16F 12/256GB Dual Sim Pop White (Foxtrot) | Смартфон OPPO Reno16 F 5G 12/256GB Pop White (CPH2859) (Цитрус, Foxtrot, KTC) | 0.90 |
+| 63 | Пилосос PHILIPS FC9550 / 09 (Foxtrot) | Пилосос Philips FC9550/09 (Цитрус, Ябко, TTT, Vencon) | 1.00 |
+| 1 | Ноутбук Dell Pro 16 Silver (BTO108_PC16250_UA) (Цитрус) | Ноутбук Dell Pro 16 (BTO108PC16250UA_W11P) (Artline, Цитрус, Foxtrot, MOYO) | 0.90 |
+| 9 | Смартфон Samsung Galaxy A57 A576B 8/128GB Awesome Icyblue (SM-A576BLBBEUC0 (Цитрус) | Смартфон Samsung Galaxy A57 8/128GB Awesome Icyblue (SM-A576BLBBEUC) (Artline, Foxtrot, MOYO, TTT) | 0.90 |
+| 12 | Ноутбук DREAM MACHINES RG3050-15UA84 Black (Foxtrot) | Ноутбук Dream Machines RG3050-15 Black (RG3050-15UA71) (Цитрус, MOYO) | 0.90 |
+| 13 | Ноутбук VINGA Iron S151 (S151-133416512S) (Foxtrot) | Ноутбук Vinga Iron S151 Grey (S151-133416512SWP) (Цитрус) | 0.90 |
+| 16 | Смартфон OPPO Reno16F 12/256GB Dual Sim Twilight Violet (Foxtrot) | Смартфон OPPO Reno16 F 5G 12/256GB Twilight Violet (CPH2859) (Цитрус, Foxtrot, KTC) | 0.90 |
+| 17 | Смартфон OPPO Reno16F 12/256GB Dual Sim Twilight Violet (Foxtrot) | Смартфон OPPO Reno16 5G 12/256GB Twilight Violet (CPH2865) (Цитрус) | 0.90 |
+| 22 | Смартфон OPPO Reno16F 8/256GB Dual Sim Twilight Violet (Foxtrot) | Смартфон OPPO Reno16 F 5G 8/256GB Twilight Violet (CPH2859) (Цитрус, KTC) | 0.90 |
+| 28 | Смартфон OPPO Reno16F 12/256GB Dual Sim Pop White (Foxtrot) | Смартфон OPPO Reno16 F 5G 12/256GB Pop White (CPH2859) (Цитрус, Foxtrot, KTC) | 0.90 |
+| 29 | Смартфон OPPO Reno16F 12/256GB Dual Sim Pop White (Foxtrot) | Смартфон OPPO Reno16 5G 12/256GB Pop White (CPH2865) (Цитрус, KTC) | 0.90 |
 
 Найбільша різниця цін між магазинами:
 
 | Товар | Дешевше | Дорожче | Різниця |
 |---|---:|---:|---:|
+| Робот-пилосос DREAME X50 Ultra Complete White | [44 999 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-x50-ultra-complete-white.html) Foxtrot | [98 899 ₴](https://jabko.ua/roboti-pilesosi/robot-pylosos-dreame-x50-ultra-complete-white-eu) Ябко | −55% |
 | Робот-пилосос DREAME Bot X40 Ultra Complete White | [41 499 ₴](https://jabko.ua/roboti-pilesosi/robot-pylosos-dreame-bot-x40-ultra-complete-white) Ябко | [89 999 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-bot-x40-ultra-complete-white.html) Foxtrot | −54% |
-| Робот-пилосос DREAME X50 Ultra Complete White | [44 999 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-x50-ultra-complete-white.html) Foxtrot | [86 499 ₴](https://jabko.ua/roboti-pilesosi/robot-pylosos-dreame-x50-ultra-complete-white-eu) Ябко | −48% |
 | Робот-пилосос миючий Dreame Aqua 10 Roller Black | [26 899 ₴](https://jabko.ua/product/robot-pylosos-dreame-aqua-10-roller-black-eu) Ябко | [48 099 ₴](https://citrus.ua/roboty-uborshhiki/robot-pilosos-miyuchiy-dreame-aqua-10-roller-black-778248.html) Цитрус | −44% |
 | Пилосос Electrolux безпровідний EP61H21WET | [8 999 ₴](https://ktc.ua/goods/ruchnij_bezdrotovij_pilosos_electrolux_600_cordless_cleaner__ep61h21wet.html) KTC | [15 199 ₴](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-electrolux-ep61h21wet) TTT | −41% |
 | Пилосос Electrolux EP83HB25UV | [17 599 ₴](https://jabko.ua/product/akumulyatornyi-pylosos-electrolux-ep83hb25uv-white) Ябко | [29 699 ₴](https://vencon.ua/ua/products/electrolux-ep83hb25uv) Vencon | −41% |
