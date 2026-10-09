@@ -3,7 +3,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
-const dir = path.resolve(import.meta.dirname, '../dist-snapshot')
+const dir = path.resolve(import.meta.dirname, '..', process.argv[2] ?? 'dist-site')
 const html = readFileSync(path.join(dir, 'index.html'), 'utf8')
 
 const one = (re, what) => {

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.json && vite build",
-    "build:snapshot": "vite build --config vite.snapshot.config.ts && node scripts/to-fragment.mjs",
+    "build:site": "vite build --config vite.static.config.ts && node scripts/to-fragment.mjs dist-site",
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"

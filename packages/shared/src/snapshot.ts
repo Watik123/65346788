@@ -40,17 +40,20 @@ function categoryTreeSlugs(nodes: CategoryNodeDto[], slug: string): Set<string> 
   return null
 }
 
-export function snapshotFeed(snap: Snapshot, q: FeedQueryParams): FeedResponse {
-  let items = snap.feed
+/**
+ * Фільтри, сортування й сторінки стрічки поверх готового списку знижок. inStockShops каже,
+ * в яких магазинах товар зараз у наявності (для фільтра за магазином).
+ */
+export function queryFeed(feed: FeedItemDto[], categories: CategoryNodeDto[], q: FeedQueryParams, inStockShops: (id: number) => readonly string[]): FeedResponse {
+  let items = feed
 
   if (q.category !== undefined) {
-    const slugs = categoryTreeSlugs(snap.filters.categories, q.category)
+    const slugs = categoryTreeSlugs(categories, q.category)
     items = items.filter((i) => slugs?.has(i.category.slug) ?? false)
   }
   if (q.shop !== undefined) {
     const wanted = new Set(q.shop)
-    const byId = new Map(snap.products.map((p) => [p.id, p]))
-    items = items.filter((i) => byId.get(i.id)?.offers.some((o) => o.inStock && wanted.has(o.shop.slug)) ?? false)
+    items = items.filter((i) => inStockShops(i.id).some((s) => wanted.has(s)))
   }
   if (q.minDiscount !== undefined) items = items.filter((i) => i.discountPercent >= (q.minDiscount as number))
   if (q.minPrice !== undefined) items = items.filter((i) => i.bestPrice >= (q.minPrice as number))
@@ -82,6 +85,17 @@ export function snapshotFeed(snap: Snapshot, q: FeedQueryParams): FeedResponse {
     limit: q.limit,
     pages: Math.max(1, Math.ceil(total / q.limit)),
   }
+}
+
+/** Магазини, де товар зараз у наявності */
+export const inStockShopSlugs = (p: ProductDetailResponse): string[] => p.offers.filter((o) => o.inStock).map((o) => o.shop.slug)
+
+export function snapshotFeed(snap: Snapshot, q: FeedQueryParams): FeedResponse {
+  const byId = new Map(snap.products.map((p) => [p.id, p]))
+  return queryFeed(snap.feed, snap.filters.categories, q, (id) => {
+    const p = byId.get(id)
+    return p ? inStockShopSlugs(p) : []
+  })
 }
 
 export function snapshotProduct(snap: Snapshot, id: number): ProductDetailResponse | null {

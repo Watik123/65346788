@@ -11,6 +11,5 @@ data/*
 apps/api/src/generated/
 
 # знімок даних і збірки сайту
-apps/web/src/snapshot/data.json
 apps/web/dist/
-apps/web/dist-snapshot/
+apps/web/dist-site/

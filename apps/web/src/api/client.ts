@@ -1,7 +1,9 @@
 import {
-  snapshotCompare,
-  snapshotFeed,
-  snapshotProduct,
+  decodeProduct,
+  productBucket,
+  staticCompare,
+  staticFeed,
+  type CompactProduct,
   type CompareQueryParams,
   type CompareResponse,
   type FeedQueryParams,
@@ -9,11 +11,14 @@ import {
   type FiltersResponse,
   type ProductDetailResponse,
   type RejectedResponse,
+  type StaticIndex,
 } from '@znyzhky/shared'
-import snapshot from '@snapshot'
 
-/** Якщо у збірку вбудований знімок, сайт працює без сервера */
-export const isSnapshotMode = snapshot !== null
+/**
+ * Збірка для сайту без сервера (npm run site:build): дані лежать файлами поруч зі сторінкою
+ * (data/index.json і data/p/<кошик>.json), сайт їх довантажує. Звичайна збірка ходить в API.
+ */
+export const isStaticMode = import.meta.env.VITE_STATIC === '1'
 
 export class ApiRequestError extends Error {
   constructor(
@@ -53,13 +58,26 @@ function feedPath(q: FeedQueryParams): string {
   return `/api/feed?${sp}`
 }
 
-export const api = {
-  feed: async (q: FeedQueryParams): Promise<FeedResponse> => (snapshot ? snapshotFeed(snapshot, q) : getJson(feedPath(q))),
+/** Файл завантажуємо один раз; після помилки наступна спроба завантажить його знову */
+const cache = new Map<string, Promise<unknown>>()
+function loadOnce<T>(path: string): Promise<T> {
+  let p = cache.get(path) as Promise<T> | undefined
+  if (!p) {
+    p = getJson<T>(path)
+    p.catch(() => cache.delete(path))
+    cache.set(path, p)
+  }
+  return p
+}
+const loadIndex = () => loadOnce<StaticIndex>('data/index.json')
 
-  filters: async (): Promise<FiltersResponse> => (snapshot ? snapshot.filters : getJson('/api/filters')),
+export const api = {
+  feed: async (q: FeedQueryParams): Promise<FeedResponse> => (isStaticMode ? staticFeed(await loadIndex(), q) : getJson(feedPath(q))),
+
+  filters: async (): Promise<FiltersResponse> => (isStaticMode ? (await loadIndex()).filters : getJson('/api/filters')),
 
   compare: async (q: CompareQueryParams): Promise<CompareResponse> => {
-    if (snapshot) return snapshotCompare(snapshot, q)
+    if (isStaticMode) return staticCompare(await loadIndex(), q)
     const sp = new URLSearchParams()
     if (q.category) sp.set('category', q.category)
     sp.set('sort', q.sort)
@@ -69,13 +87,14 @@ export const api = {
     return getJson(`/api/compare?${sp}`)
   },
 
-  rejected: async (): Promise<RejectedResponse> => (snapshot ? snapshot.rejected : getJson('/api/rejected?limit=60')),
+  rejected: async (): Promise<RejectedResponse> => (isStaticMode ? (await loadIndex()).rejected : getJson('/api/rejected?limit=60')),
 
   product: async (id: number): Promise<ProductDetailResponse> => {
-    if (snapshot) {
-      const p = snapshotProduct(snapshot, id)
+    if (isStaticMode) {
+      const bucket = await loadOnce<Record<string, CompactProduct>>(`data/p/${productBucket(id)}.json`)
+      const p = bucket[String(id)]
       if (!p) throw new ApiRequestError(404, 'Товар не знайдено')
-      return p
+      return decodeProduct(p)
     }
     return getJson(`/api/products/${id}`)
   },

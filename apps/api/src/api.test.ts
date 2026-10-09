@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { snapshotCompare, snapshotFeed, snapshotProduct, type ApiErrorResponse, type CompareQueryParams, type CompareResponse, type FeedQueryParams, type FeedResponse, type FiltersResponse, type ProductDetailResponse, type RejectedResponse } from '@znyzhky/shared'
+import { buildStaticIndex, decodeProduct, encodeProduct, snapshotCompare, snapshotFeed, snapshotProduct, staticCompare, staticFeed, type ApiErrorResponse, type CompareQueryParams, type CompareResponse, type FeedQueryParams, type FeedResponse, type FiltersResponse, type ProductDetailResponse, type RejectedResponse } from '@znyzhky/shared'
 import type { FastifyInstance } from 'fastify'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { seedDatabase } from '../prisma/seed/seed-database'
@@ -381,14 +381,18 @@ describe('знімок для сайту без сервера збігаєть�
 
   it('на кожному наборі параметрів дає ту саму відповідь, що й база', async () => {
     const snapshot = await buildSnapshot(prisma)
+    const index = JSON.parse(JSON.stringify(buildStaticIndex(snapshot))) as ReturnType<typeof buildStaticIndex>
     for (const partial of queries) {
       const q: FeedQueryParams = { sort: 'score', page: 1, limit: 24, ...partial }
-      expect(snapshotFeed(snapshot, q), JSON.stringify(partial)).toEqual(await getFeed(prisma, q))
+      const viaDb = await getFeed(prisma, q)
+      expect(snapshotFeed(snapshot, q), JSON.stringify(partial)).toEqual(viaDb)
+      expect(staticFeed(index, q), `файли: ${JSON.stringify(partial)}`).toEqual(viaDb)
     }
   })
 
   it('порівняння цін збігається з API на різних параметрах', async () => {
     const snapshot = await buildSnapshot(prisma)
+    const index = JSON.parse(JSON.stringify(buildStaticIndex(snapshot))) as ReturnType<typeof buildStaticIndex>
     const variants: Partial<CompareQueryParams>[] = [
       {},
       { sort: 'paper' },
@@ -399,7 +403,9 @@ describe('знімок для сайту без сервера збігаєть�
     ]
     for (const partial of variants) {
       const q: CompareQueryParams = { sort: 'spread', page: 1, limit: 24, ...partial }
-      expect(snapshotCompare(snapshot, q), JSON.stringify(partial)).toEqual(await getCompare(prisma, q))
+      const viaDb = await getCompare(prisma, q)
+      expect(snapshotCompare(snapshot, q), JSON.stringify(partial)).toEqual(viaDb)
+      expect(staticCompare(index, q), `файли: ${JSON.stringify(partial)}`).toEqual(viaDb)
     }
   })
 
@@ -409,6 +415,9 @@ describe('знімок для сайту без сервера збігаєть�
       const id = await productIdByModel(model)
       const viaApi = (await get<ProductDetailResponse>(`/api/products/${id}`)).body
       expect(snapshotProduct(snapshot, id)).toEqual(viaApi)
+      // Сайт без сервера зберігає історію стисло; після розпакування сторінка та сама
+      const stored = JSON.parse(JSON.stringify(encodeProduct(snapshotProduct(snapshot, id) as ProductDetailResponse)))
+      expect(decodeProduct(stored)).toEqual(viaApi)
     }
     expect(snapshotProduct(snapshot, 999_999)).toBeNull()
   })

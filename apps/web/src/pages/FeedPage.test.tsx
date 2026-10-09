@@ -7,7 +7,7 @@ import { FILTERS, makeFeed, makeItem } from '../test/fixtures'
 
 const feedMock = vi.fn()
 vi.mock('../api/client', () => ({
-  isSnapshotMode: false,
+  isStaticMode: false,
   ApiRequestError: class extends Error {},
   api: { feed: (q: unknown) => feedMock(q), filters: async () => FILTERS },
 }))

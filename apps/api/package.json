@@ -15,7 +15,7 @@
     "db:reset": "prisma migrate reset --force --skip-seed --skip-generate && prisma generate && npm run db:seed",
     "db:studio": "prisma studio",
     "deals:recompute": "tsx src/cli/recompute-deals.ts",
-    "snapshot:export": "tsx src/cli/export-snapshot.ts",
+    "static:export": "tsx src/cli/export-static.ts",
     "scrape": "tsx src/cli/scrape.ts",
     "probe": "tsx src/cli/probe.ts",
     "data:import": "tsx src/cli/data-import.ts",

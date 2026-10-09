@@ -38,7 +38,7 @@ const ITEMS = [
 
 const compareMock = vi.fn()
 vi.mock('../api/client', () => ({
-  isSnapshotMode: false,
+  isStaticMode: false,
   ApiRequestError: class extends Error {},
   api: { compare: (q: CompareQueryParams) => compareMock(q), filters: async () => FILTERS },
 }))

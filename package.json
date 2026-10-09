@@ -29,7 +29,7 @@
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "build": "npm run build -w @znyzhky/web",
-    "snapshot": "npm run snapshot:export -w @znyzhky/api && npm run build:snapshot -w @znyzhky/web"
+    "site:build": "node scripts/build-site.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

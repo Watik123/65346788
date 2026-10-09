@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router'
-import { isSnapshotMode } from './api/client'
+import { isStaticMode } from './api/client'
 import { Layout } from './components/Layout'
 import { ComparePage } from './pages/ComparePage'
 import { FeedPage } from './pages/FeedPage'
@@ -16,10 +16,10 @@ const queryClient = new QueryClient({
 })
 
 /**
- * Збірка-знімок живе на сторінці, де адреса не наша, тому там маршрути тримаються
+ * Збірка без сервера живе на сторінці, де адреса не наша, тому там маршрути тримаються
  * в пам'яті; звичайний сайт використовує адресу браузера.
  */
-const Router = isSnapshotMode ? MemoryRouter : BrowserRouter
+const Router = isStaticMode ? MemoryRouter : BrowserRouter
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
