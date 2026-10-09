@@ -1,4 +1,7 @@
 import type { PrismaClient } from '../generated/prisma/client'
+import { extractAttributes } from '../matching/attributes'
+import { compareProducts, type MatchResult } from '../matching/compare'
+import { MatchDecisions, offerKey } from '../matching/decisions'
 import type { ParsedProduct } from './types'
 
 export class IngestError extends Error {
@@ -13,7 +16,18 @@ export class IngestError extends Error {
 export interface IngestResult {
   action: 'created' | 'updated'
   productId: number
+  /** Як знайшли товар серед уже відомих (для нового запису магазину) */
+  matchedBy?: 'offer' | 'decision' | 'ean' | 'model' | 'new'
 }
+
+export interface IngestOptions {
+  now?: Date
+  /** Slug магазину: потрібен для рішень людини щодо спірних пар */
+  shopSlug?: string
+  decisions?: MatchDecisions
+}
+
+const NO_DECISIONS = new MatchDecisions()
 
 /** Ціна змінилась більш ніж у стільки разів: майже напевно помилка розбору, а не справжня зміна */
 const MAX_PRICE_JUMP = 5
@@ -37,8 +51,12 @@ export async function ingestProduct(
   p: ParsedProduct,
   today: Date,
   categoryIds: ReadonlyMap<string, number>,
-  now: Date = new Date(),
+  options: IngestOptions | Date = {},
 ): Promise<IngestResult> {
+  const opts: IngestOptions = options instanceof Date ? { now: options } : options
+  const now = opts.now ?? new Date()
+  const decisions = opts.decisions ?? NO_DECISIONS
+  const key = opts.shopSlug ? offerKey(opts.shopSlug, p.externalId) : null
   const categoryId = categoryIds.get(p.categorySlug)
   if (categoryId === undefined) throw new IngestError('ingest', `Невідома категорія "${p.categorySlug}"`)
 
@@ -51,10 +69,49 @@ export async function ingestProduct(
 
     let productId = offer?.productId
     let created = false
+    let matchedBy: IngestResult['matchedBy'] = offer ? 'offer' : undefined
+    let reviews: { candidateId: number; result: MatchResult }[] = []
 
+    // 1. Рішення людини: «цей товар той самий, що й такий-то в іншому магазині»
+    if (productId === undefined && key) {
+      for (const other of decisions.sameAs(key)) {
+        const [slug, ext] = [other.slice(0, other.indexOf(':')), other.slice(other.indexOf(':') + 1)]
+        const o = await tx.offer.findFirst({ where: { externalId: ext, shop: { slug } }, select: { productId: true } })
+        if (o) {
+          productId = o.productId
+          matchedBy = 'decision'
+          break
+        }
+      }
+    }
+
+    // 2. Однаковий штрихкод
     if (productId === undefined && p.ean) {
       const byEan = await tx.product.findUnique({ where: { ean: p.ean }, select: { id: true } })
       productId = byEan?.id
+      if (productId !== undefined) matchedBy = 'ean'
+    }
+
+    // 3. Той самий бренд і код моделі в тій самій категорії; товари, що вже є в цьому магазині, не кандидати
+    if (productId === undefined) {
+      const rejected = key ? decisions.differentFrom(key) : new Set<string>()
+      const incoming = { ...extractAttributes({ brand: p.brand, name: p.name, modelCode: p.modelCode, ean: p.ean }), ean: p.ean }
+      const candidates = await tx.product.findMany({
+        where: { categoryId, offers: { none: { shopId } } },
+        select: { id: true, name: true, brand: true, modelCode: true, ean: true, offers: { select: { externalId: true, shop: { select: { slug: true } } } } },
+        orderBy: { id: 'asc' },
+      })
+      const results = candidates
+        .filter((c) => c.brand.trim().toLowerCase() === incoming.brand)
+        .filter((c) => !c.offers.some((o) => o.externalId && rejected.has(offerKey(o.shop.slug, o.externalId))))
+        .map((c) => ({ candidateId: c.id, result: compareProducts(incoming, { ...extractAttributes(c), ean: c.ean }) }))
+      const same = results.find((r) => r.result.decision === 'same')
+      if (same) {
+        productId = same.candidateId
+        matchedBy = 'model'
+      } else {
+        reviews = results.filter((r) => r.result.decision === 'review').sort((a, b) => b.result.score - a.result.score).slice(0, 3)
+      }
     }
 
     if (productId === undefined) {
@@ -73,6 +130,11 @@ export async function ingestProduct(
       })
       productId = product.id
       created = true
+      matchedBy = 'new'
+      // Спірні пари: окремий товар, але з позначкою «перевірити, чи це не той самий»
+      for (const r of reviews) {
+        await tx.matchReview.create({ data: { productId, candidateId: r.candidateId, score: r.result.score, reasons: JSON.stringify(r.result.reasons) } })
+      }
     } else if (!created) {
       // Існуючий товар: доповнюємо лише те, чого бракує, і беремо оцінку, якщо відгуків більше
       const existing = await tx.product.findUniqueOrThrow({ where: { id: productId } })
@@ -101,6 +163,6 @@ export async function ingestProduct(
       update: point,
     })
 
-    return { action: created ? 'created' : 'updated', productId } as IngestResult
+    return { action: created ? 'created' : 'updated', productId, matchedBy } as IngestResult
   })
 }

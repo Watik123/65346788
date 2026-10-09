@@ -100,7 +100,7 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
       return
     }
     try {
-      await ingestProduct(prisma, shopId, outcome.product, today, categoryIds)
+      await ingestProduct(prisma, shopId, outcome.product, today, categoryIds, { shopSlug: scraper.slug })
       summary.saved++
     } catch (err) {
       if (err instanceof IngestError) await recordError(err.kind, err.message, outcome.product.url || url)

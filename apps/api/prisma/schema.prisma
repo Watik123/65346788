@@ -62,6 +62,8 @@ model Product {
   offers      Offer[]
   pricePoints PricePoint[]
   deal        ProductDeal?
+  reviewsAsNew       MatchReview[] @relation("MatchReviewProduct")
+  reviewsAsCandidate MatchReview[] @relation("MatchReviewCandidate")
 
   @@index([categoryId])
   @@index([brand, modelCode])
@@ -174,4 +176,26 @@ model ScrapeError {
   run ScrapeRun @relation(fields: [runId], references: [id], onDelete: Cascade)
 
   @@index([runId])
+}
+
+/// Спірна пара: можливо, той самий товар у двох магазинах. Чекає на рішення людини.
+model MatchReview {
+  id          Int       @id @default(autoincrement())
+  /// Товар, що з'явився пізніше
+  productId   Int
+  /// Наявний товар, з яким він, можливо, той самий
+  candidateId Int
+  score       Float
+  /// Причини, JSON-масив рядків
+  reasons     String
+  /// "pending" | "approved" | "rejected"
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now())
+  resolvedAt  DateTime?
+
+  product   Product @relation("MatchReviewProduct", fields: [productId], references: [id], onDelete: Cascade)
+  candidate Product @relation("MatchReviewCandidate", fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, candidateId])
+  @@index([status])
 }

@@ -3,6 +3,7 @@ import { recomputeDeals } from '../jobs/recompute-deals'
 import { parseDay } from '../lib/dates'
 import { createPrisma } from '../lib/db'
 import { findScraper } from '../scrapers'
+import { MatchDecisions, readDecisions } from '../matching/decisions'
 import { fromRecord, listDayFiles, readDayFile } from '../scraping/datastore'
 import { IngestError, ingestProduct } from '../scraping/ingest'
 import type { PrismaClient } from '../generated/prisma/client'
@@ -23,6 +24,7 @@ export interface ImportSummary {
  */
 export async function importDataStore(prisma: PrismaClient, root: string): Promise<ImportSummary> {
   const files = listDayFiles(root)
+  const decisions = new MatchDecisions(readDecisions(root))
   const categoryIds = await ensureCategories(prisma)
   const shopIds = new Map<string, number>()
   const summary: ImportSummary = { days: new Set(files.map((f) => f.date)).size, files: files.length, records: 0, saved: 0, invalid: 0, errors: [], lastDate: null }
@@ -46,7 +48,7 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
     for (const r of records) {
       summary.records++
       try {
-        await ingestProduct(prisma, shopId, fromRecord(r), day, categoryIds, day)
+        await ingestProduct(prisma, shopId, fromRecord(r), day, categoryIds, { now: day, shopSlug: f.shop, decisions })
         summary.saved++
       } catch (err) {
         if (summary.errors.length < 200) {
