@@ -10,12 +10,14 @@ const SPEC = [
   /^\d+(gb|tb|гб|тб|mb|мб|hz|гц|w|вт|mah|мач|mp|мп|"|'')$/i,
   /^\d+x\d+$/i,
   /^\d+[/\\]\d+(gb|tb|гб|тб)?$/i,
+  /^\d+(gb|гб)?[/\\]\d+(gb|tb|гб|тб)$/i,
   /^[2-6]g$/i,
   /^(wi-?fi|usb-?c|ddr\d|lpddr\d+x?|nvme|pci-e|ips|oled|qled|led|uhd|fhd|hdr10\+?|ssd|rtx|gtx)$/i,
   /^(19|20)\d{2}$/,
 ]
 
-const looksLikeCode = (t: string) => /[a-z]/i.test(t) && /\d/.test(t) && t.length >= 5 && t.length <= 25 && !SPEC.some((re) => re.test(t))
+/** Схоже на код моделі, а не на характеристику (512GB, 3840x2160, 12/512, 5G, Wi-Fi) */
+export const looksLikeCode = (t: string) => /[a-z]/i.test(t) && /\d/.test(t) && t.length >= 5 && t.length <= 25 && !SPEC.some((re) => re.test(t))
 
 export function extractModelCode(name: string): string | null {
   const paren = name.match(/\(([^()]+)\)\s*$/)

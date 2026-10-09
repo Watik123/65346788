@@ -1,0 +1,61 @@
+import { describe, expect, it } from 'vitest'
+import { extractAttributes, normalizeCode, type MatchInput } from './attributes'
+import { compareProducts } from './compare'
+
+const attrs = (name: string, brand: string, modelCode: string | null = null, ean: string | null = null) => ({ ...extractAttributes({ name, brand, modelCode, ean } as MatchInput), ean })
+const decide = (a: ReturnType<typeof attrs>, b: ReturnType<typeof attrs>) => compareProducts(a, b).decision
+
+describe('extractAttributes', () => {
+  it('пам\'ять, колір, діагональ, рік, модифікації, комплект', () => {
+    const s = attrs('Смартфон Samsung Galaxy S26 Ultra 12/512GB Black (SM-S948BZKGEUC)', 'Samsung')
+    expect(s).toMatchObject({ brand: 'samsung', ramGb: 12, storageGb: 512, color: 'black', variants: ['ultra'], bundle: false })
+    expect(s.codes).toEqual(['SMS948BZKGEUC']) // «12/512GB» не код моделі
+
+    expect(attrs('Телевізор LG 55" OLED evo C5 OLED55C56LA 2026', 'LG')).toMatchObject({ diagonal: 55, year: 2026, codes: expect.arrayContaining(['OLED55C56LA']) })
+    // Справжні назви ноутбуків KTC: «Ryzen 5 / 150» не плутаємо з пам'яттю
+    expect(attrs('Ноутбук Lenovo LOQ 15ARP10E 83S0007GRA Luna Grey - 15.6" IPS 144 Гц / AMD Ryzen 5 / 150 / DDR5 16 ГБ / PCI-E SSD 512 ГБ / GeForce RTX 3050', 'Lenovo')).toMatchObject({ ramGb: 16, storageGb: 512, diagonal: 15.6 })
+    expect(attrs('Ноутбук Lenovo ThinkPad T14s G7 21YVS0LC00 Black - 14" IPS 60 Гц / Intel Core Ultra 7 / 355 / DDR5 32 ГБ / PCI-E SSD 1 ТБ / Intel Graphics', 'Lenovo')).toMatchObject({ ramGb: 32, storageGb: 1024, color: 'black' })
+    expect(attrs('Смартфон Samsung Galaxy A27 5G 8/256 Black (SM-A276BZKCEUC)', 'Samsung')).toMatchObject({ ramGb: 8, storageGb: 256 })
+    expect(attrs('Смартфон Apple iPhone 17 256GB Чорний', 'Apple')).toMatchObject({ storageGb: 256, color: 'black' })
+    expect(attrs('Смартфон Xiaomi 15T + навушники', 'Xiaomi').bundle).toBe(true)
+  })
+
+  it('нормалізує коди', () => {
+    expect(normalizeCode('sm-s948b zk/geuc')).toBe('SMS948BZKGEUC')
+  })
+})
+
+describe('compareProducts', () => {
+  it('однаковий EAN: той самий, різні EAN: різні, навіть за однакових назв', () => {
+    expect(decide(attrs('A', 'X', null, '4006381333931'), attrs('B', 'X', null, '4006381333931'))).toBe('same')
+    expect(decide(attrs('Телевізор LG 55UT80006LA', 'LG', null, '4006381333931'), attrs('Телевізор LG 55UT80006LA', 'LG', null, '0036000291452'))).toBe('different')
+  })
+
+  it('однаковий код моделі в одного бренду: той самий, хоч назви записані по-різному', () => {
+    const ktc = attrs('Телевізор LED LG 43UA75006LA (Smart TV, Wi-Fi, 3840x2160)', 'LG')
+    const other = attrs('Телевізор LG 43" 4K UHD 43UA75006LA', 'LG')
+    expect(compareProducts(ktc, other)).toMatchObject({ decision: 'same', reasons: ['однаковий код моделі 43UA75006LA'] })
+  })
+
+  it('різна пам\'ять, колір, модифікація, рік чи комплект: різні товари', () => {
+    const base = attrs('Смартфон Samsung Galaxy S26 12/256GB Black (SM-S942B)', 'Samsung', 'SM-S942B')
+    expect(decide(base, attrs('Смартфон Samsung Galaxy S26 12/512GB Black (SM-S942B)', 'Samsung', 'SM-S942B'))).toBe('different')
+    expect(decide(base, attrs('Смартфон Samsung Galaxy S26 12/256GB White (SM-S942B)', 'Samsung', 'SM-S942B'))).toBe('different')
+    expect(decide(base, attrs('Смартфон Samsung Galaxy S26 Ultra 12/256GB Black', 'Samsung'))).toBe('different')
+    expect(decide(base, attrs('Смартфон Samsung Galaxy S26 12/256GB Black (SM-S942B) + чохол', 'Samsung', 'SM-S942B'))).toBe('different')
+    expect(decide(attrs('Телевізор Xiaomi TV A Pro 55 2025', 'Xiaomi'), attrs('Телевізор Xiaomi TV A Pro 55 2026', 'Xiaomi'))).toBe('different')
+  })
+
+  it('інший бренд: різні, навіть з однаковим кодом', () => {
+    expect(decide(attrs('Пилосос ABC12345', 'Bosch'), attrs('Пилосос ABC12345', 'Siemens'))).toBe('different')
+  })
+
+  it('частковий збіг коду (суфікс кольору/регіону) і дуже схожі назви: на ручну перевірку', () => {
+    expect(decide(attrs('Samsung Galaxy S26 Ultra 12/512GB (SM-S948B)', 'Samsung'), attrs('Samsung Galaxy S26 Ultra 12/512GB (SM-S948BZKGEUC)', 'Samsung'))).toBe('review')
+    expect(decide(attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'), attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'))).toBe('review')
+  })
+
+  it('зовсім різні моделі одного бренду: різні', () => {
+    expect(decide(attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'), attrs('Робот-пилосос Xiaomi Robot Vacuum S40', 'Xiaomi'))).toBe('different')
+  })
+})

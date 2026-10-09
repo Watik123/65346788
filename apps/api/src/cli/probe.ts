@@ -144,6 +144,8 @@ async function deep(fetcher: PoliteFetcher, urls: string[]) {
 
     // Сторінка категорії: картки товарів, ціни в картках, пагінація
     const goods = [...new Set($('a[href*="/goods/"]').map((_, a) => ($(a).attr('href') ?? '').split('#')[0]).get())]
+    const pagLinks = [...new Set($('a[href]').map((_, a) => $(a).attr('href') ?? '').get().filter((h) => /[?&]page=\d|\/page[-_/]?\d|[?&]p=\d/i.test(h)))].slice(0, 6)
+    if (pagLinks.length) console.log(`пагінація: ${pagLinks.join('  ')} | rel=next: ${$('link[rel="next"], a[rel="next"]').attr('href') ?? '—'}`)
     if (goods.length > 3) {
       console.log(`посилань на товари: ${goods.length}`)
       const firstCard = $('a[href*="/goods/"]').first()
@@ -163,6 +165,35 @@ async function deep(fetcher: PoliteFetcher, urls: string[]) {
       const navTexts = $('a').filter((_, a) => /^\s*[2-9]\s*$/.test($(a).text())).map((_, a) => `${$(a).text().trim()}→${$(a).attr('href')}`).get().slice(0, 6)
       console.log(`посилання з цифрами: ${navTexts.join('  ') || '—'}`)
     }
+
+    // Універсальний пошук картки товару: найменший елемент із ціною, посиланням і зображенням
+    const priceRe = /\d[\d\s\u00A0]{2,}\s*(₴|грн)/
+    let best: { el: AnyNode; len: number } | null = null
+    $('body *').not('script, style, svg, noscript').each((_, el) => {
+      const node = $(el)
+      const html = $.html(el) ?? ''
+      if (html.length > 6000 || html.length < 120) return
+      if (!priceRe.test(node.text()) || node.find('a[href]').length === 0 || node.find('img, picture, source').length === 0) return
+      if (!best || html.length < best.len) best = { el, len: html.length }
+    })
+    if (best) {
+      const b = best as { el: AnyNode; len: number }
+      const cls = ($(b.el).attr('class') ?? '').split(/\s+/)[0]
+      const siblings = cls ? $(`.${cls.replace(/([^\w-])/g, '\\$1')}`).length : 0
+      console.log(`картка (універсально): ${ancestry($, b.el, 5)} | таких на сторінці: ${siblings}`)
+      console.log(`вміст картки: ${collapse($.html(b.el) ?? '', 1600)}`)
+    } else console.log('картка (універсально): не знайдено елемента з ціною, посиланням і фото')
+
+    // Вбудовані дані сторінки (JSON-стан застосунку, dataLayer)
+    $('script').not('[type="application/ld+json"]').each((_, el) => {
+      const t = $(el).text()
+      const id = $(el).attr('id') ?? ''
+      const marker = ['__NEXT_DATA__', '__NUXT__', '__INITIAL_STATE__', '__APOLLO_STATE__', 'dataLayer', 'impressions', 'ecommerce'].find((m) => id.includes(m) || t.includes(m))
+      if (marker && t.length > 200 && /"price"|'price'|price:/i.test(t)) {
+        const at = Math.max(0, t.search(/"price"|price:/i) - 250)
+        console.log(`вбудовані дані [${marker}${id ? ` #${id}` : ''}], ${t.length} симв.: …${short(t.slice(at, at + 600), 600)}`)
+      }
+    })
 
     // Посилання на підкатегорії з ключовими словами
     const sub = $('a[href]').filter((_, a) => /пральн|холодильн|пилосос|телевіз|ноутбук|смартфон/i.test($(a).text()) && !($(a).attr('href') ?? '').includes('/goods/')).map((_, a) => `${short($(a).text().trim(), 30)} → ${$(a).attr('href')}`).get()
