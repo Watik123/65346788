@@ -35,7 +35,7 @@ async function main() {
   const dataDir = path.join(REPO_ROOT, 'data')
   const fetcher = new PoliteFetcher({
     shop: scraper.slug,
-    userAgent: process.env.SCRAPER_USER_AGENT ?? `ZnyzhkyBot/0.1 (+${process.env.SCRAPER_CONTACT ?? 'вкажіть SCRAPER_CONTACT у .env'})`,
+    userAgent: process.env.SCRAPER_USER_AGENT ?? `ZnyzhkyBot/0.1 (+${process.env.SCRAPER_CONTACT ?? 'contact: not set'})`,
     cacheDir: flag('fresh') ? undefined : path.join(dataDir, 'cache', scraper.slug),
     rawDir: path.join(dataDir, 'raw', scraper.slug),
   })

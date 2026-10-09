@@ -1,0 +1,54 @@
+# Збір цін на серверах GitHub (у контейнері розробки доступу до сайтів магазинів немає).
+# Поки що лише ручний запуск: вкладка Actions → «Збір цін» → Run workflow.
+name: Збір цін
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'probe: розвідка сайту; dry-run: пробний збір без запису'
+        type: choice
+        options: [probe, dry-run]
+        default: probe
+      target:
+        description: 'Для probe: адреса сайту. Для dry-run: slug магазину (ktc)'
+        default: 'https://ktc.ua'
+      max:
+        description: 'Скільки сторінок обробити (dry-run)'
+        default: '10'
+
+permissions:
+  contents: read
+
+# Один збір за раз: два паралельні запуски подвоїли б навантаження на сайт
+concurrency:
+  group: scrape
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # Чесний контакт у User-Agent: власник сайту бачить, чий це робот
+      SCRAPER_CONTACT: https://github.com/${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Розвідка сайту
+        if: inputs.mode == 'probe'
+        env:
+          TARGET: ${{ inputs.target }}
+        run: npm run probe -- "$TARGET" --pages=6
+
+      - name: Пробний збір (без запису)
+        if: inputs.mode == 'dry-run'
+        env:
+          SHOP: ${{ inputs.target }}
+          MAX: ${{ inputs.max }}
+        run: npm run scrape -- "$SHOP" --dry-run --fresh --max="$MAX"

@@ -1,0 +1,202 @@
+import * as cheerio from 'cheerio'
+import { PoliteFetcher } from '../scraping/fetcher'
+import { parseRobots } from '../scraping/robots'
+import { extractJsonLdProducts, extractMetaProduct } from '../scraping/schema-org'
+
+/**
+ * Розвідка сайту перед написанням парсера: кілька десятків запитів максимум, з дотриманням
+ * robots.txt і пауз. Друкує лише зведення (структура адрес, наявність розмітки, приклади полів),
+ * а не сторінки цілком.
+ *
+ * Запуск: npm run probe -- https://shop.example [--pages=6]
+ */
+
+const UA = process.env.SCRAPER_USER_AGENT ?? `ZnyzhkyBot/0.1 (+${process.env.SCRAPER_CONTACT ?? 'contact: not set'})`
+const CATEGORY_HINTS = [/televiz|телевіз|tv/i, /noutbuk|ноутбук|laptop/i, /smartfon|смартфон|phone/i, /pral|пральн|washing/i, /kholod|холодил|fridge|refriger/i, /pylos|пилос|vacuum/i]
+
+const short = (s: string, n = 140) => (s.length > n ? `${s.slice(0, n)}…` : s).replace(/\s+/g, ' ')
+
+function prefixHistogram(urls: string[], depth = 1): [string, number][] {
+  const counts = new Map<string, number>()
+  for (const u of urls) {
+    try {
+      const segs = new URL(u).pathname.split('/').filter(Boolean)
+      const key = '/' + segs.slice(0, depth).join('/') + (segs.length > depth ? '/…' : '')
+      counts.set(key, (counts.get(key) ?? 0) + 1)
+    } catch {
+      // некоректна адреса: пропускаємо
+    }
+  }
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])
+}
+
+function breadcrumbs(html: string): string[] {
+  const $ = cheerio.load(html)
+  const out: string[] = []
+  $('script[type="application/ld+json"]').each((_, el) => {
+    try {
+      const walk = (n: unknown): void => {
+        if (Array.isArray(n)) return n.forEach(walk)
+        if (n && typeof n === 'object') {
+          const o = n as Record<string, unknown>
+          const t = ([] as unknown[]).concat(o['@type'] ?? [])
+          if (t.includes('BreadcrumbList')) {
+            for (const item of ([] as unknown[]).concat(o['itemListElement'] ?? [])) {
+              const it = item as Record<string, unknown>
+              const name = it['name'] ?? (it['item'] as Record<string, unknown> | undefined)?.['name']
+              if (typeof name === 'string') out.push(name)
+            }
+          }
+          if (o['@graph']) walk(o['@graph'])
+        }
+      }
+      walk(JSON.parse($(el).text()))
+    } catch {
+      // зламаний блок
+    }
+  })
+  return out
+}
+
+/** Фрагменти HTML навколо можливої «старої» (закресленої) ціни */
+function oldPriceHints(html: string): string[] {
+  const $ = cheerio.load(html)
+  const hints: string[] = []
+  $('[class*="old" i], [class*="crossed" i], [class*="was" i], del, s').each((_, el) => {
+    const text = $(el).text().trim()
+    if (/\d[\d\s ]{2,}/.test(text) && hints.length < 4) {
+      const cls = $(el).attr('class') ?? el.tagName
+      hints.push(`<${el.tagName} class="${short(cls, 60)}"> ${short(text, 50)}`)
+    }
+  })
+  return hints
+}
+
+async function main() {
+  const target = process.argv.slice(2).find((a) => !a.startsWith('--'))
+  const pagesArg = process.argv.find((a) => a.startsWith('--pages='))
+  const maxPages = Math.min(Number(pagesArg?.slice(8) ?? 6) || 6, 12)
+  if (!target) {
+    console.log('Запуск: npm run probe -- https://shop.example [--pages=6]')
+    process.exit(1)
+  }
+  const origin = new URL(target).origin
+  const fetcher = new PoliteFetcher({ shop: 'probe', userAgent: UA, minDelayMs: 2000, jitterMs: 800, retries: 1 })
+  console.log(`Розвідка ${origin}\nUser-Agent: ${UA}\n`)
+
+  // 1. robots.txt і карта сайту
+  const robotsRes = await fetcher.get(`${origin}/robots.txt`)
+  const robots = parseRobots(robotsRes.status === 200 ? robotsRes.body : '', UA)
+  console.log(`== robots.txt: HTTP ${robotsRes.status}, Crawl-delay: ${robots.crawlDelaySeconds ?? 'немає'}, Sitemap: ${robots.sitemaps.join(', ') || 'не вказано'}`)
+
+  const sitemapCandidates = robots.sitemaps.length ? robots.sitemaps : [`${origin}/sitemap.xml`, `${origin}/sitemap_index.xml`]
+  const sampleUrls: string[] = []
+  for (const sm of sitemapCandidates.slice(0, 2)) {
+    try {
+      const res = await fetcher.get(sm)
+      const $ = cheerio.load(res.body, { xml: true })
+      const children = $('sitemap > loc').map((_, e) => $(e).text().trim()).get()
+      const urls = $('url > loc').map((_, e) => $(e).text().trim()).get()
+      console.log(`\n== ${sm}: HTTP ${res.status}, вкладених sitemap: ${children.length}, адрес: ${urls.length}`)
+      children.slice(0, 15).forEach((c) => console.log(`   sitemap: ${c}`))
+      if (children.length > 15) console.log(`   … ще ${children.length - 15}`)
+      urls.slice(0, 8).forEach((u) => console.log(`   url: ${u}`))
+      sampleUrls.push(...urls)
+
+      // Відкриваємо один вкладений файл, у назві якого схоже на товари
+      const productish = children.find((c) => /product|goods|tovar|item|catalog/i.test(c)) ?? children[0]
+      if (productish) {
+        const r2 = await fetcher.get(productish)
+        const $2 = cheerio.load(r2.body, { xml: true })
+        const urls2 = $2('url > loc').map((_, e) => $2(e).text().trim()).get()
+        console.log(`   → ${productish}: HTTP ${r2.status}, адрес: ${urls2.length}`)
+        urls2.slice(0, 10).forEach((u) => console.log(`     url: ${u}`))
+        console.log('     перші сегменти шляху:', JSON.stringify(prefixHistogram(urls2).slice(0, 8)))
+        sampleUrls.push(...urls2)
+      }
+    } catch (err) {
+      console.log(`\n== ${sm}: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
+  // 2. Головна: які розділи є і як виглядають посилання на категорії
+  const home = await fetcher.get(`${origin}/`)
+  const $h = cheerio.load(home.body)
+  const links = [...new Set($h('a[href]').map((_, a) => $h(a).attr('href') ?? '').get())]
+    .map((h) => { try { return new URL(h, origin).toString() } catch { return '' } })
+    .filter((h) => h.startsWith(origin))
+  console.log(`\n== Головна: HTTP ${home.status}, внутрішніх посилань: ${links.length}`)
+  console.log('   перші сегменти шляху:', JSON.stringify(prefixHistogram(links).slice(0, 12)))
+  const homeLd = extractJsonLdProducts(home.body)
+  console.log(`   блоків ld+json: ${homeLd.blocks}`)
+
+  const categoryLinks: string[] = []
+  for (const re of CATEGORY_HINTS) {
+    const found = $h('a[href]')
+      .filter((_, a) => re.test($h(a).attr('href') ?? '') || re.test($h(a).text()))
+      .map((_, a) => `${short($h(a).text().trim(), 40)} → ${new URL($h(a).attr('href') ?? '', origin).toString()}`)
+      .get()
+    const uniq = [...new Set(found)].slice(0, 3)
+    console.log(`   категорія ${re.source.split('|')[0]}: ${uniq.length ? '' : 'не знайдено'}`)
+    uniq.forEach((l) => console.log(`     ${l}`))
+    const first = uniq[0]?.split(' → ')[1]
+    if (first) categoryLinks.push(first)
+  }
+
+  // 3. Одна сторінка категорії: як виглядають посилання на товари й пагінація
+  const productLinks: string[] = []
+  const catUrl = categoryLinks.find((u) => robots.isAllowed(new URL(u).pathname + new URL(u).search))
+  if (catUrl) {
+    const cat = await fetcher.get(catUrl)
+    const $c = cheerio.load(cat.body)
+    const catLinks = [...new Set($c('a[href]').map((_, a) => $c(a).attr('href') ?? '').get())]
+      .map((h) => { try { return new URL(h, origin).toString() } catch { return '' } })
+      .filter((h) => h.startsWith(origin))
+    console.log(`\n== Категорія ${catUrl}: HTTP ${cat.status}, посилань: ${catLinks.length}, ld+json: ${extractJsonLdProducts(cat.body).blocks}`)
+    console.log('   перші сегменти шляху:', JSON.stringify(prefixHistogram(catLinks, 1).slice(0, 10)))
+    const pag = catLinks.filter((l) => /[?&]page=|\/page[-_/]?\d|PAGEN|[?&]p=\d/i.test(l)).slice(0, 5)
+    console.log(`   пагінація: ${pag.length ? pag.join('  ') : 'не знайдено явних посилань'}`)
+    // Найчастіший префікс з глибиною 1 серед довгих адрес, імовірно, товари
+    const [topPrefix] = prefixHistogram(catLinks.filter((l) => new URL(l).pathname.length > 25), 1)
+    console.log(`   найчастіший префікс довгих адрес: ${topPrefix ? `${topPrefix[0]} (${topPrefix[1]})` : '—'}`)
+    if (topPrefix) productLinks.push(...catLinks.filter((l) => ('/' + new URL(l).pathname.split('/').filter(Boolean)[0]) === topPrefix[0].replace('/…', '')))
+    productLinks.slice(0, 5).forEach((l) => console.log(`     ${l}`))
+  }
+
+  // 4. Кілька сторінок товарів: що дає розмітка
+  const candidates = [...new Set([...productLinks, ...sampleUrls.filter((u) => /\.html|product|goods|tovar|\/p\//i.test(u))])]
+    .filter((u) => !/\/ru\//.test(u))
+    .slice(0, maxPages)
+  console.log(`\n== Сторінки товарів (${candidates.length})`)
+  for (const url of candidates) {
+    try {
+      const res = await fetcher.get(url)
+      const ld = extractJsonLdProducts(res.body)
+      const meta = extractMetaProduct(res.body)
+      const p = ld.products[0]
+      console.log(`\n-- ${url}\n   HTTP ${res.status}, ld+json блоків: ${ld.blocks} (зламаних ${ld.invalidBlocks}), товарів у розмітці: ${ld.products.length}`)
+      if (p) {
+        console.log(`   name: ${p.name}\n   brand: ${p.brand} | sku: ${p.sku} | mpn: ${p.mpn} | ean: ${p.ean}`)
+        console.log(`   price: ${p.price} ${p.currency} | availability: ${p.availability} | seller: ${p.seller}`)
+        console.log(`   rating: ${p.rating} (${p.reviewCount}) | image: ${p.imageUrl ? 'є' : 'немає'}`)
+        console.log(`   ключі вузла: ${Object.keys(p.raw as object).join(', ')}`)
+        const offers = (p.raw as Record<string, unknown>)['offers']
+        console.log(`   offers: ${short(JSON.stringify(offers ?? null), 300)}`)
+      }
+      console.log(`   meta: price=${meta.price} ${meta.currency ?? ''} availability=${meta.availability} title=${short(meta.name ?? '', 60)}`)
+      console.log(`   хлібні крихти: ${breadcrumbs(res.body).join(' › ') || 'немає в розмітці'}`)
+      const hints = oldPriceHints(res.body)
+      console.log(`   можлива закреслена ціна: ${hints.length ? '' : 'не знайдено'}`)
+      hints.forEach((h) => console.log(`     ${h}`))
+      const $p = cheerio.load(res.body)
+      console.log(`   h1: ${short($p('h1').first().text().trim(), 100)}`)
+    } catch (err) {
+      console.log(`\n-- ${url}\n   ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+}
+
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

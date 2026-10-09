@@ -53,6 +53,11 @@ export interface PoliteFetcherOptions {
 
 const MAX_RETRY_AFTER_MS = 60_000
 
+/** Значення заголовка лише з друкованих ASCII-символів; решта кодується як у URL */
+export function toHeaderValue(value: string): string {
+  return value.replace(/[^\x20-\x7E]/g, (ch) => encodeURIComponent(ch))
+}
+
 /**
  * Ввічливий завантажувач:
  *  - не заходить туди, куди забороняє robots.txt, і поважає Crawl-delay;
@@ -66,6 +71,8 @@ export class PoliteFetcher implements Fetcher {
   private robotsByOrigin = new Map<string, RobotsRules>()
 
   constructor(options: PoliteFetcherOptions) {
+    // Заголовки HTTP допускають лише ASCII: кирилицю в контакті кодуємо, а не ламаємо кожен запит
+    options = { ...options, userAgent: toHeaderValue(options.userAgent) }
     this.o = {
       minDelayMs: 1500,
       jitterMs: 500,

@@ -100,6 +100,13 @@ describe('PoliteFetcher: ввічливість і повтори', () => {
     expect(calls.every((c) => c.ua === 'ZnyzhkyBot/0.1 (+contact)')).toBe(true)
   })
 
+  it('кирилиця в підписі робота не ламає запит: кодується в ASCII', async () => {
+    const { fetcher, calls } = setup({ ...robots, [`${ORIGIN}/a`]: [{ body: 'a' }] }, { userAgent: 'ZnyzhkyBot/0.1 (+пошта@приклад.укр)' })
+    await fetcher.get(`${ORIGIN}/a`)
+    expect(calls[0]?.ua).toMatch(/^[\x20-\x7E]+$/)
+    expect(calls[0]?.ua).toContain('ZnyzhkyBot/0.1 (+%D0%BF')
+  })
+
   it('повторює після 503 з наростаючою затримкою і зрештою отримує сторінку', async () => {
     const { fetcher, calls, sleeps } = setup({ ...robots, [`${ORIGIN}/a`]: [{ status: 503 }, { status: 503 }, { body: 'нарешті' }] })
     const res = await fetcher.get(`${ORIGIN}/a`)
