@@ -77,6 +77,10 @@ describe('compareProducts', () => {
     expect(decide(attrs('Телевізор Samsung Neo QLED Mini LED 75QN70F (QE75QN70FAUXUA)', 'SAMSUNG', 'QE75QN70FAUXUA'), attrs('Телевізор SAMSUNG QE75QN70FAUXUA', 'SAMSUNG'))).toBe('same')
     expect(decide(attrs('Телевізор Samsung 40F6000 (UE40F6000FUXUA)', 'SAMSUNG', 'UE40F6000FUXUA'), attrs('Телевізор Samsung 40" Full HD UE40F6000FUXUA', 'Samsung'))).toBe('same')
     expect(decide(attrs('Телевізор LED LG 43UA75006LA (Smart TV, Wi-Fi, 3840x2160)', 'LG', '43UA75006LA'), attrs('Телевізор LG 43UA75006LA', 'LG'))).toBe('same')
+    // Apple з кодом регіону і без нього; інший колір — інший артикул
+    expect(decide(attrs('Смартфон APPLE iPhone 17 Pro 256GB Silver (MG8G4AF/A)', 'APPLE'), attrs('Apple iPhone 17 Pro 256GB Silver (MG8G4)', 'Apple'))).toBe('same')
+    expect(decide(attrs('Смартфон Apple iPhone 17 Pro Max 512GB Deep Blue (MFYU4A)', 'Apple'), attrs('Смартфон APPLE iPhone 17 Pro Max 512GB Deep Blue (MFYU4AF/A)', 'APPLE'))).toBe('same')
+    expect(decide(attrs('Apple iPhone 17 Pro 256GB (MG8G4)', 'Apple'), attrs('Apple iPhone 17 Pro 256GB (MG8H4AF/A)', 'Apple'))).toBe('different')
     // Одна серія ноутбуків, різні конфігурації: спільний код серії не робить їх одним товаром
     expect(decide(attrs('Ноутбук HP 200-G2i Black (DS9F6ET)', 'HP', 'DS9F6ET'), attrs('Ноутбук HP 200-G2i (DS9G2ET)', 'HP', 'DS9G2ET'))).toBe('different')
     expect(decide(attrs('Ноутбук Lenovo IdeaPad Slim 3 16IPH11 Cosmic Blue (83US006RRA)', 'LENOVO', '83US006RRA'), attrs('Ноутбук LENOVO IdeaPad Slim 5 16IPH11 Cosmic Blue (83S6005RRA)', 'LENOVO', '83S6005RRA'))).toBe('different')

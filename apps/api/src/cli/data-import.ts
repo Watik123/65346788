@@ -6,6 +6,7 @@ import { findScraper } from '../scrapers'
 import { MatchDecisions, readDecisions } from '../matching/decisions'
 import { fromRecord, listDayFiles, readDayFile } from '../scraping/datastore'
 import { IngestError, ingestProduct } from '../scraping/ingest'
+import { isNotNew } from '../scrapers/listing-utils'
 import type { PrismaClient } from '../generated/prisma/client'
 
 export interface ImportSummary {
@@ -14,6 +15,8 @@ export interface ImportSummary {
   records: number
   saved: number
   invalid: number
+  /** Вживані, уцінені, вітринні: у сховищі можуть бути зі старих зборів, у базу не беремо */
+  notNew: number
   errors: { kind: string; message: string; date: string; shop: string }[]
   lastDate: string | null
 }
@@ -27,7 +30,7 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
   const decisions = new MatchDecisions(readDecisions(root))
   const categoryIds = await ensureCategories(prisma)
   const shopIds = new Map<string, number>()
-  const summary: ImportSummary = { days: new Set(files.map((f) => f.date)).size, files: files.length, records: 0, saved: 0, invalid: 0, errors: [], lastDate: null }
+  const summary: ImportSummary = { days: new Set(files.map((f) => f.date)).size, files: files.length, records: 0, saved: 0, invalid: 0, notNew: 0, errors: [], lastDate: null }
 
   for (const f of files) {
     let shopId = shopIds.get(f.shop)
@@ -47,6 +50,10 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
     const day = parseDay(f.date)
     for (const r of records) {
       summary.records++
+      if (isNotNew(r.name)) {
+        summary.notNew++
+        continue
+      }
       try {
         await ingestProduct(prisma, shopId, fromRecord(r), day, categoryIds, { now: day, shopSlug: f.shop, decisions })
         summary.saved++
@@ -71,7 +78,7 @@ async function main() {
   const prisma = createPrisma()
   try {
     const s = await importDataStore(prisma, root)
-    console.log(`Імпорт: днів ${s.days}, файлів ${s.files}, записів ${s.records}, збережено ${s.saved}, пошкоджених рядків ${s.invalid}, помилок ${s.errors.length}`)
+    console.log(`Імпорт: днів ${s.days}, файлів ${s.files}, записів ${s.records}, збережено ${s.saved}, не нових ${s.notNew}, пошкоджених рядків ${s.invalid}, помилок ${s.errors.length}`)
     for (const e of s.errors.slice(0, 10)) console.log(`  ${e.date} ${e.shop} ${e.kind}: ${e.message}`)
     if (s.lastDate) {
       const deals = await recomputeDeals(prisma, { today: parseDay(s.lastDate) })

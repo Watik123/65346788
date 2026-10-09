@@ -70,7 +70,8 @@ describe('buildReport', () => {
     const root = mkdtempSync(path.join(os.tmpdir(), 'report-multi-'))
     try {
       const tv = (shop: string, id: string, price: number, name: string): ParsedProduct => ({ ...p(id, price, null), url: `https://${shop}.example/${id}`, name, modelCode: '43UA75006LA' })
-      writeJsonl(path.join(root, 'prices/2026-10-09/ktc.jsonl'), [toRecord(tv('ktc', '1', 15999, 'Телевізор LED LG 43UA75006LA (Smart TV)'), 'ktc', '2026-10-09')])
+      // Вживаний товар зі старого збору: у базу не потрапляє
+      writeJsonl(path.join(root, 'prices/2026-10-09/ktc.jsonl'), [toRecord(tv('ktc', '1', 15999, 'Телевізор LED LG 43UA75006LA (Smart TV)'), 'ktc', '2026-10-09'), toRecord(tv('ktc', '2', 9999, 'Вживаний Телевізор LG 43UA75006LA чудовий стан'), 'ktc', '2026-10-09')])
       writeJsonl(path.join(root, 'prices/2026-10-09/moyo.jsonl'), [toRecord(tv('moyo', '77', 14999, 'Телевізор LG 43" 4K 43UA75006LA'), 'moyo', '2026-10-09')])
       await importDataStore(db.prisma, root)
       const md = await buildReport(db.prisma)

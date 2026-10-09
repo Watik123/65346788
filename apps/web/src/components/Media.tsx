@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { CategoryIcon } from './icons'
 
 interface Props {
@@ -8,12 +9,16 @@ interface Props {
   className?: string
 }
 
-/** Фото товару. Поки парсери не зібрали фото, показуємо спокійну заглушку зі значком категорії. */
+/**
+ * Фото товару. Немає фото або воно не завантажилось (магазин прибрав його, мережа) —
+ * спокійна заглушка зі значком категорії замість битої картинки.
+ */
 export function Media({ imageUrl, alt, categorySlug, brand, className = '' }: Props) {
-  if (imageUrl) {
+  const [failed, setFailed] = useState<string | null>(null)
+  if (imageUrl && failed !== imageUrl) {
     return (
       <div className={`overflow-hidden bg-surface-2 ${className}`}>
-        <img src={imageUrl} alt={alt} loading="lazy" className="size-full object-contain" />
+        <img src={imageUrl} alt={alt} loading="lazy" className="size-full object-contain" onError={() => setFailed(imageUrl)} />
       </div>
     )
   }

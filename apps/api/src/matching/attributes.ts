@@ -101,6 +101,13 @@ export function extractAttributes(input: MatchInput): ProductAttributes {
     const t = w.replace(/[^A-Za-z0-9\-/.]/g, '').replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, '')
     if (looksLikeCode(t)) codes.add(normalizeCode(t))
   }
+  // Apple: до артикулу дописують код регіону (MG8G4 = MG8G4AF/A = MFYU4A…): додаємо основу з 5 знаків
+  if (brandKey(input.brand) === 'apple') {
+    for (const c of [...codes]) {
+      const m = c.match(/^([A-Z][A-Z0-9]{4})[A-Z]{1,2}A?$/)
+      if (m) codes.add(m[1] as string)
+    }
+  }
 
   return {
     brand: brandKey(input.brand),

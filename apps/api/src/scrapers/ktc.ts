@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio'
 import { parseAvailability, parsePrice } from '../scraping/schema-org'
 import type { ListingParse, ListingRef, ListingScraper, ParseOutcome } from '../scraping/types'
+import { isNotNew } from './listing-utils'
 import { extractModelCode } from './model-code'
 
 /**
@@ -55,6 +56,7 @@ function itemToOutcome(item: Json, ref: ListingRef): ParseOutcome {
   const brand = isObj(item['brand']) ? str(item['brand']['name']) : str(item['brand'])
   if (!name || !url || !sku) return { kind: 'skip', reason: 'missing_data', detail: !name ? 'немає назви' : !url ? 'немає адреси' : 'немає артикулу' }
   if (!brand) return { kind: 'skip', reason: 'missing_data', detail: 'немає бренду' }
+  if (isNotNew(name)) return { kind: 'skip', reason: 'not_new' }
 
   const offer = asArray(item['offers']).filter(isObj)[0]
   if (!offer) return { kind: 'skip', reason: 'no_price' }
