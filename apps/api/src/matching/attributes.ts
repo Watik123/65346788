@@ -55,7 +55,7 @@ const VARIANT_WORDS = ['pro', 'max', 'ultra', 'plus', 'lite', 'mini', 'fe', 'se'
 const STOP = new Set([
   'смартфон', 'телевізор', 'ноутбук', 'ігровий', 'пилосос', 'робот', 'робот-пилосос', 'ручний', 'бездротовий', 'акумуляторний',
   'миючий', 'вертикальний', 'холодильник', 'пральна', 'машина', 'led', 'qled', 'oled', 'smart', 'tv', 'wi-fi', 'wifi', 'google',
-  'android', 'dual', 'sim', 'і', 'та', 'з', 'для', 'gb', 'гб', 'tb', 'тб',
+  'android', 'dual', 'sim', 'standard', 'і', 'та', 'з', 'для', 'gb', 'гб', 'tb', 'тб',
 ])
 
 export function normalizeCode(code: string): string {

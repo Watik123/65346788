@@ -1,5 +1,5 @@
 import type { CheerioAPI } from 'cheerio'
-import type { ParseOutcome } from '../scraping/types'
+import type { ParseOutcome, SkipReason } from '../scraping/types'
 
 /** Спільне для парсерів сторінок категорій. */
 
@@ -21,8 +21,8 @@ export function cleanUrl(href: string | null | undefined, base: string): string 
  * Чи йти на наступну сторінку: на цій мають бути товари, і не лише продані. Магазини
  * показують товари без наявності в кінці каталогу, тож далі нічого з ціною вже немає.
  */
-export function worthContinuing(outcomes: ParseOutcome[]): boolean {
-  return outcomes.length > 0 && !outcomes.every((o) => o.kind === 'skip' && o.reason === 'sold_out')
+export function worthContinuing(outcomes: ParseOutcome[], stopReasons: readonly SkipReason[] = ['sold_out']): boolean {
+  return outcomes.length > 0 && !outcomes.every((o) => o.kind === 'skip' && stopReasons.includes(o.reason))
 }
 
 /**
@@ -54,7 +54,7 @@ export function linkedPage($: CheerioAPI, currentUrl: string, candidate: string)
 
 /** Не новий товар: вживаний, уцінений, відновлений, вітринний */
 export function isNotNew(name: string): boolean {
-  return /(^|[^\p{L}])(б\/в|б\.в\.|вживан|уцінен|уцінка|відновлен|як нов|вітринн|refurbished|renewed)/iu.test(name)
+  return /(^|[^\p{L}])(б\/в|б\/у|б\.в\.|вживан|уцінен|уцінка|уценен|відновлен|восстановлен|як нов|вітринн|refurbished|renewed)/iu.test(name)
 }
 
 /** Ціле число з тексту: «28 відгуків» → 28 */
