@@ -1,4 +1,4 @@
-import { SORT_OPTIONS } from '@znyzhky/shared'
+import { COMPARE_SORTS, SORT_OPTIONS } from '@znyzhky/shared'
 import { z } from 'zod'
 import { ApiError } from './errors'
 
@@ -28,6 +28,20 @@ export const feedQuerySchema = z
   })
 
 export type FeedQuery = z.infer<typeof feedQuerySchema>
+
+const compareSortKeys = COMPARE_SORTS.map((o) => o.value) as [string, ...string[]]
+
+export const compareQuerySchema = z.object({
+  category: z.string().min(1).optional(),
+  sort: z.enum(compareSortKeys).default('spread'),
+  /** paper=1: лише товари зі «знижкою на папері» */
+  paper: z
+    .enum(['1', '0', 'true', 'false'])
+    .optional()
+    .transform((v) => v === '1' || v === 'true'),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(60).default(24),
+})
 
 export const rejectedQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(60).default(24),

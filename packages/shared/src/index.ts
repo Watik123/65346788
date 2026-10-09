@@ -1,4 +1,5 @@
 export * from './api'
+export * from './compare'
 export * from './deal'
 export * from './format'
 export * from './snapshot'

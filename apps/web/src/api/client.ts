@@ -1,6 +1,9 @@
 import {
+  snapshotCompare,
   snapshotFeed,
   snapshotProduct,
+  type CompareQueryParams,
+  type CompareResponse,
   type FeedQueryParams,
   type FeedResponse,
   type FiltersResponse,
@@ -54,6 +57,17 @@ export const api = {
   feed: async (q: FeedQueryParams): Promise<FeedResponse> => (snapshot ? snapshotFeed(snapshot, q) : getJson(feedPath(q))),
 
   filters: async (): Promise<FiltersResponse> => (snapshot ? snapshot.filters : getJson('/api/filters')),
+
+  compare: async (q: CompareQueryParams): Promise<CompareResponse> => {
+    if (snapshot) return snapshotCompare(snapshot, q)
+    const sp = new URLSearchParams()
+    if (q.category) sp.set('category', q.category)
+    sp.set('sort', q.sort)
+    if (q.paperOnly) sp.set('paper', '1')
+    sp.set('page', String(q.page))
+    sp.set('limit', String(q.limit))
+    return getJson(`/api/compare?${sp}`)
+  },
 
   rejected: async (): Promise<RejectedResponse> => (snapshot ? snapshot.rejected : getJson('/api/rejected?limit=60')),
 

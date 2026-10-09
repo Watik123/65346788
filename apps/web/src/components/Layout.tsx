@@ -45,7 +45,8 @@ export function Layout() {
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <Link to="/" className="flex shrink-0 items-center gap-2.5 rounded-lg" aria-label="Справжні знижки, на головну">
             <LogoMark />
-            <span className="whitespace-nowrap text-base font-bold tracking-tight sm:text-[1.05rem]">Справжні знижки</span>
+            {/* На вузькому екрані лишаємо лише значок: меню з трьох розділів інакше не вміщується */}
+            <span className="hidden whitespace-nowrap text-base font-bold tracking-tight min-[520px]:inline sm:text-[1.05rem]">Справжні знижки</span>
           </Link>
           {demo && (
             <span className="hidden rounded-full border border-line px-2 py-0.5 text-xs font-medium text-ink-3 sm:inline" title="Ціни, відгуки й наявність у цій версії вигадані">
@@ -55,6 +56,9 @@ export function Layout() {
           <nav aria-label="Розділи" className="ml-auto flex items-center sm:gap-1">
             <NavLink to="/" end className={navClass}>
               Знижки
+            </NavLink>
+            <NavLink to="/compare" className={navClass}>
+              Порівняння
             </NavLink>
             <NavLink to="/rejected" className={navClass}>
               Відсіяні

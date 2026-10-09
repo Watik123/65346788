@@ -8,6 +8,7 @@ import type {
   CategoryNodeDto,
 } from './api'
 import { SORT_OPTIONS } from './api'
+import { queryCompare, toCompareItem, type CompareItemDto, type CompareQueryParams, type CompareResponse } from './compare'
 
 /**
  * Знімок усіх даних, який сайт може показати без сервера. Логіка нижче повторює
@@ -85,4 +86,16 @@ export function snapshotFeed(snap: Snapshot, q: FeedQueryParams): FeedResponse {
 
 export function snapshotProduct(snap: Snapshot, id: number): ProductDetailResponse | null {
   return snap.products.find((p) => p.id === id) ?? null
+}
+
+const compareCache = new WeakMap<Snapshot, CompareItemDto[]>()
+
+/** Порівняння цін зі знімка: ті самі правила, що й на сервері (див. compare.ts) */
+export function snapshotCompare(snap: Snapshot, q: CompareQueryParams): CompareResponse {
+  let items = compareCache.get(snap)
+  if (!items) {
+    items = snap.products.map(toCompareItem).filter((i): i is CompareItemDto => i !== null)
+    compareCache.set(snap, items)
+  }
+  return queryCompare(items, q)
 }

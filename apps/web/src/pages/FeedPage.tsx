@@ -1,6 +1,6 @@
 import { formatPrice, pluralUk, SORT_OPTIONS, type FiltersResponse, type SortKey } from '@znyzhky/shared'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { FeedCard, FeedCardSkeleton } from '../components/FeedCard'
 import { FilterPanel } from '../components/FilterPanel'
 import { CloseIcon, FilterIcon } from '../components/icons'
@@ -168,6 +168,9 @@ export function FeedPage() {
                   Щоб відрізнити справжню знижку від накрученої, потрібна історія цін щонайменше за 14 днів. Ціни збираємо щодня, тож знижки з’являться тут, щойно
                   даних стане достатньо.
                 </p>
+                <Link to="/compare" className="mt-4 inline-flex min-h-11 items-center rounded-full bg-ink px-5 text-sm font-semibold text-canvas">
+                  Тим часом: порівняння цін у магазинах
+                </Link>
               </div>
             ) : data && data.items.length === 0 ? (
               <div className="rounded-2xl border border-line bg-surface p-8 text-center">

@@ -3,12 +3,13 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { snapshotFeed, snapshotProduct, type ApiErrorResponse, type FeedQueryParams, type FeedResponse, type FiltersResponse, type ProductDetailResponse, type RejectedResponse } from '@znyzhky/shared'
+import { snapshotCompare, snapshotFeed, snapshotProduct, type ApiErrorResponse, type CompareQueryParams, type CompareResponse, type FeedQueryParams, type FeedResponse, type FiltersResponse, type ProductDetailResponse, type RejectedResponse } from '@znyzhky/shared'
 import type { FastifyInstance } from 'fastify'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { seedDatabase } from '../prisma/seed/seed-database'
 import { buildApp } from './app'
 import { buildSnapshot } from './cli/export-snapshot'
+import { getCompare } from './services/compare'
 import { getFeed } from './services/feed'
 import type { PrismaClient } from './generated/prisma/client'
 import { REPO_ROOT } from './lib/database-url'
@@ -189,6 +190,43 @@ describe('GET /api/feed', () => {
   })
 })
 
+describe('GET /api/compare', () => {
+  it('товари з кількох магазинів: ціни від найдешевшої, різниця, «знижка на папері»', async () => {
+    const { status, body } = await get<CompareResponse>('/api/compare?limit=60')
+    expect(status).toBe(200)
+    expect(body.total).toBeGreaterThan(0)
+    expect(body.summary.products).toBe(body.total)
+    for (const item of body.items) {
+      expect(new Set(item.prices.map((p) => p.shop.slug)).size).toBeGreaterThanOrEqual(2)
+      expect(item.prices.map((p) => p.price)).toEqual([...item.prices.map((p) => p.price)].sort((a, b) => a - b))
+      expect(item.minPrice).toBe(item.prices[0]?.price)
+      expect(item.spreadAmount).toBe(item.maxPrice - item.minPrice)
+      if (item.paper) {
+        // Магазин заявляє знижку, а інший продає не дорожче і без знижки
+        expect(item.paper.claimedPercent).toBeGreaterThanOrEqual(10)
+        expect(item.paper.plainPrice).toBeLessThanOrEqual(item.paper.price)
+        expect(item.paper.plainShop.slug).not.toBe(item.paper.shop.slug)
+      }
+    }
+    // За замовчуванням спершу найбільша різниця цін
+    const spreads = body.items.map((i) => i.spreadPercent)
+    expect(spreads).toEqual([...spreads].sort((a, b) => b - a))
+  })
+
+  it('фільтр «лише знижки на папері» і категорія', async () => {
+    const all = (await get<CompareResponse>('/api/compare?limit=60')).body
+    const paper = (await get<CompareResponse>('/api/compare?paper=1&sort=paper&limit=60')).body
+    expect(paper.total).toBe(all.summary.paper)
+    expect(paper.items.every((i) => i.paper !== null)).toBe(true)
+    const tv = (await get<CompareResponse>('/api/compare?category=televizory')).body
+    expect(tv.items.every((i) => i.category.slug === 'televizory')).toBe(true)
+  })
+
+  it('неправильне сортування — помилка 400', async () => {
+    expect((await get<ApiErrorResponse>('/api/compare?sort=nope')).status).toBe(400)
+  })
+})
+
 describe('GET /api/filters', () => {
   it('віддає дерево категорій, магазини, межі цін і варіанти сортування', async () => {
     const { status, body } = await get<FiltersResponse>('/api/filters')
@@ -346,6 +384,22 @@ describe('знімок для сайту без сервера збігаєть�
     for (const partial of queries) {
       const q: FeedQueryParams = { sort: 'score', page: 1, limit: 24, ...partial }
       expect(snapshotFeed(snapshot, q), JSON.stringify(partial)).toEqual(await getFeed(prisma, q))
+    }
+  })
+
+  it('порівняння цін збігається з API на різних параметрах', async () => {
+    const snapshot = await buildSnapshot(prisma)
+    const variants: Partial<CompareQueryParams>[] = [
+      {},
+      { sort: 'paper' },
+      { sort: 'shops', limit: 5, page: 2 },
+      { sort: 'price', category: 'elektronika' },
+      { category: 'televizory', paperOnly: true },
+      { category: 'nonexistent' },
+    ]
+    for (const partial of variants) {
+      const q: CompareQueryParams = { sort: 'spread', page: 1, limit: 24, ...partial }
+      expect(snapshotCompare(snapshot, q), JSON.stringify(partial)).toEqual(await getCompare(prisma, q))
     }
   })
 

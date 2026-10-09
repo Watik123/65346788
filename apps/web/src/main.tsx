@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router'
 import { isSnapshotMode } from './api/client'
 import { Layout } from './components/Layout'
+import { ComparePage } from './pages/ComparePage'
 import { FeedPage } from './pages/FeedPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { ProductPage } from './pages/ProductPage'
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
           <Route element={<Layout />}>
             <Route index element={<FeedPage />} />
             <Route path="product/:id" element={<ProductPage />} />
+            <Route path="compare" element={<ComparePage />} />
             <Route path="rejected" element={<RejectedPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
+import type { CompareQueryParams } from '@znyzhky/shared'
 import { toApiParams, type FeedFilters } from './feed-params'
 
 export const useFeed = (filters: FeedFilters) =>
@@ -14,3 +15,6 @@ export const useFilters = () => useQuery({ queryKey: ['filters'], queryFn: api.f
 export const useRejected = () => useQuery({ queryKey: ['rejected'], queryFn: api.rejected })
 
 export const useProduct = (id: number) => useQuery({ queryKey: ['product', id], queryFn: () => api.product(id), enabled: Number.isFinite(id) })
+
+export const useCompare = (q: CompareQueryParams) =>
+  useQuery({ queryKey: ['compare', q], queryFn: () => api.compare(q), placeholderData: keepPreviousData })
