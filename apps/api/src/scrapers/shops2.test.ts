@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest'
 import type { ListingParse, ParsedProduct } from '../scraping/types'
 import { parseArtlineListing } from './artline'
 import { parseJabkoListing } from './jabko'
+import { parseTttListing } from './ttt'
 import { parseVenconListing } from './vencon'
 
 /**
- * Зразки сторінок Ябка, Vencon і Artline за будовою, яку показала розвідка 9 жовтня 2026 р.
+ * Зразки сторінок Ябка, Vencon, Artline і TTT за будовою, яку показала розвідка 9 жовтня 2026 р.
  * (npm run probe -- --deep=... --select=...), скорочено до потрібних елементів.
  */
 
@@ -129,5 +130,55 @@ describe('Artline', () => {
     const one = card({ id: '3', name: 'Ноутбук HP 15', brand: 'HP', price: 30000 })
     expect(parseArtlineListing(one + '<a href="https://artline.ua/uk/catalog/noutbuki/page=3">3</a>', { ...ref, url: 'https://artline.ua/uk/catalog/noutbuki/page=2' }).nextUrl).toBe('https://artline.ua/uk/catalog/noutbuki/page=3')
     expect(parseArtlineListing(one, ref).nextUrl).toBeNull()
+  })
+})
+
+describe('TTT', () => {
+  const ref = { url: 'https://www.ttt.ua/ua/shop/category/telefony-mp3-gps/mobilnye-telefony/smartfony', categorySlug: 'smartfony' }
+  const card = (o: { id: string; name: string; brand?: string; price: number; old?: number; preOrder?: boolean; reviews?: number; stars?: number }) => `
+    <article class="product-cut product-cut--with-effect " data-product-scope="" data-gtm-name="${o.name}" data-gtm-id="${o.id}" data-gtm-price="${o.preOrder ? 0 : o.price}" data-gtm-brand="${o.brand ?? 'Apple'}" data-gtm-category="Смартфоны">
+      <div class="product-photo__item" data-product-photo-href="https://www.ttt.ua/ua/shop/product/p-${o.id}"><img class="product-photo__img" src="data:image/gif;base64,R0lGOD" data-original="https://www.ttt.ua/uploads/shop/products/medium/${o.id}.jpg"></div>
+      <div class="product-cut__row"><a class="product-cut__title link link--main" href="https://www.ttt.ua/ua/shop/product/p-${o.id}">${o.name} </a></div>
+      <div class="star-rating"><ul class="star-rating__stars">${'<li class="star-rating__star" title="' + (o.stars ?? 0) + ' з 5 зірок"></li>'.repeat(5)}</ul>
+        <div class="star-rating__votes"><a class="star-rating__link" href="#tab=comments-list"> ${o.reviews ?? 0} відгуків </a></div></div>
+      <div class="product-cut__id"><span class="product-cut__id-code" data-product-number=""> 258509 </span></div>
+      <div class="product-cut__row ${o.preOrder ? 'hidden' : ''}" data-product-price-section="">
+        ${o.preOrder ? '<div class="product-cut__row soon"><p class="soon__body"><span class="soon__text">Передзамовлення</span></p></div>' : '<div class="product-cut__row available" data-product-available="available"><p class="available__body"><span class="available__text">В наявності</span></p></div>'}
+        <div class="product-price"><ul class="product-price__list">
+          ${o.old ? `<li class="product-price__item"><div class="product-price__old"><span class="product-price__value" data-product-price--origin="data-product-price--origin">${o.old.toLocaleString('uk-UA')}</span><span>грн.</span></div></li>` : ''}
+          <li class="product-price__item"><div class="product-price__main"><span class="product-price__value" data-product-price--main="data-product-price--main">${o.preOrder ? 0 : o.price.toLocaleString('uk-UA')}</span><span>грн.</span></div></li>
+        </ul></div>
+      </div>
+    </article>`
+  const pages = (offsets: number[], path = '/ua/shop/category/telefony-mp3-gps/mobilnye-telefony/smartfony') =>
+    offsets.map((n) => `<a href="https://www.ttt.ua${path}?per_page=${n}">${n / 24 + 1}</a>`).join('')
+
+  it('дані з атрибутів картки, ціна з блоку ціни, закреслена ціна, оцінка, фото з data-original', () => {
+    const r = parseTttListing(card({ id: '175167', name: 'Смартфон Apple iPhone 18 Pro 256GB (MJRQ4AF/A) Silver', price: 77999, old: 84999, reviews: 3, stars: 4 }) + pages([24, 48]), ref)
+    expect(productsOf(r)[0]).toMatchObject({
+      externalId: '175167',
+      url: 'https://www.ttt.ua/ua/shop/product/p-175167',
+      name: 'Смартфон Apple iPhone 18 Pro 256GB (MJRQ4AF/A) Silver',
+      brand: 'Apple',
+      price: 77999,
+      oldPrice: 84999,
+      inStock: true,
+      rating: 4,
+      reviewCount: 3,
+      imageUrl: 'https://www.ttt.ua/uploads/shop/products/medium/175167.jpg',
+    })
+    expect(r.nextUrl).toBe(`${ref.url}?per_page=24`)
+  })
+
+  it('передзамовлення (прихований блок ціни, ціна 0) пропускає; наступна сторінка — найближчий більший зсув з посилань', () => {
+    const r = parseTttListing(card({ id: '1', name: 'Смартфон Apple iPhone Duo 512GB', price: 69999, old: 69999, preOrder: true }), ref)
+    expect(skipsOf(r)).toEqual(['sold_out'])
+    expect(r.nextUrl).toBeNull()
+    const one = card({ id: '2', name: 'Смартфон Apple iPhone 17 256GB', price: 50000 })
+    const second = { ...ref, url: `${ref.url}?per_page=24` }
+    expect(parseTttListing(one + pages([0, 48, 72]), second).nextUrl).toBe(`${ref.url}?per_page=48`)
+    expect(parseTttListing(one + pages([0]), second).nextUrl).toBeNull()
+    // Посилання на інший розділ не рахується
+    expect(parseTttListing(one + pages([48], '/ua/shop/category/foto-video-audio-i-tv/televizory'), second).nextUrl).toBeNull()
   })
 })
