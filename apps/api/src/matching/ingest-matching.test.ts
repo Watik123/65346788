@@ -7,6 +7,7 @@ import type { PrismaClient } from '../generated/prisma/client'
 import { ingestProduct } from '../scraping/ingest'
 import type { ParsedProduct } from '../scraping/types'
 import { createTempDb } from '../test-utils/temp-db'
+import { CandidateIndex } from './candidates'
 import { MatchDecisions, appendDecision, readDecisions } from './decisions'
 import { mergeProducts } from './merge'
 
@@ -112,6 +113,22 @@ describe('зіставлення під час запису', () => {
     expect(again).toMatchObject({ productId: b.productId, matchedBy: 'offer' })
     expect(again.productId).not.toBe(a.productId)
     expect(await prisma.matchReview.count()).toBe(1)
+  })
+})
+
+describe('спільний індекс кандидатів (імпорт, збір)', () => {
+  it('бачить щойно записані товари й магазини, а дописаний код моделі враховує', async () => {
+    const candidates = new CandidateIndex()
+    const shopC = (await prisma.shop.create({ data: { slug: 'c', name: 'В', baseUrl: 'https://c.example' } })).id
+    const put = (shopId: number, slug: string, p: ParsedProduct) => ingestProduct(prisma, shopId, p, DAY, categoryIds, { now: DAY, shopSlug: slug, candidates })
+
+    const a = await put(shopA, 'a', product({ externalId: '1', name: 'Samsung Galaxy A27 8/256GB Black' }))
+    const b = await put(shopB, 'b', product({ externalId: '2', name: 'Samsung Galaxy A27 8/256GB Black', modelCode: 'SM-A276B' }))
+    expect(b).toMatchObject({ productId: a.productId, matchedBy: 'model' })
+    // Товар уже є в магазині Б: другий такий самий запис Б не зливається з ним
+    expect((await put(shopB, 'b', product({ externalId: '3', name: 'Samsung Galaxy A27 8/256GB Black' }))).productId).not.toBe(a.productId)
+    // Код моделі товар отримав від Б: магазин В з іншою назвою, але тим самим кодом, знаходить його
+    expect(await put(shopC, 'c', product({ externalId: '4', name: 'Смартфон Samsung A27 (SM-A276B) 8/256 Чорний' }))).toMatchObject({ productId: a.productId, matchedBy: 'model' })
   })
 })
 

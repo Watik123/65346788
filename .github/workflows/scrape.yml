@@ -64,7 +64,14 @@ jobs:
           npm run scrape -- "$SHOPS" --fresh --store="$GITHUB_WORKSPACE/datastore"
           echo "code=$?" >> "$GITHUB_OUTPUT"
 
+      # Спершу зберегти зібране: якщо далі щось зламається, дані дня не пропадуть
+      - name: Зберегти дані в репозиторій
+        run: scripts/save-datastore.sh "Дані цін за $(date -u +%F)"
+
       - name: Статистика
+        id: stats
+        continue-on-error: true
+        timeout-minutes: 30
         env:
           DATABASE_URL: file:${{ runner.temp }}/stats.db
         run: |
@@ -73,17 +80,14 @@ jobs:
           npm run data:report -- --out="$GITHUB_WORKSPACE/datastore/STATS.md" > /dev/null
           cat datastore/STATS.md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Зберегти дані в репозиторій
+      - name: Зберегти статистику
+        if: steps.stats.outcome == 'success'
+        run: scripts/save-datastore.sh "Статистика цін за $(date -u +%F)"
+
+      - name: Статистика не порахувалась
+        if: steps.stats.outcome != 'success'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add datastore
-          if git diff --cached --quiet; then echo "Нових даних немає"; exit 0; fi
-          git commit -m "Дані цін за $(date -u +%F)"
-          for i in 1 2 3; do
-            git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
-            sleep 10
-          done
+          echo "Дані збережено, але статистика не порахувалась; подробиці в кроці «Статистика»"
           exit 1
 
       - name: Збір завершився з помилкою

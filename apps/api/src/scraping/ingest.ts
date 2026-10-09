@@ -1,6 +1,7 @@
 import type { PrismaClient } from '../generated/prisma/client'
-import { brandKey, canonicalBrand } from '../catalog/brands'
+import { canonicalBrand } from '../catalog/brands'
 import { extractAttributes } from '../matching/attributes'
+import { CandidateIndex, type ProductFields } from '../matching/candidates'
 import { compareProducts, type MatchResult } from '../matching/compare'
 import { MatchDecisions, offerKey } from '../matching/decisions'
 import type { ParsedProduct } from './types'
@@ -26,6 +27,8 @@ export interface IngestOptions {
   /** Slug магазину: потрібен для рішень людини щодо спірних пар */
   shopSlug?: string
   decisions?: MatchDecisions
+  /** Товари-кандидати в пам'яті, спільні для всього імпорту чи збору; без нього читаються з бази щоразу */
+  candidates?: CandidateIndex
 }
 
 const NO_DECISIONS = new MatchDecisions()
@@ -57,11 +60,12 @@ export async function ingestProduct(
   const opts: IngestOptions = options instanceof Date ? { now: options } : options
   const now = opts.now ?? new Date()
   const decisions = opts.decisions ?? NO_DECISIONS
+  const index = opts.candidates ?? new CandidateIndex()
   const key = opts.shopSlug ? offerKey(opts.shopSlug, p.externalId) : null
   const categoryId = categoryIds.get(p.categorySlug)
   if (categoryId === undefined) throw new IngestError('ingest', `Невідома категорія "${p.categorySlug}"`)
 
-  return prisma.$transaction(async (tx) => {
+  const { result, fields } = await prisma.$transaction(async (tx) => {
     let offer = await tx.offer.findFirst({ where: { shopId, externalId: p.externalId } })
 
     if (offer && (p.price < offer.price / MAX_PRICE_JUMP || p.price > offer.price * MAX_PRICE_JUMP)) {
@@ -97,15 +101,10 @@ export async function ingestProduct(
     if (productId === undefined) {
       const rejected = key ? decisions.differentFrom(key) : new Set<string>()
       const incoming = { ...extractAttributes({ brand: p.brand, name: p.name, modelCode: p.modelCode, ean: p.ean }), ean: p.ean }
-      const candidates = await tx.product.findMany({
-        where: { categoryId, offers: { none: { shopId } } },
-        select: { id: true, name: true, brand: true, modelCode: true, ean: true, offers: { select: { externalId: true, shop: { select: { slug: true } } } } },
-        orderBy: { id: 'asc' },
-      })
+      const candidates = await index.candidates(tx, categoryId, p.brand, shopId)
       const results = candidates
-        .filter((c) => brandKey(c.brand) === incoming.brand)
-        .filter((c) => !c.offers.some((o) => o.externalId && rejected.has(offerKey(o.shop.slug, o.externalId))))
-        .map((c) => ({ candidateId: c.id, result: compareProducts(incoming, { ...extractAttributes(c), ean: c.ean }) }))
+        .filter((c) => !c.offerKeys.some((k) => rejected.has(k)))
+        .map((c) => ({ candidateId: c.id, result: compareProducts(incoming, c.attrs) }))
       const same = results.find((r) => r.result.decision === 'same')
       if (same) {
         productId = same.candidateId
@@ -115,6 +114,7 @@ export async function ingestProduct(
       }
     }
 
+    let fields: ProductFields
     if (productId === undefined) {
       const product = await tx.product.create({
         data: {
@@ -127,8 +127,9 @@ export async function ingestProduct(
           ratingAvg: p.rating,
           reviewCount: p.reviewCount,
         },
-        select: { id: true },
+        select: { id: true, name: true, brand: true, modelCode: true, ean: true },
       })
+      fields = product
       productId = product.id
       created = true
       matchedBy = 'new'
@@ -136,10 +137,10 @@ export async function ingestProduct(
       for (const r of reviews) {
         await tx.matchReview.create({ data: { productId, candidateId: r.candidateId, score: r.result.score, reasons: JSON.stringify(r.result.reasons) } })
       }
-    } else if (!created) {
+    } else {
       // Існуючий товар: доповнюємо лише те, чого бракує, і беремо оцінку, якщо відгуків більше
       const existing = await tx.product.findUniqueOrThrow({ where: { id: productId } })
-      await tx.product.update({
+      fields = await tx.product.update({
         where: { id: productId },
         data: {
           imageUrl: existing.imageUrl ?? p.imageUrl,
@@ -147,6 +148,7 @@ export async function ingestProduct(
           modelCode: existing.modelCode ?? p.modelCode,
           ...(p.reviewCount > existing.reviewCount ? { ratingAvg: p.rating, reviewCount: p.reviewCount } : {}),
         },
+        select: { name: true, brand: true, modelCode: true, ean: true },
       })
     }
 
@@ -164,6 +166,9 @@ export async function ingestProduct(
       update: point,
     })
 
-    return { action: created ? 'created' : 'updated', productId, matchedBy } as IngestResult
+    return { result: { action: created ? 'created' : 'updated', productId, matchedBy } as IngestResult, fields }
   })
+
+  index.record(categoryId, result.productId, fields, shopId, key, result.action === 'created')
+  return result
 }

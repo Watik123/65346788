@@ -1,5 +1,6 @@
 import type { PrismaClient } from '../generated/prisma/client'
 import { startOfUtcDay } from '../lib/dates'
+import { CandidateIndex } from '../matching/candidates'
 import { FetchError, type Fetcher } from './fetcher'
 import { IngestError, ingestProduct } from './ingest'
 import { silentLogger, type Logger, type ParseOutcome, type ParsedProduct, type ProductRef, type ShopScraper } from './types'
@@ -51,6 +52,7 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
 
   let shopId = 0
   let categoryIds = new Map<string, number>()
+  const candidates = new CandidateIndex()
   if (!dryRun) {
     const shop = await prisma.shop.upsert({
       where: { slug: scraper.slug },
@@ -100,7 +102,7 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
       return
     }
     try {
-      await ingestProduct(prisma, shopId, outcome.product, today, categoryIds, { shopSlug: scraper.slug })
+      await ingestProduct(prisma, shopId, outcome.product, today, categoryIds, { shopSlug: scraper.slug, candidates })
       summary.saved++
     } catch (err) {
       if (err instanceof IngestError) await recordError(err.kind, err.message, outcome.product.url || url)
