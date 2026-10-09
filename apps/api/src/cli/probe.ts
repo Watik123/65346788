@@ -109,7 +109,15 @@ function jsonProductArrays(value: unknown, at = '$', out: string[] = [], depth =
     const objs = value.filter((v) => v && typeof v === 'object' && !Array.isArray(v)) as Record<string, unknown>[]
     const first = objs[0]
     if (objs.length >= 3 && first && Object.keys(first).some((k) => /price/i.test(k)) && Object.keys(first).some((k) => /name|title/i.test(k))) {
-      out.push(`${at} [${objs.length}] ключі: ${Object.keys(first).join(', ')}\n    перший: ${short(JSON.stringify(first), 2500)}`)
+      // Громіздкі поля (характеристики, варіанти) згортаємо, ціни й наявність показуємо повністю
+      const compact = Object.fromEntries(
+        Object.entries(first).map(([k, v]) => {
+          const json = JSON.stringify(v) ?? 'undefined'
+          const keep = /price|status|image|review|rating|brand|category|seller|vitrin|avail|stock/i.test(k)
+          return [k, json.length > (keep ? 1200 : 200) ? `‹${json.length} симв.: ${json.slice(0, 120)}…›` : v]
+        }),
+      )
+      out.push(`${at} [${objs.length}] ключі: ${Object.keys(first).join(', ')}\n    перший: ${short(JSON.stringify(compact), 5000)}`)
       return out
     }
     value.slice(0, 50).forEach((v, i) => jsonProductArrays(v, `${at}[${i}]`, out, depth + 1))
@@ -129,7 +137,7 @@ async function deep(fetcher: PoliteFetcher, urls: string[], selectors: string[])
       try {
         const found = $(sel)
         console.log(`вибірка «${sel}»: ${found.length}`)
-        found.slice(0, 2).each((k, el) => console.log(`  ${k + 1}: ${collapse($.html(el) ?? '', 3500)}`))
+        found.slice(0, 2).each((k, el) => console.log(`  ${k + 1}: ${collapse($.html(el) ?? '', 7000)}`))
       } catch (err) {
         console.log(`вибірка «${sel}»: помилка ${err instanceof Error ? err.message : String(err)}`)
       }
