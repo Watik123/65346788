@@ -21,6 +21,17 @@ function jaccard(a: string[], b: string[]): number {
 const differ = <T>(x: T | null, y: T | null) => x !== null && y !== null && x !== y
 
 /**
+ * Діагональ: «15″» і «15.3″» — той самий екран, записаний цілим числом (Цитрус пише MacBook Air 15.3″ як 15″),
+ * а 15.6″ і 16″ — різні.
+ */
+function diagonalsDiffer(a: number | null, b: number | null): boolean {
+  if (a === null || b === null || a === b) return false
+  if (Number.isInteger(a) && Math.floor(b) === a) return false
+  if (Number.isInteger(b) && Math.floor(a) === b) return false
+  return true
+}
+
+/**
  * Чи це той самий товар у двох магазинах.
  *  same      — однаковий EAN, однаковий код моделі в одного бренду або однакові назви, і жодних суперечностей;
  *  review    — схоже, але не напевно (частковий збіг коду або дуже схожі назви): на ручну перевірку;
@@ -39,7 +50,7 @@ export function compareProducts(a: ProductAttributes & { ean?: string | null }, 
   if (differ(a.storageGb, b.storageGb)) conflicts.push(`різна пам'ять: ${a.storageGb} і ${b.storageGb} ГБ`)
   if (differ(a.ramGb, b.ramGb)) conflicts.push(`різна оперативна пам'ять: ${a.ramGb} і ${b.ramGb} ГБ`)
   if (differ(a.color, b.color)) conflicts.push(`різний колір: ${a.color} і ${b.color}`)
-  if (differ(a.diagonal, b.diagonal)) conflicts.push(`різна діагональ: ${a.diagonal}″ і ${b.diagonal}″`)
+  if (diagonalsDiffer(a.diagonal, b.diagonal)) conflicts.push(`різна діагональ: ${a.diagonal}″ і ${b.diagonal}″`)
   if (differ(a.year, b.year)) conflicts.push(`різний рік: ${a.year} і ${b.year}`)
   if (a.variants.join() !== b.variants.join()) conflicts.push(`різна модифікація: ${a.variants.join(' ') || '—'} і ${b.variants.join(' ') || '—'}`)
   if (a.bundle !== b.bundle) conflicts.push('один із них комплект')

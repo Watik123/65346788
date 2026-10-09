@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import type { ListingParse, ParsedProduct } from '../scraping/types'
 import { parseArtlineListing } from './artline'
+import { parseIspaceListing, partNumberFromSlug } from './ispace'
 import { parseJabkoListing } from './jabko'
 import { parseTttListing } from './ttt'
 import { parseVenconListing } from './vencon'
 
 /**
- * Зразки сторінок Ябка, Vencon, Artline і TTT за будовою, яку показала розвідка 9 жовтня 2026 р.
+ * Зразки сторінок Ябка, Vencon, Artline, TTT і iSpace за будовою, яку показала розвідка 9 жовтня 2026 р.
  * (npm run probe -- --deep=... --select=...), скорочено до потрібних елементів.
  */
 
@@ -180,5 +181,47 @@ describe('TTT', () => {
     expect(parseTttListing(one + pages([0]), second).nextUrl).toBeNull()
     // Посилання на інший розділ не рахується
     expect(parseTttListing(one + pages([48], '/ua/shop/category/foto-video-audio-i-tv/televizory'), second).nextUrl).toBeNull()
+  })
+})
+
+describe('iSpace', () => {
+  const ref = { url: 'https://ispace.ua/category/macbook-air', categorySlug: 'noutbuky' }
+  const card = (o: { slug: string; name: string; price: number; old?: number; button?: 'add-to-cart' | 'preorder' | 'notify-me' }) => `
+    <div class="carousel-product" type="product"><div><div><div class="entity-card">
+      <a href="/product/${o.slug}" class="entity-card_image-wrapper"><img src="https://cdn.example/${o.slug}.webp" class="entity-card_image" alt="${o.name}"></a>
+      <a href="/product/${o.slug}" class="entity-card_name" data-title="${o.name.replace(/"/g, '&quot;')}"><span class="entity-card_name-text">${o.name}</span></a>
+    </div></div></div>
+    <div class="carousel-product_price-wrapper">
+      ${o.old ? `<p class="carousel-product_action-price"><!--[-->${o.old.toLocaleString('uk-UA')} ₴<!--]--></p>` : '<!---->'}
+      <p class="carousel-product_price"><span class="carousel-product_price-value${o.old ? ' carousel-product_price-value__discount' : ''}"><!--[-->${o.price.toLocaleString('uk-UA')} ₴<!--]--></span>${o.old ? `<span class="carousel-product_discount">-${(o.old - o.price).toLocaleString('uk-UA')} ₴</span>` : ''}</p>
+      <button class="button carousel-product_button" data-test="carousel-product-${o.button ?? 'add-to-cart'}-button">У кошик</button>
+    </div></div>`
+  const page = (cards: string, pages = '<a href="/category/macbook-air">1</a><a href="/category/macbook-air?page=2" class="pagination_button">2</a>') =>
+    `<html><body><div class="products-grid_grid">${cards}</div><div class="pagination">${pages}</div></body></html>`
+
+  it('артикул з адреси, ціна зі знижкою й стара ціна, бренд Apple', () => {
+    const r = parseIspaceListing(page(card({ slug: 'macbook-air-153-m5-10c-cpu10c-gpu-16-gb-512-gb-temnaia-noc-mdvh4ua-a', name: 'MacBook Air 15.3" M5 (10C CPU/10C GPU), 16 ГБ, 512 ГБ, Темна ніч', price: 86999, old: 92599 })), ref)
+    expect(productsOf(r)[0]).toMatchObject({
+      externalId: 'macbook-air-153-m5-10c-cpu10c-gpu-16-gb-512-gb-temnaia-noc-mdvh4ua-a',
+      url: 'https://ispace.ua/product/macbook-air-153-m5-10c-cpu10c-gpu-16-gb-512-gb-temnaia-noc-mdvh4ua-a',
+      name: 'MacBook Air 15.3" M5 (10C CPU/10C GPU), 16 ГБ, 512 ГБ, Темна ніч',
+      brand: 'Apple',
+      modelCode: 'MDVH4UA/A',
+      price: 86999,
+      oldPrice: 92599,
+      inStock: true,
+    })
+    expect(r.nextUrl).toBe('https://ispace.ua/category/macbook-air?page=2')
+    expect(partNumberFromSlug('iphone-15-256-gb-rozovyi-mtp73rx-a')).toBe('MTP73RX/A')
+    expect(partNumberFromSlug('apple-tv-4k')).toBeNull()
+  })
+
+  it('передзамовлення й «повідомити мене» не наявні; сторінка лише з них зупиняє обхід', () => {
+    const r = parseIspaceListing(
+      page(card({ slug: 'macbook-air-a-mdvu4ua-a', name: 'MacBook Air 15.3"', price: 124499, button: 'preorder' }) + card({ slug: 'iphone-15-mtp73rx-a', name: 'iPhone 15, 256 ГБ, Рожевий', price: 40899, button: 'notify-me' })),
+      ref,
+    )
+    expect(skipsOf(r)).toEqual(['sold_out', 'sold_out'])
+    expect(r.nextUrl).toBeNull()
   })
 })

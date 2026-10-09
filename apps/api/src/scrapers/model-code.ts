@@ -18,6 +18,8 @@ const SPEC = [
   /^(i[3579]|r[3579]|ultra[3579]?)-?\d{3,5}[a-z]{0,2}$/i,
   /^\d{3,5}(u|h|hs|hx|k|kf|f|g\d)$/i,
   /^\d+(gpu|cpu|core|cores)$/i,
+  // «(10C CPU/10C GPU)» у назвах MacBook: кількість ядер, не код
+  /^(\d+c?[/\\]?)?(cpu|gpu)([/\\]?\d+c?)?$/i,
   /^\d{3,4}p$/i,
 ]
 

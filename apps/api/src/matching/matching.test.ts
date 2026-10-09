@@ -26,6 +26,16 @@ describe('extractAttributes', () => {
 })
 
 describe('compareProducts', () => {
+  it('MacBook у різних магазинах: «15″» і «15.3″», українські назви кольорів, ядра процесора не код', () => {
+    const ispace = attrs('MacBook Air 15.3" M5 (10C CPU/10C GPU), 16 ГБ, 512 ГБ, Темна ніч', 'Apple', 'MDVH4UA/A')
+    expect(ispace).toMatchObject({ color: 'black', diagonal: 15.3, codes: ['MDVH4UAA', 'MDVH4'] })
+    expect(decide(ispace, attrs('Ноутбук Apple MacBook Air M5 Chip 15" 16/512GB Midnight (MDVH4) 2026', 'Apple'))).toBe('same')
+    expect(decide(ispace, attrs("Ноутбук APPLE MacBook Air 15' M5 16GB/512GB Starlight (MDVD4UA/A)", 'APPLE', 'MDVD4UA/A'))).toBe('different')
+    expect(attrs('MacBook Air 13.6", 16 ГБ, 512 ГБ, Сяюча зірка', 'Apple').color).toBe('white')
+    // 15.6″ і 16″ — різні екрани
+    expect(decide(attrs('Ноутбук Acer Aspire 15.6" 16/512GB', 'Acer'), attrs('Ноутбук Acer Aspire 16" 16/512GB', 'Acer'))).toBe('different')
+  })
+
   it('однаковий EAN: той самий, різні EAN: різні, навіть за однакових назв', () => {
     expect(decide(attrs('A', 'X', null, '4006381333931'), attrs('B', 'X', null, '4006381333931'))).toBe('same')
     expect(decide(attrs('Телевізор LG 55UT80006LA', 'LG', null, '4006381333931'), attrs('Телевізор LG 55UT80006LA', 'LG', null, '0036000291452'))).toBe('different')

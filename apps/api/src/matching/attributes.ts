@@ -34,8 +34,8 @@ export interface MatchInput {
 const word = (alts: string) => new RegExp(`(?<![\\p{L}\\p{N}])(?:${alts})(?![\\p{L}\\p{N}])`, 'iu')
 
 const COLORS: [RegExp, string][] = [
-  [word('black|чорн\\p{L}*|midnight|obsidian|graphite|графіт\\p{L}*|onyx'), 'black'],
-  [word('white|біл\\p{L}*|ivory|starlight'), 'white'],
+  [word('black|чорн\\p{L}*|midnight|obsidian|graphite|графіт\\p{L}*|onyx|темн\\p{L}*\\s+ніч'), 'black'],
+  [word('white|біл\\p{L}*|ivory|starlight|сяюч\\p{L}*\\s+зірк\\p{L}*'), 'white'],
   [word('silver|срібл\\p{L}*'), 'silver'],
   [word('gr[ae]y|сір\\p{L}*'), 'gray'],
   [word('blue|син\\p{L}*|блакитн\\p{L}*|navy|teal'), 'blue'],
