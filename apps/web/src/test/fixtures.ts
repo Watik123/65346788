@@ -27,6 +27,7 @@ export function makeFeed(items: FeedItemDto[], over: Partial<FeedResponse> = {})
 }
 
 export const FILTERS: FiltersResponse = {
+  demo: true,
   categories: [
     {
       slug: 'elektronika',

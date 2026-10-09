@@ -26,7 +26,18 @@ export async function getFilters(prisma: PrismaClient): Promise<FiltersResponse>
 
   const shopCount = new Map(byShop.map((s) => [s.shopId, s._count._all]))
 
+  // Тестові магазини з сиду мають адреси на example.com; справжні — сайти магазинів
+  const isExample = (url: string) => {
+    try {
+      const host = new URL(url).hostname
+      return host === 'example.com' || host.endsWith('.example.com') || host.endsWith('.example')
+    } catch {
+      return false
+    }
+  }
+
   return {
+    demo: shops.length > 0 && shops.every((s) => isExample(s.baseUrl)),
     categories: categories.filter((c) => c.parentId === null).map((c) => toNode(c.id)),
     shops: shops.map((s) => ({ slug: s.slug, name: s.name, dealCount: shopCount.get(s.id) ?? 0 })),
     priceRange: agg._min.bestPrice !== null && agg._max.bestPrice !== null ? { min: agg._min.bestPrice, max: agg._max.bestPrice } : null,

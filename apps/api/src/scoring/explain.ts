@@ -42,7 +42,8 @@ export const reasons = {
   insufficientHistory: (span: number, needed: number): Reason => ({
     code: 'insufficient_history',
     tone: 'negative',
-    text: `Замало даних: історія цін охоплює ${days(span)}, а потрібно щонайменше ${days(needed)}.`,
+    // span — відстань між першим і останнім днем; днів спостережень на один більше
+    text: `Замало даних: ціни відстежуємо ${days(span + 1)}, а для висновку потрібно щонайменше ${days(needed)}.`,
   }),
 
   recentPriceSpike: (recentDays: number, peak: number, abovePercent: number): Reason => ({

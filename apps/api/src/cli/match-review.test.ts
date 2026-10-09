@@ -7,6 +7,7 @@ import { toRecord, writeJsonl } from '../scraping/datastore'
 import type { ParsedProduct } from '../scraping/types'
 import { createTempDb } from '../test-utils/temp-db'
 import { importDataStore } from './data-import'
+import { getFilters } from '../services/filters'
 import { approvePair, listPending, rejectPair } from './match-review'
 
 const phone = (shop: string, id: string, name: string, price: number): ParsedProduct => ({
@@ -42,8 +43,9 @@ afterEach(async () => {
 })
 
 describe('ручна перевірка пар', () => {
-  it('показує пару з цінами обох магазинів', async () => {
+  it('показує пару з цінами обох магазинів; справжні магазини — не демо-дані', async () => {
     await importDataStore(db.prisma, root)
+    expect((await getFilters(db.prisma)).demo).toBe(false)
     const [line] = await listPending(db.prisma)
     expect(line).toMatch(/^№\d+ \(схожість/)
     expect(line).toContain('SM-S948BZKGEUC')

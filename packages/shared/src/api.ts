@@ -105,6 +105,8 @@ export interface ShopFilterDto extends ShopRefDto {
 }
 
 export interface FiltersResponse {
+  /** Тестові дані (вигадані магазини й ціни), а не зібрані з сайтів магазинів */
+  demo: boolean
   categories: CategoryNodeDto[]
   shops: ShopFilterDto[]
   priceRange: { min: number; max: number } | null

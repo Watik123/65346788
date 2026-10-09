@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { LogoMark, MoonIcon, SunIcon, SystemIcon } from './icons'
+import { useFilters } from '../lib/queries'
 import { THEME_LABELS, useTheme } from '../lib/theme'
 
 const THEME_ICON = { system: SystemIcon, light: SunIcon, dark: MoonIcon }
@@ -31,6 +32,9 @@ function ScrollToTop() {
 }
 
 export function Layout() {
+  const filters = useFilters()
+  const demo = filters.data?.demo ?? false
+  const shopNames = filters.data?.shops.map((s) => s.name).join(', ') ?? ''
   return (
     <div className="flex min-h-dvh flex-col">
       <ScrollToTop />
@@ -43,9 +47,11 @@ export function Layout() {
             <LogoMark />
             <span className="whitespace-nowrap text-base font-bold tracking-tight sm:text-[1.05rem]">Справжні знижки</span>
           </Link>
-          <span className="hidden rounded-full border border-line px-2 py-0.5 text-xs font-medium text-ink-3 sm:inline" title="Ціни, відгуки й наявність у цій версії вигадані">
-            демо-дані
-          </span>
+          {demo && (
+            <span className="hidden rounded-full border border-line px-2 py-0.5 text-xs font-medium text-ink-3 sm:inline" title="Ціни, відгуки й наявність у цій версії вигадані">
+              демо-дані
+            </span>
+          )}
           <nav aria-label="Розділи" className="ml-auto flex items-center sm:gap-1">
             <NavLink to="/" end className={navClass}>
               Знижки
@@ -65,8 +71,12 @@ export function Layout() {
       <footer className="border-t border-line">
         <div className="mx-auto max-w-7xl px-4 py-6 text-sm text-ink-3 sm:px-6">
           <p>
-            Демонстраційна версія: товари, ціни, оцінки та наявність вигадані, посилання на магазини ведуть на заглушки. Справжня знижка це ціна нижча за типову
-            ціну ринку за 60 днів, а не за закреслену ціну магазину.
+            {demo
+              ? 'Демонстраційна версія: товари, ціни, оцінки та наявність вигадані, посилання на магазини ведуть на заглушки. '
+              : shopNames
+                ? `Ціни щодня збираємо зі сторінок магазинів: ${shopNames}. `
+                : ''}
+            Справжня знижка це ціна нижча за типову ціну ринку за 60 днів, а не за закреслену ціну магазину.
           </p>
         </div>
       </footer>

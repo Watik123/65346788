@@ -193,6 +193,7 @@ describe('GET /api/filters', () => {
   it('віддає дерево категорій, магазини, межі цін і варіанти сортування', async () => {
     const { status, body } = await get<FiltersResponse>('/api/filters')
     expect(status).toBe(200)
+    expect(body.demo).toBe(true) // сид: вигадані магазини на example.com
     expect(body.categories.map((c) => c.slug)).toEqual(['elektronika', 'pobutova-tekhnika'])
     expect(body.categories.map((c) => c.dealCount)).toEqual([9, 8])
     expect(body.categories[0]?.children.map((c) => c.slug)).toEqual(['televizory', 'noutbuky', 'smartfony'])
