@@ -4,7 +4,7 @@ import { createTempDb } from '../test-utils/temp-db'
 import { FetchError, type Fetcher } from './fetcher'
 import { parseProductPage } from './from-schema-org'
 import { runScraper } from './runner'
-import type { ProductRef, ShopScraper } from './types'
+import type { PageScraper, ProductRef, ShopScraper } from './types'
 
 const DAY1 = new Date('2026-10-03T00:00:00Z')
 const DAY2 = new Date('2026-10-04T00:00:00Z')
@@ -49,7 +49,7 @@ function site(pages: Record<string, Reply>) {
   return { fetcher, requested }
 }
 
-function shopOf(slug: string, urls: Array<string | ProductRef>, parseOpts: Parameters<typeof parseProductPage>[2] = {}): ShopScraper {
+function shopOf(slug: string, urls: Array<string | ProductRef>, parseOpts: Parameters<typeof parseProductPage>[2] = {}): PageScraper {
   return {
     slug,
     name: `Магазин ${slug}`,

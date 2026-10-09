@@ -2,7 +2,7 @@ import type { PrismaClient } from '../generated/prisma/client'
 import { startOfUtcDay } from '../lib/dates'
 import { FetchError, type Fetcher } from './fetcher'
 import { IngestError, ingestProduct } from './ingest'
-import { silentLogger, type Logger, type ParsedProduct, type ProductRef, type ShopScraper } from './types'
+import { silentLogger, type Logger, type ParseOutcome, type ParsedProduct, type ProductRef, type ShopScraper } from './types'
 
 export interface RunOptions {
   today?: Date
@@ -74,41 +74,25 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
   let aborted = false
 
   const handle = async (ref: ProductRef): Promise<void> => {
-    let html: string
-    try {
-      const res = await fetcher.get(ref.url)
-      if (res.status === 404 || res.status === 410) {
-        consecutiveFailures = 0
-        skip('gone')
-        return
-      }
-      if (res.status !== 200) {
-        consecutiveFailures++
-        await recordError('fetch', `HTTP ${res.status}`, ref.url)
-        return
-      }
-      html = res.body
-      consecutiveFailures = 0
-    } catch (err) {
-      consecutiveFailures++
-      const kind = err instanceof FetchError && err.kind === 'robots' ? 'robots' : 'fetch'
-      await recordError(kind, err instanceof Error ? err.message : String(err), ref.url)
-      return
-    }
+    const html = await load(ref.url)
+    if (html === null) return
 
-    let outcome
+    if (scraper.kind === 'listing') return
+    let outcome: ParseOutcome
     try {
       outcome = scraper.parse(html, ref)
     } catch (err) {
       await recordError('parse', err instanceof Error ? err.message : String(err), ref.url)
       return
     }
+    await accept(outcome, ref.url)
+  }
 
+  const accept = async (outcome: ParseOutcome, url: string): Promise<void> => {
     if (outcome.kind === 'skip') {
       skip(outcome.reason)
       return
     }
-
     summary.found++
     if (dryRun) {
       summary.products.push(outcome.product)
@@ -119,14 +103,71 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
       await ingestProduct(prisma, shopId, outcome.product, today, categoryIds)
       summary.saved++
     } catch (err) {
-      if (err instanceof IngestError) await recordError(err.kind, err.message, ref.url)
-      else await recordError('ingest', err instanceof Error ? err.message : String(err), ref.url)
+      if (err instanceof IngestError) await recordError(err.kind, err.message, outcome.product.url || url)
+      else await recordError('ingest', err instanceof Error ? err.message : String(err), outcome.product.url || url)
     }
   }
 
+  /** Завантаження сторінки з обліком невдач; null, якщо сторінку отримати не вдалося */
+  const load = async (url: string): Promise<string | null> => {
+    try {
+      const res = await fetcher.get(url)
+      if (res.status === 404 || res.status === 410) {
+        consecutiveFailures = 0
+        skip('gone')
+        return null
+      }
+      if (res.status !== 200) {
+        consecutiveFailures++
+        await recordError('fetch', `HTTP ${res.status}`, url)
+        return null
+      }
+      consecutiveFailures = 0
+      return res.body
+    } catch (err) {
+      consecutiveFailures++
+      const kind = err instanceof FetchError && err.kind === 'robots' ? 'robots' : 'fetch'
+      await recordError(kind, err instanceof Error ? err.message : String(err), url)
+      return null
+    }
+  }
+
+  const limitReached = () => opts.maxProducts !== undefined && summary.found >= opts.maxProducts
+
   try {
     const ctx = { fetcher, log, maxProducts: opts.maxProducts }
-    for await (const ref of scraper.discover(ctx)) {
+    if (scraper.kind === 'listing') {
+      const maxPages = scraper.maxPagesPerListing ?? 200
+      outer: for await (const listing of scraper.listings(ctx)) {
+        const visited = new Set<string>()
+        let url: string | null = listing.url
+        while (url && !visited.has(url) && visited.size < maxPages) {
+          visited.add(url)
+          const html = await load(url)
+          processed++
+          if (consecutiveFailures >= maxFailures) {
+            aborted = true
+            summary.note = `Зупинено: ${maxFailures} невдалих завантажень поспіль. Схоже, сайт блокує збір або недоступний.`
+            break outer
+          }
+          if (html === null) break
+          let parsed
+          try {
+            parsed = scraper.parseListing(html, { url, categorySlug: listing.categorySlug })
+          } catch (err) {
+            await recordError('parse', err instanceof Error ? err.message : String(err), url)
+            break
+          }
+          if (parsed.outcomes.length === 0) log.warn(`На сторінці ${url} не знайдено жодного товару`)
+          for (const outcome of parsed.outcomes) {
+            await accept(outcome, url)
+            if (limitReached()) break outer
+          }
+          log.info(`${listing.categorySlug}: сторінок ${visited.size}, товарів ${summary.found}`)
+          url = parsed.nextUrl
+        }
+      }
+    } else for await (const ref of scraper.discover(ctx)) {
       await handle(ref)
       processed++
       if (processed % 25 === 0) log.info(`Опрацьовано сторінок: ${processed}, збережено: ${summary.saved}`)
