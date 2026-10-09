@@ -55,6 +55,16 @@ describe('compareProducts', () => {
     expect(decide(attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'), attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'))).toBe('review')
   })
 
+  it('справжні назви з різних магазинів (пробний збір 9 жовтня 2026 р.)', () => {
+    // Цитрус пише технологію екрана й рік, Foxtrot лише код
+    expect(decide(attrs('Телевізор Samsung 55" Mini LED 4K UE55M70HAUXUA Vision AI 2026', 'Samsung'), attrs('Телевізор SAMSUNG UE55M70HAUXUA', 'SAMSUNG'))).toBe('same')
+    expect(decide(attrs('Телевізор Samsung Neo QLED Mini LED 75QN70F (QE75QN70FAUXUA)', 'SAMSUNG', 'QE75QN70FAUXUA'), attrs('Телевізор SAMSUNG QE75QN70FAUXUA', 'SAMSUNG'))).toBe('same')
+    expect(decide(attrs('Телевізор Samsung 40F6000 (UE40F6000FUXUA)', 'SAMSUNG', 'UE40F6000FUXUA'), attrs('Телевізор Samsung 40" Full HD UE40F6000FUXUA', 'Samsung'))).toBe('same')
+    expect(decide(attrs('Телевізор LED LG 43UA75006LA (Smart TV, Wi-Fi, 3840x2160)', 'LG', '43UA75006LA'), attrs('Телевізор LG 43UA75006LA', 'LG'))).toBe('same')
+    // PRO окремим словом — інша модель, хоч код той самий
+    expect(decide(attrs('Телевізор HISENSE 43E7S PRO', 'HISENSE'), attrs('Телевізор Hisense 43E7S', 'Hisense'))).toBe('different')
+  })
+
   it('зовсім різні моделі одного бренду: різні', () => {
     expect(decide(attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'), attrs('Робот-пилосос Xiaomi Robot Vacuum S40', 'Xiaomi'))).toBe('different')
   })

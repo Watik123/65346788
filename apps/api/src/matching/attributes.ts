@@ -83,6 +83,13 @@ export function extractAttributes(input: MatchInput): ProductAttributes {
   const diag = name.match(/(\d{2}(?:[.,]\d)?)\s*(?:"|''|″|дюйм)/)
   const year = lower.match(/(?<!\d)(20[1-3]\d)(?!\d)/)
   const words = lower.split(/[\s,()/+]+/).map((w) => w.replace(/[^\p{L}\p{N}-]/gu, '')).filter(Boolean)
+  // «Mini LED», «Neo QLED», «Micro RGB» — технологія екрана, а не модифікація моделі: один магазин
+  // пише її в назві, інший ні, а модель та сама
+  const variantWords = lower
+    .replace(/mini\s*-?\s*led|neo\s*qled|micro\s*(?:rgb|led)/g, ' ')
+    .split(/[\s,()/+]+/)
+    .map((w) => w.replace(/[^\p{L}\p{N}-]/gu, ''))
+    .filter(Boolean)
 
   const codes = new Set<string>()
   if (input.modelCode) codes.add(normalizeCode(input.modelCode))
@@ -99,7 +106,7 @@ export function extractAttributes(input: MatchInput): ProductAttributes {
     color,
     diagonal: diag ? Number((diag[1] as string).replace(',', '.')) : null,
     year: year ? Number(year[1]) : null,
-    variants: VARIANT_WORDS.filter((v) => words.includes(v)).sort(),
+    variants: VARIANT_WORDS.filter((v) => variantWords.includes(v)).sort(),
     bundle: /\+\s*\p{L}|bundle|комплект|набір/iu.test(name),
     tokens: words.filter((w) => !STOP.has(w) && w !== input.brand.toLowerCase() && w !== brandKey(input.brand) && w.length > 1),
   }
