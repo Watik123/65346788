@@ -8,7 +8,8 @@ import { extractModelCode } from './model-code'
 /**
  * MOYO (moyo.ua). Розвідка 9 жовтня 2026 р. показала:
  *  - розмітки schema.org для товарів немає, зате кожна картка в списку має атрибути з даними:
- *    data-id, data-name, data-brand, data-price, data-status-product («В наличии» / «Нет в наличии»);
+ *    data-id, data-name, data-brand, data-price, data-status-product («В наличии», «Заканчивается»,
+ *    «Нет в наличии»; перші два можна купити);
  *  - закреслена ціна: div.product-card_price_oldprice; оцінка: зірочки й кількість відгуків;
  *  - по 24 товари на сторінку, наступна: <link rel="next" href="?page=2">; товари без наявності
  *    (data-price="0", клас not-available) стоять у кінці каталогу;
@@ -26,7 +27,11 @@ export const MOYO_CATEGORIES: { path: string; slug: string }[] = [
   { path: '/ua/bt/mbt/robot_pyle_i_chist/', slug: 'pylososy' },
 ]
 
-const IN_STOCK = /^(в наличии|в наявності|є в наявності)$/i
+/**
+ * Статуси, за яких купити не можна. Решта («В наличии», «Заканчивается» тощо) продаються:
+ * на таких картках є кнопка «Купити», а не «Повідомити».
+ */
+const NOT_AVAILABLE = /нет в наличии|немає в наявності|ожидается|очікується|снят|знят|архів|архив/i
 
 /** Адреса фото: у src часто заглушка-завантажувач, справжня адреса закодована в data-srcset-hash */
 function imageOf(card: cheerio.Cheerio<AnyNode>): string | null {
@@ -55,7 +60,7 @@ function cardToOutcome(card: cheerio.Cheerio<AnyNode>, ref: ListingRef): ParseOu
   if (isNotNew(name)) return { kind: 'skip', reason: 'not_new' }
 
   const status = (card.attr('data-status-product') ?? '').trim()
-  const inStock = IN_STOCK.test(status) && !card.hasClass('not-available')
+  const inStock = !card.hasClass('not-available') && !NOT_AVAILABLE.test(status) && card.find('.js-inform').length === 0
   const price = parsePrice(card.attr('data-price') ?? '') ?? (inStock ? parsePrice(card.find('.product-card_price_current').first().text()) : null)
   if (price === null) return { kind: 'skip', reason: inStock ? 'no_price' : 'sold_out' }
   // Товар без наявності: ціна на картці буває старою, у порівняння її не беремо

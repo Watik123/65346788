@@ -1,4 +1,5 @@
 import type { PrismaClient } from '../generated/prisma/client'
+import { brandKey, canonicalBrand } from '../catalog/brands'
 import { extractAttributes } from '../matching/attributes'
 import { compareProducts, type MatchResult } from '../matching/compare'
 import { MatchDecisions, offerKey } from '../matching/decisions'
@@ -102,7 +103,7 @@ export async function ingestProduct(
         orderBy: { id: 'asc' },
       })
       const results = candidates
-        .filter((c) => c.brand.trim().toLowerCase() === incoming.brand)
+        .filter((c) => brandKey(c.brand) === incoming.brand)
         .filter((c) => !c.offers.some((o) => o.externalId && rejected.has(offerKey(o.shop.slug, o.externalId))))
         .map((c) => ({ candidateId: c.id, result: compareProducts(incoming, { ...extractAttributes(c), ean: c.ean }) }))
       const same = results.find((r) => r.result.decision === 'same')
@@ -118,7 +119,7 @@ export async function ingestProduct(
       const product = await tx.product.create({
         data: {
           name: p.name,
-          brand: p.brand,
+          brand: canonicalBrand(p.brand),
           modelCode: p.modelCode,
           ean: p.ean,
           categoryId,

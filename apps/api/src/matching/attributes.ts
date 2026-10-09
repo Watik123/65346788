@@ -1,3 +1,4 @@
+import { brandKey } from '../catalog/brands'
 import { looksLikeCode } from '../scrapers/model-code'
 
 /**
@@ -91,7 +92,7 @@ export function extractAttributes(input: MatchInput): ProductAttributes {
   }
 
   return {
-    brand: input.brand.trim().toLowerCase(),
+    brand: brandKey(input.brand),
     codes: [...codes].filter((c) => c.length >= 5),
     ramGb: ram,
     storageGb: storage,
@@ -100,6 +101,6 @@ export function extractAttributes(input: MatchInput): ProductAttributes {
     year: year ? Number(year[1]) : null,
     variants: VARIANT_WORDS.filter((v) => words.includes(v)).sort(),
     bundle: /\+\s*\p{L}|bundle|комплект|набір/iu.test(name),
-    tokens: words.filter((w) => !STOP.has(w) && w !== input.brand.toLowerCase() && w.length > 1),
+    tokens: words.filter((w) => !STOP.has(w) && w !== input.brand.toLowerCase() && w !== brandKey(input.brand) && w.length > 1),
   }
 }

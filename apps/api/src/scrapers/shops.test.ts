@@ -52,6 +52,11 @@ describe('MOYO', () => {
     expect(r.nextUrl).toBe('https://www.moyo.ua/ua/comp-and-periphery/notebooks/?page=2')
   })
 
+  it('«Заканчивается» означає, що товар ще продається', () => {
+    const r = parseMoyoListing(page(card({ id: '640679', name: 'Телевізор Samsung Neo QLED Mini LED 100QN80F (QE100QN80FUXUA)', brand: 'SAMSUNG', price: 179999, old: 199999, status: 'Заканчивается' })), ref)
+    expect(productsOf(r)[0]).toMatchObject({ externalId: '640679', price: 179999, oldPrice: 199999, inStock: true })
+  })
+
   it('товари без наявності пропускає; сторінка з самих таких зупиняє обхід', () => {
     const sold = card({ id: '660083', name: 'Ноутбук HP OmniBook 5', price: 0, status: 'Нет в наличии' })
     const r = parseMoyoListing(page(sold + sold.replaceAll('660083', '660084')), ref)

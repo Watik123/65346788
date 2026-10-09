@@ -36,12 +36,24 @@ export async function buildReport(prisma: PrismaClient): Promise<string> {
   const out: string[] = []
   const day = today.toISOString().slice(0, 10)
   out.push(`# Статистика цін на ${day}`, '')
-  out.push(`Історія: ${days(historyDays)}. Товарів сьогодні: **${offers.length}**, у наявності: ${offers.filter((o) => o.inStock).length}.`, '')
+  const productCount = new Set(offers.map((o) => o.productId)).size
+  out.push(`Історія: ${days(historyDays)}. Пропозицій магазинів сьогодні: **${offers.length}**, у наявності: ${offers.filter((o) => o.inStock).length}, різних товарів: ${productCount}.`, '')
+
+  // По магазинах
+  const byShop = new Map<string, typeof offers>()
+  for (const o of offers) byShop.set(o.shop.name, [...(byShop.get(o.shop.name) ?? []), o])
+  out.push('## Магазини', '', '| Магазин | Товарів | У наявності | Із закресленою ціною | Середня «знижка» магазину |', '|---|---:|---:|---:|---:|')
+  for (const [shop, list] of [...byShop].sort((a, b) => b[1].length - a[1].length)) {
+    const claims = list.map((o) => ({ o, old: claimedOldPrice(o.rawData) })).filter((x) => x.old !== null && x.old > x.o.price)
+    const avg = claims.length ? claims.reduce((s, x) => s + (1 - x.o.price / (x.old as number)) * 100, 0) / claims.length : 0
+    out.push(`| ${esc(shop)} | ${list.length} | ${list.filter((o) => o.inStock).length} | ${claims.length} (${pct(claims.length, list.length)}) | ${claims.length ? `−${formatPercent(avg)}` : '–'} |`)
+  }
+  out.push('')
 
   // По магазинах і категоріях
   const byCat = new Map<string, typeof offers>()
   for (const o of offers) byCat.set(o.product.category.name, [...(byCat.get(o.product.category.name) ?? []), o])
-  out.push('## Що відстежуємо', '', '| Категорія | Товарів | У наявності | Із закресленою ціною | Середня «знижка» магазину |', '|---|---:|---:|---:|---:|')
+  out.push('## Категорії', '', '| Категорія | Пропозицій | У наявності | Із закресленою ціною | Середня «знижка» магазину |', '|---|---:|---:|---:|---:|')
   for (const [cat, list] of [...byCat].sort((a, b) => b[1].length - a[1].length)) {
     const claims = list.map((o) => ({ o, old: claimedOldPrice(o.rawData) })).filter((x) => x.old !== null && x.old > x.o.price)
     const avg = claims.length ? claims.reduce((s, x) => s + (1 - x.o.price / (x.old as number)) * 100, 0) / claims.length : 0
@@ -56,15 +68,44 @@ export async function buildReport(prisma: PrismaClient): Promise<string> {
     .map((x) => ({ ...x, pct: (1 - x.o.price / x.old) * 100 }))
   out.push('## Знижки, які показує магазин', '')
   out.push(
-    `Закреслена ціна є в **${claimed.length}** з ${offers.length} товарів (${pct(claimed.length, offers.length)}). Медіанна заявлена знижка: −${formatPercent(median(claimed.map((c) => c.pct)))}.`,
+    `Закреслена ціна є в **${claimed.length}** з ${offers.length} пропозицій (${pct(claimed.length, offers.length)}). Медіанна заявлена знижка: −${formatPercent(median(claimed.map((c) => c.pct)))}.`,
     '',
   )
   if (claimed.length) {
-    out.push('Найбільші заявлені знижки (перевіримо їх, щойно буде 14 днів історії):', '', '| Товар | Ціна | Закреслена | Заявлено |', '|---|---:|---:|---:|')
+    out.push('Найбільші заявлені знижки (перевіримо їх, щойно буде 14 днів історії):', '', '| Товар | Магазин | Ціна | Закреслена | Заявлено |', '|---|---|---:|---:|---:|')
     for (const c of claimed.sort((a, b) => b.pct - a.pct).slice(0, 10)) {
-      out.push(`| [${esc(c.o.product.name)}](${c.o.url}) | ${formatPrice(c.o.price)} | ${formatPrice(c.old)} | −${formatPercent(c.pct)} |`)
+      out.push(`| [${esc(c.o.product.name)}](${c.o.url}) | ${esc(c.o.shop.name)} | ${formatPrice(c.o.price)} | ${formatPrice(c.old)} | −${formatPercent(c.pct)} |`)
     }
     out.push('')
+  }
+
+  // Той самий товар у кількох магазинах: різниця цін сьогодні
+  const byProduct = new Map<number, typeof offers>()
+  for (const o of offers.filter((x) => x.inStock)) byProduct.set(o.productId, [...(byProduct.get(o.productId) ?? []), o])
+  const multi = [...byProduct.values()].filter((list) => new Set(list.map((o) => o.shopId)).size >= 2)
+  if (byShop.size >= 2) {
+    const pending = await prisma.matchReview.count({ where: { status: 'pending' } })
+    out.push('## Один товар у кількох магазинах', '')
+    out.push(
+      `Знайдено в 2+ магазинах: **${multi.length}** товарів, у 3+: ${multi.filter((l) => new Set(l.map((o) => o.shopId)).size >= 3).length}. Схожих пар, які треба перевірити вручну: ${pending}.`,
+      '',
+    )
+    const spread = multi
+      .map((list) => {
+        const sorted = [...list].sort((a, b) => a.price - b.price)
+        const min = sorted[0] as (typeof list)[number]
+        const max = sorted[sorted.length - 1] as (typeof list)[number]
+        return { min, max, pct: (1 - min.price / max.price) * 100 }
+      })
+      .filter((x) => x.pct > 0)
+      .sort((a, b) => b.pct - a.pct)
+    if (spread.length) {
+      out.push('Найбільша різниця цін між магазинами:', '', '| Товар | Дешевше | Дорожче | Різниця |', '|---|---:|---:|---:|')
+      for (const x of spread.slice(0, 10)) {
+        out.push(`| ${esc(x.min.product.name)} | [${formatPrice(x.min.price)}](${x.min.url}) ${esc(x.min.shop.name)} | [${formatPrice(x.max.price)}](${x.max.url}) ${esc(x.max.shop.name)} | −${formatPercent(x.pct)} |`)
+      }
+      out.push('')
+    }
   }
 
   // Зміни за добу
