@@ -1,5 +1,5 @@
 # Збір цін на серверах GitHub (у контейнері розробки доступу до сайтів магазинів немає).
-#  - щодня о 05:17 UTC (08:17 за Києвом) збирає ціни й зберігає їх у datastore/;
+#  - щодня о 05:17 UTC (08:17 за Києвом) збирає ціни всіх магазинів і зберігає їх у datastore/;
 #  - вручну (вкладка Actions → «Збір цін» → Run workflow): збір, розвідка сайту або пробний збір.
 # Щоб зупинити щоденний збір: вкладка Actions → «Збір цін» → «…» → Disable workflow.
 name: Збір цін
@@ -15,8 +15,8 @@ on:
         options: [collect, probe, deep, dry-run]
         default: collect
       target:
-        description: 'collect і dry-run: slug магазину (ktc); probe: сайти через кому; deep: адреси через кому'
-        default: 'ktc'
+        description: 'collect і dry-run: all або магазини через кому (ktc,foxtrot,moyo,citrus); probe: сайти через кому; deep: адреси через кому'
+        default: 'all'
       max:
         description: 'Скільки товарів максимум (dry-run)'
         default: '100'
@@ -40,7 +40,7 @@ jobs:
   collect:
     if: github.event_name == 'schedule' || inputs.mode == 'collect'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     permissions:
       contents: write
     steps:
@@ -54,10 +54,11 @@ jobs:
       - name: Збір цін
         id: scrape
         env:
-          SHOP: ${{ inputs.target || 'ktc' }}
+          # Щодня: усі магазини по черзі; вручну можна вказати один чи кілька через кому
+          SHOPS: ${{ github.event_name == 'schedule' && 'all' || inputs.target }}
         run: |
           set +e
-          npm run scrape -- "$SHOP" --fresh --store="$GITHUB_WORKSPACE/datastore"
+          npm run scrape -- "$SHOPS" --fresh --store="$GITHUB_WORKSPACE/datastore"
           echo "code=$?" >> "$GITHUB_OUTPUT"
 
       - name: Статистика

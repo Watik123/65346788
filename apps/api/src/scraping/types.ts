@@ -42,7 +42,8 @@ export interface ParsedProduct {
   raw: unknown
 }
 
-export type SkipReason = 'third_party_seller' | 'not_a_product' | 'wrong_currency' | 'no_price' | 'sold_out' | 'missing_data'
+/** not_new: вживаний, уцінений, відновлений чи вітринний зразок; з цінами нових товарів не порівнюємо */
+export type SkipReason = 'third_party_seller' | 'not_a_product' | 'not_new' | 'wrong_currency' | 'no_price' | 'sold_out' | 'missing_data'
 
 export type ParseOutcome = { kind: 'product'; product: ParsedProduct } | { kind: 'skip'; reason: SkipReason; detail?: string }
 
