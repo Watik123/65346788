@@ -251,8 +251,16 @@ async function deep(fetcher: PoliteFetcher, urls: string[], selectors: string[])
     })
 
     // Посилання на підкатегорії з ключовими словами
-    const sub = $('a[href]').filter((_, a) => /пральн|холодильн|пилосос|телевіз|ноутбук|смартфон/i.test($(a).text()) && !($(a).attr('href') ?? '').includes('/goods/')).map((_, a) => `${short($(a).text().trim(), 30)} → ${$(a).attr('href')}`).get()
-    if (sub.length) console.log(`підкатегорії: ${[...new Set(sub)].slice(0, 15).join('  |  ')}`)
+    // Посилання на розділи: лише короткі підписи і не сторінки товарів (там цифровий код у кінці)
+    const sub = $('a[href]')
+      .filter((_, a) => {
+        const text = $(a).text().trim()
+        const href = $(a).attr('href') ?? ''
+        return /пральн|холодильн|пилосос|телевіз|ноутбук|смартфон/i.test(text) && text.length <= 40 && !href.includes('/goods/') && !/\d{5,}\.html|[-_]\d{5,}/.test(href)
+      })
+      .map((_, a) => `${short($(a).text().trim(), 40)} → ${$(a).attr('href')}`)
+      .get()
+    if (sub.length) console.log(`розділи: ${[...new Set(sub)].slice(0, 40).join('  |  ')}`)
   }
 }
 
