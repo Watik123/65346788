@@ -20,6 +20,7 @@
     "probe": "tsx src/cli/probe.ts",
     "data:import": "tsx src/cli/data-import.ts",
     "data:report": "tsx src/cli/data-report.ts",
+    "match:review": "tsx src/cli/match-review.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },

@@ -99,6 +99,18 @@ export async function buildReport(prisma: PrismaClient): Promise<string> {
       })
       .filter((x) => x.pct > 0)
       .sort((a, b) => b.pct - a.pct)
+    if (pending > 0) {
+      const pairs = await prisma.matchReview.findMany({
+        where: { status: 'pending' },
+        include: { product: { include: { offers: { include: { shop: true } } } }, candidate: { include: { offers: { include: { shop: true } } } } },
+        orderBy: [{ score: 'desc' }, { id: 'asc' }],
+        take: 10,
+      })
+      const shops = (p: (typeof pairs)[number]['product']) => p.offers.map((o) => o.shop.name).join(', ')
+      out.push('Найсхожіші пари на перевірку (`npm run match:review`):', '', '| № | Товар | Можливо, той самий | Схожість |', '|---:|---|---|---:|')
+      for (const r of pairs) out.push(`| ${r.id} | ${esc(r.product.name)} (${esc(shops(r.product))}) | ${esc(r.candidate.name)} (${esc(shops(r.candidate))}) | ${r.score.toFixed(2)} |`)
+      out.push('')
+    }
     if (spread.length) {
       out.push('Найбільша різниця цін між магазинами:', '', '| Товар | Дешевше | Дорожче | Різниця |', '|---|---:|---:|---:|')
       for (const x of spread.slice(0, 10)) {
