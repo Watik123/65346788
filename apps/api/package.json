@@ -19,6 +19,7 @@
     "scrape": "tsx src/cli/scrape.ts",
     "probe": "tsx src/cli/probe.ts",
     "data:import": "tsx src/cli/data-import.ts",
+    "data:report": "tsx src/cli/data-report.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },
