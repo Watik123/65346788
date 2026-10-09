@@ -85,6 +85,13 @@ describe('FeedPage', () => {
     await waitFor(() => expect(lastQuery().minDiscount).toBeUndefined())
   })
 
+  it('без фільтрів і без знижок пояснює, що історії цін ще замало, а не радить скинути фільтри', async () => {
+    feedMock.mockResolvedValue(makeFeed([], { total: 0 }))
+    renderPage('/')
+    expect(await screen.findByText('Перевірених знижок поки немає')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Скинути фільтри' })).toBeNull()
+  })
+
   it('помилка завантаження дає зрозуміле повідомлення й повтор', async () => {
     feedMock.mockRejectedValueOnce(new Error('offline'))
     renderPage()

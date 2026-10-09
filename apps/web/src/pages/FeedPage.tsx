@@ -160,6 +160,15 @@ export function FeedPage() {
                   <FeedCardSkeleton key={i} />
                 ))}
               </div>
+            ) : data && data.items.length === 0 && count === 0 ? (
+              // Фільтрів немає, а знижок нуль: збір лише почався, історії цін ще замало для висновків
+              <div className="rounded-2xl border border-line bg-surface p-8 text-center">
+                <p className="font-semibold">Перевірених знижок поки немає</p>
+                <p className="mx-auto mt-1 max-w-md text-sm text-ink-2">
+                  Щоб відрізнити справжню знижку від накрученої, потрібна історія цін щонайменше за 14 днів. Ціни збираємо щодня, тож знижки з’являться тут, щойно
+                  даних стане достатньо.
+                </p>
+              </div>
             ) : data && data.items.length === 0 ? (
               <div className="rounded-2xl border border-line bg-surface p-8 text-center">
                 <p className="font-semibold">За цими фільтрами нічого не знайшлося</p>
