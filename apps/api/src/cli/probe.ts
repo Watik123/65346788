@@ -91,11 +91,58 @@ function collapse(html: string, n: number): string {
   return short(html.replace(/<(script|style|svg)[\s\S]*?<\/\1>/gi, '').replace(/\s+/g, ' '), n)
 }
 
-async function deep(fetcher: PoliteFetcher, urls: string[]) {
+/** Найчастіші класи, схожі на картки, ціни й рейтинги: показують будову сторінки без самої сторінки */
+function classHistogram($: cheerio.CheerioAPI): string {
+  const counts = new Map<string, number>()
+  $('[class]').each((_, el) => {
+    for (const c of ($(el).attr('class') ?? '').split(/\s+/)) {
+      if (/card|price|product|goods|tile|rating|review|old|discount|sale|stock|avail/i.test(c)) counts.set(c, (counts.get(c) ?? 0) + 1)
+    }
+  })
+  return [...counts].sort((a, b) => b[1] - a[1]).slice(0, 45).map(([c, n]) => `${c}:${n}`).join('  ')
+}
+
+/** Масиви об'єктів із ціною у вбудованому JSON (Next.js, Nuxt тощо): шлях, кількість, перший елемент */
+function jsonProductArrays(value: unknown, at = '$', out: string[] = [], depth = 0): string[] {
+  if (out.length >= 6 || depth > 14) return out
+  if (Array.isArray(value)) {
+    const objs = value.filter((v) => v && typeof v === 'object' && !Array.isArray(v)) as Record<string, unknown>[]
+    const first = objs[0]
+    if (objs.length >= 3 && first && Object.keys(first).some((k) => /price/i.test(k)) && Object.keys(first).some((k) => /name|title/i.test(k))) {
+      out.push(`${at} [${objs.length}] ключі: ${Object.keys(first).join(', ')}\n    перший: ${short(JSON.stringify(first), 2500)}`)
+      return out
+    }
+    value.slice(0, 50).forEach((v, i) => jsonProductArrays(v, `${at}[${i}]`, out, depth + 1))
+  } else if (value && typeof value === 'object') {
+    for (const [k, v] of Object.entries(value)) jsonProductArrays(v, `${at}.${k}`, out, depth + 1)
+  }
+  return out
+}
+
+async function deep(fetcher: PoliteFetcher, urls: string[], selectors: string[]) {
   for (const url of urls) {
     const res = await fetcher.get(url)
     const $ = cheerio.load(res.body)
     console.log(`\n######## ${url}\nHTTP ${res.status}, розмір ${res.body.length}`)
+    console.log(`класи: ${classHistogram($)}`)
+    for (const sel of selectors) {
+      try {
+        const found = $(sel)
+        console.log(`вибірка «${sel}»: ${found.length}`)
+        found.slice(0, 2).each((k, el) => console.log(`  ${k + 1}: ${collapse($.html(el) ?? '', 3500)}`))
+      } catch (err) {
+        console.log(`вибірка «${sel}»: помилка ${err instanceof Error ? err.message : String(err)}`)
+      }
+    }
+    $('script#__NEXT_DATA__, script[type="application/json"]').each((_, el) => {
+      try {
+        const arrays = jsonProductArrays(JSON.parse($(el).text()))
+        console.log(`JSON ${$(el).attr('id') ?? $(el).attr('type')}: масивів товарів ${arrays.length}`)
+        arrays.forEach((a) => console.log(`  ${a}`))
+      } catch {
+        // не JSON
+      }
+    })
 
     // Усі блоки ld+json: типи та для товару повні offers
     $('script[type="application/ld+json"]').each((i, el) => {
@@ -217,15 +264,18 @@ async function main() {
   const deepArg = process.argv.find((a) => a.startsWith('--deep='))
   if (deepArg) {
     const urls = deepArg.slice(7).split(',').map((u) => u.trim()).filter(Boolean).slice(0, 10)
+    // Селектори CSS містять коми, тому розділяємо їх «;;»
+    const selectArg = process.argv.find((a) => a.startsWith('--select='))
+    const selectors = selectArg ? selectArg.slice(9).split(';;').map((s) => s.trim()).filter(Boolean) : []
     const fetcher = new PoliteFetcher({ shop: 'probe', userAgent: UA, minDelayMs: 2000, jitterMs: 800, retries: 1 })
     console.log(`Глибока розвідка (${urls.length} адрес)\nUser-Agent: ${UA}`)
-    await deep(fetcher, urls)
+    await deep(fetcher, urls, selectors)
     return
   }
   const target = process.argv.slice(2).find((a) => !a.startsWith('--'))
   const pagesArg = process.argv.find((a) => a.startsWith('--pages='))
   if (!target) {
-    console.log('Запуск: npm run probe -- https://shop.example [--pages=6] | --sites=a,b,c | --deep=url1,url2')
+    console.log('Запуск: npm run probe -- https://shop.example [--pages=6] | --sites=a,b,c | --deep=url1,url2 [--select=css1;;css2]')
     process.exit(1)
   }
   await probeSite(target, Math.min(Number(pagesArg?.slice(8) ?? 6) || 6, 12))

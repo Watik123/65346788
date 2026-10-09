@@ -20,6 +20,9 @@ on:
       max:
         description: 'Скільки товарів максимум (dry-run)'
         default: '100'
+      select:
+        description: 'deep: CSS-селектори через ;; (показати перші збіги)'
+        default: ''
 
 permissions:
   contents: read
@@ -107,7 +110,8 @@ jobs:
         if: inputs.mode == 'deep'
         env:
           TARGET: ${{ inputs.target }}
-        run: npm run probe -- "--deep=$TARGET"
+          SELECT: ${{ inputs.select }}
+        run: npm run probe -- "--deep=$TARGET" "--select=$SELECT"
 
       - name: Пробний збір (без запису)
         if: inputs.mode == 'dry-run'
