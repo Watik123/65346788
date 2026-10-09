@@ -14,6 +14,11 @@ const SPEC = [
   /^[2-6]g$/i,
   /^(wi-?fi|usb-?c|ddr\d|lpddr\d+x?|nvme|pci-e|ips|oled|qled|led|uhd|fhd|hdr10\+?|ssd|rtx|gtx)$/i,
   /^(19|20)\d{2}$/,
+  // Процесори й відео: i5-13420H, R7-7735HS, 7520U, 285HX, 8645HS, 10GPU; роздільність 1080p
+  /^(i[3579]|r[3579]|ultra[3579]?)-?\d{3,5}[a-z]{0,2}$/i,
+  /^\d{3,5}(u|h|hs|hx|k|kf|f|g\d)$/i,
+  /^\d+(gpu|cpu|core|cores)$/i,
+  /^\d{3,4}p$/i,
 ]
 
 /** Схоже на код моделі, а не на характеристику (512GB, 3840x2160, 12/512, 5G, Wi-Fi) */

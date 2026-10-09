@@ -52,7 +52,11 @@ const COLORS: [RegExp, string][] = [
 const VARIANT_WORDS = ['pro', 'max', 'ultra', 'plus', 'lite', 'mini', 'fe', 'se', 'neo', 'air', 'edge', 'flip', 'fold', 'prime', 'turbo', 'note', 'slim']
 
 /** Слова-категорії та службові, що не допомагають відрізнити модель */
-const STOP = new Set(['смартфон', 'телевізор', 'ноутбук', 'пилосос', 'робот', 'робот-пилосос', 'ручний', 'бездротовий', 'холодильник', 'пральна', 'машина', 'led', 'qled', 'oled', 'smart', 'tv', 'wi-fi', 'wifi', 'google', 'android', 'і', 'та', 'з', 'для', 'gb', 'гб', 'tb', 'тб'])
+const STOP = new Set([
+  'смартфон', 'телевізор', 'ноутбук', 'ігровий', 'пилосос', 'робот', 'робот-пилосос', 'ручний', 'бездротовий', 'акумуляторний',
+  'миючий', 'вертикальний', 'холодильник', 'пральна', 'машина', 'led', 'qled', 'oled', 'smart', 'tv', 'wi-fi', 'wifi', 'google',
+  'android', 'dual', 'sim', 'і', 'та', 'з', 'для', 'gb', 'гб', 'tb', 'тб',
+])
 
 export function normalizeCode(code: string): string {
   return code.toUpperCase().replace(/[\s\-_/.]/g, '')
@@ -108,6 +112,7 @@ export function extractAttributes(input: MatchInput): ProductAttributes {
     year: year ? Number(year[1]) : null,
     variants: VARIANT_WORDS.filter((v) => variantWords.includes(v)).sort(),
     bundle: /\+\s*\p{L}|bundle|комплект|набір/iu.test(name),
-    tokens: words.filter((w) => !STOP.has(w) && w !== input.brand.toLowerCase() && w !== brandKey(input.brand) && w.length > 1),
+    // Довгі числа в дужках — здебільшого внутрішні номери магазину («(1191424)» у KTC), не модель
+    tokens: words.filter((w) => !STOP.has(w) && w !== input.brand.toLowerCase() && w !== brandKey(input.brand) && w.length > 1 && !/^\d{6,}$/.test(w)),
   }
 }

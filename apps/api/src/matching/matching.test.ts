@@ -52,7 +52,23 @@ describe('compareProducts', () => {
 
   it('частковий збіг коду (суфікс кольору/регіону) і дуже схожі назви: на ручну перевірку', () => {
     expect(decide(attrs('Samsung Galaxy S26 Ultra 12/512GB (SM-S948B)', 'Samsung'), attrs('Samsung Galaxy S26 Ultra 12/512GB (SM-S948BZKGEUC)', 'Samsung'))).toBe('review')
-    expect(decide(attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'), attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'))).toBe('review')
+    expect(decide(attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro', 'Xiaomi'), attrs('Робот-пилосос Xiaomi Robot Vacuum H50 Pro EU', 'Xiaomi'))).toBe('review')
+  })
+
+  it('однакові назви без кодів, і характеристики не суперечать: той самий', () => {
+    expect(decide(attrs('Смартфон XIAOMI REDMI 17 4/256GB Black', 'XIAOMI'), attrs('Смартфон Xiaomi Redmi 17 4/256GB (Black)', 'Xiaomi'))).toBe('same')
+    expect(decide(attrs('Смартфон OPPO A6 Pro 4G 8/256GB Stellar Blue', 'OPPO'), attrs('Смартфон OPPO A6 PRO 4G 8/256GB Stellar Blue', 'OPPO'))).toBe('same')
+    // Внутрішній номер KTC у дужках і слова-описи («акумуляторний», «ручний бездротовий») не заважають
+    expect(decide(attrs('Смартфон Poco X8 Pro 8/256GB Green (1191424)', 'POCO'), attrs('Смартфон POCO X8 Pro 8/256GB Green', 'POCO'))).toBe('same')
+    expect(decide(attrs('Акумуляторний пилосос Dyson V16 Piston Animal (492963-01)', 'Dyson'), attrs('Ручний бездротовий пилосос Dyson V16 Piston Animal (492963-01)', 'Dyson'))).toBe('same')
+    // Пам'ять різна — ні, хоч решта однакова
+    expect(decide(attrs('Смартфон Xiaomi Redmi 17 4/128GB Black', 'Xiaomi'), attrs('Смартфон Xiaomi Redmi 17 4/256GB Black', 'Xiaomi'))).toBe('different')
+  })
+
+  it('частковий збіг коду серії, але різні артикули: різні, без ручної перевірки', () => {
+    expect(decide(attrs('Ігровий ноутбук ACER Nitro V 15 ANV15-52-75W7 Black (NH.QZ8EU.010)', 'ACER'), attrs('Ноутбук Acer Nitro V 15 ANV15-52 Obsidian Black (NH.QV2EU.00V)', 'Acer'))).toBe('different')
+    // Процесор у назві одного магазину не робить його «іншим артикулом»
+    expect(decide(attrs('Ноутбук Lenovo IdeaPad Slim 3 15IRH10 i5-13420H 16/512GB (83K100CBRA)', 'Lenovo'), attrs('Ноутбук LENOVO IdeaPad Slim 3 15IRH10 (83K100CBRA)', 'LENOVO'))).toBe('same')
   })
 
   it('справжні назви з різних магазинів (пробний збір 9 жовтня 2026 р.)', () => {
@@ -61,6 +77,13 @@ describe('compareProducts', () => {
     expect(decide(attrs('Телевізор Samsung Neo QLED Mini LED 75QN70F (QE75QN70FAUXUA)', 'SAMSUNG', 'QE75QN70FAUXUA'), attrs('Телевізор SAMSUNG QE75QN70FAUXUA', 'SAMSUNG'))).toBe('same')
     expect(decide(attrs('Телевізор Samsung 40F6000 (UE40F6000FUXUA)', 'SAMSUNG', 'UE40F6000FUXUA'), attrs('Телевізор Samsung 40" Full HD UE40F6000FUXUA', 'Samsung'))).toBe('same')
     expect(decide(attrs('Телевізор LED LG 43UA75006LA (Smart TV, Wi-Fi, 3840x2160)', 'LG', '43UA75006LA'), attrs('Телевізор LG 43UA75006LA', 'LG'))).toBe('same')
+    // Одна серія ноутбуків, різні конфігурації: спільний код серії не робить їх одним товаром
+    expect(decide(attrs('Ноутбук HP 200-G2i Black (DS9F6ET)', 'HP', 'DS9F6ET'), attrs('Ноутбук HP 200-G2i (DS9G2ET)', 'HP', 'DS9G2ET'))).toBe('different')
+    expect(decide(attrs('Ноутбук Lenovo IdeaPad Slim 3 16IPH11 Cosmic Blue (83US006RRA)', 'LENOVO', '83US006RRA'), attrs('Ноутбук LENOVO IdeaPad Slim 5 16IPH11 Cosmic Blue (83S6005RRA)', 'LENOVO', '83S6005RRA'))).toBe('different')
+    expect(decide(attrs('Ноутбук LENOVO LOQ 17IRX10 Luna Grey (83JH00EJRA)', 'LENOVO', '83JH00EJRA'), attrs('Ноутбук LENOVO LOQ 17IRX10 Luna Grey (83JH003NRA)', 'LENOVO', '83JH003NRA'))).toBe('different')
+    // Той самий артикул, хоч в одній назві є ще код серії
+    expect(decide(attrs('Ноутбук ASUS Vivobook 16 M1607GA-MB009 (90NB16Z1-M000A0)', 'ASUS', '90NB16Z1-M000A0'), attrs('Ноутбук ASUS M1607GA-MB009 (90NB16Z1-M000A0)', 'ASUS', '90NB16Z1-M000A0'))).toBe('same')
+    expect(decide(attrs('Ноутбук ASUS Vivobook 16 M1607GA-MB009 Quiet Blue - 16" IPS 60 Гц / AMD Ryzen AI 7 / 445 / DDR5 16 ГБ / PCI-E SSD 512 ГБ / Radeon Graphics', 'ASUS', 'M1607GA-MB009'), attrs('Ноутбук ASUS M1607GA-MB009 (90NB16Z1-M000A0)', 'ASUS', '90NB16Z1-M000A0'))).toBe('same')
     // PRO окремим словом — інша модель, хоч код той самий
     expect(decide(attrs('Телевізор HISENSE 43E7S PRO', 'HISENSE'), attrs('Телевізор Hisense 43E7S', 'Hisense'))).toBe('different')
   })

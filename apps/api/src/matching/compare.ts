@@ -22,9 +22,10 @@ const differ = <T>(x: T | null, y: T | null) => x !== null && y !== null && x !=
 
 /**
  * Чи це той самий товар у двох магазинах.
- *  same      — однаковий EAN або однаковий код моделі в одного бренду і жодних суперечностей;
+ *  same      — однаковий EAN, однаковий код моделі в одного бренду або однакові назви, і жодних суперечностей;
  *  review    — схоже, але не напевно (частковий збіг коду або дуже схожі назви): на ручну перевірку;
- *  different — інший бренд, обсяг пам'яті, колір, діагональ, рік, модифікація чи комплект.
+ *  different — інший бренд, обсяг пам'яті, колір, діагональ, рік, модифікація, комплект
+ *              або різні артикули конфігурацій за спільного коду серії.
  * Автоматично зливаємо лише «same»: краще пропустити збіг, ніж змішати різні товари.
  */
 export function compareProducts(a: ProductAttributes & { ean?: string | null }, b: ProductAttributes & { ean?: string | null }): MatchResult {
@@ -44,6 +45,17 @@ export function compareProducts(a: ProductAttributes & { ean?: string | null }, 
   if (a.bundle !== b.bundle) conflicts.push('один із них комплект')
   if (conflicts.length > 0) return { decision: 'different', score, reasons: conflicts }
 
+  // Коди, що не мають пари в іншому товарі (ні такого самого, ні того, що містить один одного).
+  // Якщо такі є в обох — це різні артикули: різні товари, навіть за спільного коду серії
+  // (HP 200 G2i DS9F6ET і DS9G2ET) чи схожих назв. 40F6000 і UE40F6000FUXUA не суперечать.
+  const related = (x: string, list: string[]) => list.some((y) => y.includes(x) || x.includes(y))
+  const ownA = a.codes.filter((c) => !related(c, b.codes))
+  const ownB = b.codes.filter((c) => !related(c, a.codes))
+  if (ownA.length > 0 && ownB.length > 0) {
+    const linked = ownA.length < a.codes.length
+    return { decision: 'different', score, reasons: [linked ? `спільний код серії, але різні артикули: ${ownA[0]} і ${ownB[0]}` : `різні коди моделі: ${ownA[0]} і ${ownB[0]}`] }
+  }
+
   const shared = a.codes.filter((c) => b.codes.includes(c))
   if (shared.length > 0) return { decision: 'same', score: Math.max(score, 0.99), reasons: [`однаковий код моделі ${shared[0]}`] }
 
@@ -57,6 +69,8 @@ export function compareProducts(a: ProductAttributes & { ean?: string | null }, 
     }
   }
 
+  // Ті самі значущі слова назви, а бренд, пам'ять, колір і решта не суперечать: той самий товар
+  if (score >= 0.95) return { decision: 'same', score, reasons: ['однакові назви'] }
   if (score >= 0.8) return { decision: 'review', score, reasons: [`схожі назви (${Math.round(score * 100)}%)`] }
   return { decision: 'different', score, reasons: ['назви й коди не збігаються'] }
 }
