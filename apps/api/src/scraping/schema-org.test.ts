@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseProductPage } from './from-schema-org'
-import { extractJsonLdProducts, extractMetaProduct, normalizeEan, parseAvailability, parsePrice } from './schema-org'
+import { extractBreadcrumbs, extractJsonLdProducts, extractMetaProduct, normalizeEan, parseAvailability, parsePrice } from './schema-org'
 
 const ld = (json: unknown) => `<html><head><script type="application/ld+json">${typeof json === 'string' ? json : JSON.stringify(json)}</script></head><body></body></html>`
 const ref = { url: 'https://shop.example/p/1', categorySlug: 'televizory' }
@@ -171,5 +171,27 @@ describe('parseProductPage', () => {
   it('запасний варіант: ціна з мета-тегів', () => {
     const html = `<script type="application/ld+json">${JSON.stringify({ '@type': 'Product', name: 'X', sku: 's', brand: 'B' })}</script><meta property="product:price:amount" content="777">`
     expect(parseProductPage(html, ref)).toMatchObject({ kind: 'product', product: { price: 777 } })
+  })
+})
+
+describe('extractBreadcrumbs', () => {
+  it('читає крихти в порядку position, з адресами в різних формах', () => {
+    const html = ld({
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 3, name: 'Телевізори', item: 'https://shop.example/tv/' },
+        { '@type': 'ListItem', position: 1, name: 'КТС', item: { '@id': 'https://shop.example/' } },
+        { '@type': 'ListItem', position: 2, item: { '@id': 'https://shop.example/home/', name: 'Техніка для дому' } },
+      ],
+    })
+    expect(extractBreadcrumbs(html)).toEqual([
+      { name: 'КТС', url: 'https://shop.example/' },
+      { name: 'Техніка для дому', url: 'https://shop.example/home/' },
+      { name: 'Телевізори', url: 'https://shop.example/tv/' },
+    ])
+  })
+
+  it('без розмітки крихт повертає порожній список', () => {
+    expect(extractBreadcrumbs(ld({ '@type': 'Product', name: 'X' }))).toEqual([])
   })
 })

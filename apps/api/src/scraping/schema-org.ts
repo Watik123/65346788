@@ -182,3 +182,38 @@ export function extractMetaProduct(html: string): Partial<ExtractedProduct> {
     availability: availability ? (/in\s*stock|instock|available/i.test(availability) ? 'in_stock' : /out|sold/i.test(availability) ? 'out_of_stock' : 'unknown') : 'unknown',
   }
 }
+
+export interface Crumb {
+  name: string
+  url: string | null
+}
+
+/** Хлібні крихти з розмітки BreadcrumbList, за порядком position */
+export function extractBreadcrumbs(html: string): Crumb[] {
+  const $ = cheerio.load(html)
+  let best: Crumb[] = []
+  $('script[type="application/ld+json"]').each((_, el) => {
+    let parsed: unknown
+    try {
+      parsed = JSON.parse($(el).text())
+    } catch {
+      return
+    }
+    for (const node of walk(parsed)) {
+      if (!typeIncludes(node, ['BreadcrumbList'])) continue
+      const items = asArray(node['itemListElement'])
+        .filter(isObj)
+        .map((it, i) => {
+          const item = it['item']
+          const name = text(it['name']) ?? (isObj(item) ? text(item['name']) : null)
+          const url = typeof item === 'string' ? item : isObj(item) ? (text(item['@id']) ?? text(item['url'])) : null
+          return { pos: Number(it['position']) || i + 1, name, url }
+        })
+        .filter((c): c is { pos: number; name: string; url: string | null } => c.name !== null)
+        .sort((a, b) => a.pos - b.pos)
+        .map(({ name, url }) => ({ name, url }))
+      if (items.length > best.length) best = items
+    }
+  })
+  return best
+}

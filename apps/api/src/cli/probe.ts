@@ -115,7 +115,14 @@ async function deep(fetcher: PoliteFetcher, urls: string[]) {
             console.log(`  крихта: ${it['position']} ${it['name'] ?? (typeof item === 'object' ? item?.['name'] : '')} → ${typeof item === 'string' ? item : (item?.['@id'] ?? item?.['url'] ?? '')}`)
           }
         }
-        if (types.includes('ItemList')) console.log(`  ItemList: ${short(JSON.stringify(v), 500)}`)
+        if (types.includes('ItemList')) {
+          const items = ([] as Array<Record<string, unknown>>).concat(v.itemListElement ?? [])
+          console.log(`  ItemList: numberOfItems=${v.numberOfItems}, елементів=${items.length}`)
+          items.slice(0, 2).forEach((it, k) => console.log(`  елемент ${k + 1}: ${short(JSON.stringify(it), 1400)}`))
+          const keys = new Map<string, number>()
+          for (const it of items) for (const key of Object.keys((it['item'] as object) ?? {})) keys.set(key, (keys.get(key) ?? 0) + 1)
+          console.log(`  ключі товарів у списку: ${[...keys].map(([k, n]) => `${k}:${n}`).join(', ')}`)
+        }
       } catch {
         console.log(`ld+json #${i}: зламаний`)
       }
@@ -147,6 +154,8 @@ async function deep(fetcher: PoliteFetcher, urls: string[]) {
       }
       console.log(`картка товару: ${ancestry($, card.get(0), 5)}`)
       console.log(`вміст картки: ${collapse($.html(card) ?? '', 1500)}`)
+      $('div.loop__pb').slice(0, 3).each((k, el) => console.log(`блок ціни картки ${k + 1}: ${collapse($.html(el) ?? '', 600)}`))
+      $('div.loop__avholder').slice(0, 2).each((k, el) => console.log(`наявність картки ${k + 1}: ${collapse($.html(el) ?? '', 300)}`))
       const pag = [...new Set($('a[href]').map((_, a) => $(a).attr('href') ?? '').get().filter((h) => /page|p=\d|\/\d+\/?$|_\d+\/?$/i.test(h) && !h.includes('/goods/')))].slice(0, 10)
       console.log(`пагінація (кандидати): ${pag.join('  ') || '—'}`)
       const next = $('link[rel="next"], a[rel="next"]').attr('href')
@@ -156,7 +165,7 @@ async function deep(fetcher: PoliteFetcher, urls: string[]) {
     }
 
     // Посилання на підкатегорії з ключовими словами
-    const sub = $('a[href]').filter((_, a) => /пральн|холодильн|пилосос|телевіз|ноутбук|смартфон/i.test($(a).text())).map((_, a) => `${short($(a).text().trim(), 30)} → ${$(a).attr('href')}`).get()
+    const sub = $('a[href]').filter((_, a) => /пральн|холодильн|пилосос|телевіз|ноутбук|смартфон/i.test($(a).text()) && !($(a).attr('href') ?? '').includes('/goods/')).map((_, a) => `${short($(a).text().trim(), 30)} → ${$(a).attr('href')}`).get()
     if (sub.length) console.log(`підкатегорії: ${[...new Set(sub)].slice(0, 15).join('  |  ')}`)
   }
 }
