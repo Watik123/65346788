@@ -23,6 +23,9 @@ on:
       select:
         description: 'deep: CSS-селектори через ;; (показати перші збіги)'
         default: ''
+      json_path:
+        description: 'deep: шлях у вбудованому JSON (напр. props.pageProps.data), показати його поля'
+        default: ''
 
 permissions:
   contents: read
@@ -112,7 +115,8 @@ jobs:
         env:
           TARGET: ${{ inputs.target }}
           SELECT: ${{ inputs.select }}
-        run: npm run probe -- "--deep=$TARGET" "--select=$SELECT"
+          JSON_PATH: ${{ inputs.json_path }}
+        run: npm run probe -- "--deep=$TARGET" "--select=$SELECT" "--json-path=$JSON_PATH"
 
       - name: Пробний збір (без запису)
         if: inputs.mode == 'dry-run'

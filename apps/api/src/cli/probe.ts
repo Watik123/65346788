@@ -127,7 +127,7 @@ function jsonProductArrays(value: unknown, at = '$', out: string[] = [], depth =
   return out
 }
 
-async function deep(fetcher: PoliteFetcher, urls: string[], selectors: string[]) {
+async function deep(fetcher: PoliteFetcher, urls: string[], selectors: string[], jsonPath?: string) {
   for (const url of urls) {
     const res = await fetcher.get(url)
     const $ = cheerio.load(res.body)
@@ -144,7 +144,18 @@ async function deep(fetcher: PoliteFetcher, urls: string[], selectors: string[])
     }
     $('script#__NEXT_DATA__, script[type="application/json"]').each((_, el) => {
       try {
-        const arrays = jsonProductArrays(JSON.parse($(el).text()))
+        const json = JSON.parse($(el).text()) as unknown
+        // --json-path=props.pageProps.data: які поля є на цьому рівні (числа й рядки повністю, решта розміром)
+        if (jsonPath) {
+          const node = jsonPath.split('.').reduce<unknown>((cur, k) => (cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[k] : undefined), json)
+          if (node && typeof node === 'object') {
+            for (const [k, v] of Object.entries(node)) {
+              const shown = v === null || typeof v !== 'object' ? JSON.stringify(v) : Array.isArray(v) ? `масив[${v.length}]` : `{${short(Object.keys(v).join(','), 200)}} ${short(JSON.stringify(v), 300)}`
+              console.log(`  ${jsonPath}.${k} = ${short(shown ?? 'undefined', 400)}`)
+            }
+          } else console.log(`  ${jsonPath}: ${short(JSON.stringify(node) ?? 'немає', 300)}`)
+        }
+        const arrays = jsonProductArrays(json)
         console.log(`JSON ${$(el).attr('id') ?? $(el).attr('type')}: масивів товарів ${arrays.length}`)
         arrays.forEach((a) => console.log(`  ${a}`))
       } catch {
@@ -285,7 +296,7 @@ async function main() {
     const selectors = selectArg ? selectArg.slice(9).split(';;').map((s) => s.trim()).filter(Boolean) : []
     const fetcher = new PoliteFetcher({ shop: 'probe', userAgent: UA, minDelayMs: 2000, jitterMs: 800, retries: 1 })
     console.log(`Глибока розвідка (${urls.length} адрес)\nUser-Agent: ${UA}`)
-    await deep(fetcher, urls, selectors)
+    await deep(fetcher, urls, selectors, process.argv.find((a) => a.startsWith('--json-path='))?.slice(12) || undefined)
     return
   }
   const target = process.argv.slice(2).find((a) => !a.startsWith('--'))
