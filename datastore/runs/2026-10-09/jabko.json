@@ -1,16 +1,16 @@
 {
   "shop": "jabko",
   "date": "2026-10-09",
-  "startedAt": "2026-10-09T06:00:08.081Z",
-  "finishedAt": "2026-10-09T06:04:25.171Z",
+  "startedAt": "2026-10-09T12:04:18.643Z",
+  "finishedAt": "2026-10-09T12:08:55.954Z",
   "status": "completed",
-  "found": 2651,
-  "saved": 2651,
-  "skipped": 1216,
+  "found": 2762,
+  "saved": 2762,
+  "skipped": 1297,
   "skippedByReason": {
     "missing_data": 100,
-    "not_new": 301,
-    "sold_out": 815
+    "not_new": 388,
+    "sold_out": 809
   },
   "errors": 0,
   "note": null,

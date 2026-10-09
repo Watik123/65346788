@@ -1,14 +1,14 @@
 {
   "shop": "ttt",
   "date": "2026-10-09",
-  "startedAt": "2026-10-09T06:05:33.605Z",
-  "finishedAt": "2026-10-09T06:06:48.583Z",
+  "startedAt": "2026-10-09T12:10:06.381Z",
+  "finishedAt": "2026-10-09T12:11:22.990Z",
   "status": "completed",
-  "found": 844,
-  "saved": 844,
-  "skipped": 140,
+  "found": 812,
+  "saved": 812,
+  "skipped": 148,
   "skippedByReason": {
-    "sold_out": 140
+    "sold_out": 148
   },
   "errors": 0,
   "note": null,

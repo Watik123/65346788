@@ -1,14 +1,15 @@
 {
   "shop": "ktc",
   "date": "2026-10-09",
-  "startedAt": "2026-10-09T02:17:20.075Z",
-  "finishedAt": "2026-10-09T02:19:11.066Z",
+  "startedAt": "2026-10-09T11:56:24.070Z",
+  "finishedAt": "2026-10-09T11:58:00.680Z",
   "status": "completed",
-  "found": 1539,
-  "saved": 1539,
-  "skipped": 1280,
+  "found": 1511,
+  "saved": 1511,
+  "skipped": 1109,
   "skippedByReason": {
-    "no_price": 1280
+    "sold_out": 975,
+    "not_new": 134
   },
   "errors": 0,
   "note": null,
