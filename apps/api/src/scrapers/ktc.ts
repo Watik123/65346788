@@ -59,7 +59,8 @@ function itemToOutcome(item: Json, ref: ListingRef): ParseOutcome {
   const offer = asArray(item['offers']).filter(isObj)[0]
   if (!offer) return { kind: 'skip', reason: 'no_price' }
   const price = parsePrice(offer['price'])
-  if (price === null) return { kind: 'skip', reason: 'no_price' }
+  // «Товар продано»: архівна модель без ціни й без наявності, KTC тримає її в кінці каталогу
+  if (price === null) return { kind: 'skip', reason: parseAvailability(offer['availability']) === 'out_of_stock' ? 'sold_out' : 'no_price' }
   const currency = str(offer['priceCurrency']) ?? 'UAH'
   if (currency.toUpperCase() !== 'UAH') return { kind: 'skip', reason: 'wrong_currency', detail: currency }
 
@@ -117,10 +118,14 @@ export function parseKtcListing(html: string, ref: ListingRef): ListingParse {
     }
   })
 
+  // Продані товари KTC показує після всіх, що продаються. Якщо на сторінці лишились тільки
+  // вони, далі в цій категорії нічого з ціною немає: не робимо зайвих запитів до сайту.
+  const onlySold = outcomes.length > 0 && outcomes.every((o) => o.kind === 'skip' && o.reason === 'sold_out')
+
   // Наступна сторінка: лише в межах тієї самої категорії, щоб не забрести в інший розділ
   const nextHref = $('link[rel="next"]').attr('href') ?? $('a[rel="next"]').attr('href')
   let nextUrl: string | null = null
-  if (nextHref && outcomes.length > 0) {
+  if (nextHref && outcomes.length > 0 && !onlySold) {
     try {
       const next = new URL(nextHref, ref.url)
       const current = new URL(ref.url)

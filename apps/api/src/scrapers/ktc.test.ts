@@ -60,6 +60,23 @@ describe('parseKtcListing', () => {
     expect(parseKtcListing('<html></html>', ref)).toEqual({ outcomes: [], nextUrl: null })
   })
 
+  it('проданий товар без ціни пропускається як «продано»; сторінка з самих проданих зупиняє обхід', () => {
+    const sold = (sku: string) => ({ '@type': 'ListItem', item: { '@type': 'Product', name: `Ноутбук ASUS ${sku}`, url: `https://ktc.ua/goods/${sku}.html`, brand: { name: 'ASUS' }, sku, offers: { '@type': 'Offer', availability: 'https://schema.org/OutOfStock' } } })
+    const page = (items: unknown[]) => `<link rel="next" href="/smartphone/?page=9"><script type="application/ld+json">${JSON.stringify({ '@type': 'ItemList', itemListElement: items })}</script>`
+
+    const allSold = parseKtcListing(page([sold('1'), sold('2')]), ref)
+    expect(allSold.outcomes).toEqual([
+      { kind: 'skip', reason: 'sold_out' },
+      { kind: 'skip', reason: 'sold_out' },
+    ])
+    expect(allSold.nextUrl).toBeNull()
+
+    // Змішана сторінка: є товари з ціною, тож ідемо далі
+    const mixed = JSON.parse(fixture.match(/<script type="application\/ld\+json">(\{"@context": "https:\/\/schema.org", "@type": "ItemList"[\s\S]*?)<\/script>/)?.[1] ?? '{}')
+    const mixedPage = page([...mixed.itemListElement, sold('3')])
+    expect(parseKtcListing(mixedPage, ref).nextUrl).toBe('https://ktc.ua/smartphone/?page=9')
+  })
+
   it('порожня сторінка списку не веде далі, навіть якщо є rel=next', () => {
     expect(parseKtcListing('<link rel="next" href="/smartphone/?page=99">', ref).nextUrl).toBeNull()
   })

@@ -42,7 +42,7 @@ export interface ParsedProduct {
   raw: unknown
 }
 
-export type SkipReason = 'third_party_seller' | 'not_a_product' | 'wrong_currency' | 'no_price' | 'missing_data'
+export type SkipReason = 'third_party_seller' | 'not_a_product' | 'wrong_currency' | 'no_price' | 'sold_out' | 'missing_data'
 
 export type ParseOutcome = { kind: 'product'; product: ParsedProduct } | { kind: 'skip'; reason: SkipReason; detail?: string }
 
