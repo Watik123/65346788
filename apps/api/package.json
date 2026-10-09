@@ -9,6 +9,7 @@
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev && prisma generate",
+    "db:init": "prisma migrate deploy",
     "db:setup": "prisma migrate deploy && npm run db:seed",
     "db:seed": "tsx prisma/seed/index.ts",
     "db:reset": "prisma migrate reset --force --skip-seed --skip-generate && prisma generate && npm run db:seed",
@@ -17,6 +18,7 @@
     "snapshot:export": "tsx src/cli/export-snapshot.ts",
     "scrape": "tsx src/cli/scrape.ts",
     "probe": "tsx src/cli/probe.ts",
+    "data:import": "tsx src/cli/data-import.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },

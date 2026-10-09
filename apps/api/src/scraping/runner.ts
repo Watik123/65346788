@@ -26,6 +26,8 @@ export interface RunSummary {
   skippedByReason: Record<string, number>
   errors: number
   note: string | null
+  /** Перші помилки запуску (для звіту, коли бази немає) */
+  errorList: { kind: string; url: string | null; message: string }[]
   /** Лише для dryRun */
   products: ParsedProduct[]
 }
@@ -41,7 +43,7 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
   const maxFailures = opts.maxConsecutiveFailures ?? 8
   const dryRun = opts.dryRun === true
 
-  const summary: RunSummary = { runId: null, status: 'completed', found: 0, saved: 0, skipped: 0, skippedByReason: {}, errors: 0, note: null, products: [] }
+  const summary: RunSummary = { runId: null, status: 'completed', found: 0, saved: 0, skipped: 0, skippedByReason: {}, errors: 0, note: null, errorList: [], products: [] }
   const skip = (reason: string) => {
     summary.skipped++
     summary.skippedByReason[reason] = (summary.skippedByReason[reason] ?? 0) + 1
@@ -62,6 +64,7 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
 
   const recordError = async (kind: string, message: string, url?: string) => {
     summary.errors++
+    if (summary.errorList.length < 200) summary.errorList.push({ kind, url: url ?? null, message })
     log.error(`${kind}: ${message}${url ? ` (${url})` : ''}`)
     if (!dryRun && summary.runId !== null) await prisma.scrapeError.create({ data: { runId: summary.runId, kind, message, url: url ?? null } })
   }

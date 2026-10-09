@@ -23,6 +23,7 @@
     "deals:recompute": "npm run deals:recompute -w @znyzhky/api",
     "scrape": "npm run scrape -w @znyzhky/api --",
     "probe": "npm run probe -w @znyzhky/api --",
+    "data:import": "npm run data:import -w @znyzhky/api --",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "build": "npm run build -w @znyzhky/web",

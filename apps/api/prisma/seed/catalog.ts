@@ -22,22 +22,8 @@ export const SHOPS: SeedShopDef[] = [
   { slug: 'zeta', name: 'Магазин Зета', baseUrl: 'https://example.com/zeta', rating: 4.5, priceFactor: 0.985 },
 ]
 
-export interface SeedCategoryDef {
-  slug: string
-  name: string
-  parent?: string
-}
-
-export const CATEGORIES: SeedCategoryDef[] = [
-  { slug: 'elektronika', name: 'Електроніка' },
-  { slug: 'pobutova-tekhnika', name: 'Побутова техніка' },
-  { slug: 'televizory', name: 'Телевізори', parent: 'elektronika' },
-  { slug: 'noutbuky', name: 'Ноутбуки', parent: 'elektronika' },
-  { slug: 'smartfony', name: 'Смартфони', parent: 'elektronika' },
-  { slug: 'pralni-mashyny', name: 'Пральні машини', parent: 'pobutova-tekhnika' },
-  { slug: 'kholodylnyky', name: 'Холодильники', parent: 'pobutova-tekhnika' },
-  { slug: 'pylososy', name: 'Пилососи', parent: 'pobutova-tekhnika' },
-]
+export { CATEGORIES } from '../../src/catalog/categories'
+export type { CategoryDef as SeedCategoryDef } from '../../src/catalog/categories'
 
 /**
  * Сценарій цінової історії. Саме він задає, що має знайти модуль скору:

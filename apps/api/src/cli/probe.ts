@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio'
+import type { AnyNode } from 'domhandler'
 import { PoliteFetcher } from '../scraping/fetcher'
 import { parseRobots } from '../scraping/robots'
 import { extractJsonLdProducts, extractMetaProduct } from '../scraping/schema-org'
@@ -72,7 +73,103 @@ function oldPriceHints(html: string): string[] {
   return hints
 }
 
+/** Предки елемента з класами: «div.product-price > span.price» */
+function ancestry($: cheerio.CheerioAPI, el: AnyNode | undefined, depth = 4): string {
+  const chain: string[] = []
+  let cur = el ? $(el) : null
+  for (let i = 0; cur && cur.length && i < depth; i++) {
+    const node = cur.get(0) as { tagName?: string } | undefined
+    const cls = (cur.attr('class') ?? '').trim().split(/\s+/).slice(0, 3).join('.')
+    const id = cur.attr('id')
+    chain.unshift(`${node?.tagName ?? '?'}${id ? `#${id}` : ''}${cls ? `.${cls}` : ''}`)
+    cur = cur.parent()
+  }
+  return chain.join(' > ')
+}
+
+function collapse(html: string, n: number): string {
+  return short(html.replace(/<(script|style|svg)[\s\S]*?<\/\1>/gi, '').replace(/\s+/g, ' '), n)
+}
+
+async function deep(fetcher: PoliteFetcher, urls: string[]) {
+  for (const url of urls) {
+    const res = await fetcher.get(url)
+    const $ = cheerio.load(res.body)
+    console.log(`\n######## ${url}\nHTTP ${res.status}, розмір ${res.body.length}`)
+
+    // Усі блоки ld+json: типи та для товару повні offers
+    $('script[type="application/ld+json"]').each((i, el) => {
+      try {
+        const v = JSON.parse($(el).text())
+        const types = ([] as unknown[]).concat(v['@type'] ?? (v['@graph'] ? 'graph' : '?'))
+        console.log(`ld+json #${i}: ${types.join(',')}`)
+        if (types.includes('Product')) {
+          console.log(`  offers: ${short(JSON.stringify(v.offers), 900)}`)
+          const props = ([] as Array<Record<string, unknown>>).concat(v.additionalProperty ?? [])
+          console.log(`  additionalProperty (${props.length}): ${short(props.slice(0, 40).map((p) => `${p['name']}=${short(String(p['value'] ?? ''), 30)}`).join(' | '), 900)}`)
+          for (const k of ['gtin', 'gtin13', 'gtin8', 'productID', 'model', 'category', 'color']) if (v[k]) console.log(`  ${k}: ${short(JSON.stringify(v[k]), 120)}`)
+        }
+        if (types.includes('BreadcrumbList')) {
+          for (const it of ([] as Array<Record<string, unknown>>).concat(v.itemListElement ?? [])) {
+            const item = it['item'] as Record<string, unknown> | string | undefined
+            console.log(`  крихта: ${it['position']} ${it['name'] ?? (typeof item === 'object' ? item?.['name'] : '')} → ${typeof item === 'string' ? item : (item?.['@id'] ?? item?.['url'] ?? '')}`)
+          }
+        }
+        if (types.includes('ItemList')) console.log(`  ItemList: ${short(JSON.stringify(v), 500)}`)
+      } catch {
+        console.log(`ld+json #${i}: зламаний`)
+      }
+    })
+
+    // Закреслені ціни: де саме вони стоять
+    $('del, s, [class*="old" i]').slice(0, 8).each((_, el) => {
+      const t = $(el).text().trim()
+      if (/\d/.test(t)) console.log(`закреслене «${short(t, 30)}»: ${ancestry($, el, 6)}`)
+    })
+
+    // Елементи з ціною поточного товару: шукаємо текст ціни з розмітки
+    const ldPrice = extractJsonLdProducts(res.body).products[0]?.price
+    if (ldPrice) {
+      const pretty = ldPrice.toLocaleString('uk-UA').replace(/\u00A0/g, ' ')
+      const hits = $('body *').not('script, style, noscript').filter((_, el) => $(el).children().length === 0 && $(el).text().replace(/[\s\u00A0]/g, '').includes(String(ldPrice))).slice(0, 4)
+      hits.each((_, el) => console.log(`ціна ${pretty}: ${ancestry($, el, 6)} | блок: ${collapse($.html($(el).parent().parent()) ?? '', 400)}`))
+    }
+
+    // Сторінка категорії: картки товарів, ціни в картках, пагінація
+    const goods = [...new Set($('a[href*="/goods/"]').map((_, a) => ($(a).attr('href') ?? '').split('#')[0]).get())]
+    if (goods.length > 3) {
+      console.log(`посилань на товари: ${goods.length}`)
+      const firstCard = $('a[href*="/goods/"]').first()
+      let card = firstCard
+      for (let i = 0; i < 6 && card.length; i++) {
+        if (card.find('a[href*="/goods/"]').length >= 1 && /\d[\d\s\u00A0]{3,}/.test(card.text()) && card.text().length < 2500) break
+        card = card.parent()
+      }
+      console.log(`картка товару: ${ancestry($, card.get(0), 5)}`)
+      console.log(`вміст картки: ${collapse($.html(card) ?? '', 1500)}`)
+      const pag = [...new Set($('a[href]').map((_, a) => $(a).attr('href') ?? '').get().filter((h) => /page|p=\d|\/\d+\/?$|_\d+\/?$/i.test(h) && !h.includes('/goods/')))].slice(0, 10)
+      console.log(`пагінація (кандидати): ${pag.join('  ') || '—'}`)
+      const next = $('link[rel="next"], a[rel="next"]').attr('href')
+      console.log(`rel=next: ${next ?? '—'}`)
+      const navTexts = $('a').filter((_, a) => /^\s*[2-9]\s*$/.test($(a).text())).map((_, a) => `${$(a).text().trim()}→${$(a).attr('href')}`).get().slice(0, 6)
+      console.log(`посилання з цифрами: ${navTexts.join('  ') || '—'}`)
+    }
+
+    // Посилання на підкатегорії з ключовими словами
+    const sub = $('a[href]').filter((_, a) => /пральн|холодильн|пилосос|телевіз|ноутбук|смартфон/i.test($(a).text())).map((_, a) => `${short($(a).text().trim(), 30)} → ${$(a).attr('href')}`).get()
+    if (sub.length) console.log(`підкатегорії: ${[...new Set(sub)].slice(0, 15).join('  |  ')}`)
+  }
+}
+
 async function main() {
+  const deepArg = process.argv.find((a) => a.startsWith('--deep='))
+  if (deepArg) {
+    const urls = deepArg.slice(7).split(',').map((u) => u.trim()).filter(Boolean).slice(0, 10)
+    const fetcher = new PoliteFetcher({ shop: 'probe', userAgent: UA, minDelayMs: 2000, jitterMs: 800, retries: 1 })
+    console.log(`Глибока розвідка (${urls.length} адрес)\nUser-Agent: ${UA}`)
+    await deep(fetcher, urls)
+    return
+  }
   const target = process.argv.slice(2).find((a) => !a.startsWith('--'))
   const pagesArg = process.argv.find((a) => a.startsWith('--pages='))
   const maxPages = Math.min(Number(pagesArg?.slice(8) ?? 6) || 6, 12)
