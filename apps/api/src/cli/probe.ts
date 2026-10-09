@@ -171,6 +171,18 @@ async function deep(fetcher: PoliteFetcher, urls: string[]) {
 }
 
 async function main() {
+  const sites = process.argv.find((a) => a.startsWith('--sites='))
+  if (sites) {
+    for (const site of sites.slice(8).split(',').map((x) => x.trim()).filter(Boolean)) {
+      console.log(`\n\n==================== ${site} ====================`)
+      try {
+        await probeSite(site, 3)
+      } catch (err) {
+        console.log(`Розвідка ${site} не вдалася: ${err instanceof Error ? err.message : String(err)}`)
+      }
+    }
+    return
+  }
   const deepArg = process.argv.find((a) => a.startsWith('--deep='))
   if (deepArg) {
     const urls = deepArg.slice(7).split(',').map((u) => u.trim()).filter(Boolean).slice(0, 10)
@@ -181,17 +193,26 @@ async function main() {
   }
   const target = process.argv.slice(2).find((a) => !a.startsWith('--'))
   const pagesArg = process.argv.find((a) => a.startsWith('--pages='))
-  const maxPages = Math.min(Number(pagesArg?.slice(8) ?? 6) || 6, 12)
   if (!target) {
-    console.log('Запуск: npm run probe -- https://shop.example [--pages=6]')
+    console.log('Запуск: npm run probe -- https://shop.example [--pages=6] | --sites=a,b,c | --deep=url1,url2')
     process.exit(1)
   }
+  await probeSite(target, Math.min(Number(pagesArg?.slice(8) ?? 6) || 6, 12))
+}
+
+async function probeSite(target: string, maxPages: number) {
   const origin = new URL(target).origin
   const fetcher = new PoliteFetcher({ shop: 'probe', userAgent: UA, minDelayMs: 2000, jitterMs: 800, retries: 1 })
   console.log(`Розвідка ${origin}\nUser-Agent: ${UA}\n`)
 
   // 1. robots.txt і карта сайту
-  const robotsRes = await fetcher.get(`${origin}/robots.txt`)
+  let robotsRes
+  try {
+    robotsRes = await fetcher.get(`${origin}/robots.txt`)
+  } catch (err) {
+    console.log(`== robots.txt: ${err instanceof Error ? err.message : String(err)}\nРозвідку припинено.`)
+    return
+  }
   const robots = parseRobots(robotsRes.status === 200 ? robotsRes.body : '', UA)
   console.log(`== robots.txt: HTTP ${robotsRes.status}, Crawl-delay: ${robots.crawlDelaySeconds ?? 'немає'}, Sitemap: ${robots.sitemaps.join(', ') || 'не вказано'}`)
 

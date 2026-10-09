@@ -120,6 +120,8 @@ export class PoliteFetcher implements Fetcher {
     const res = await this.request(`${origin}/robots.txt`, origin, true)
     let rules: RobotsRules
     if (res.status === 200) rules = parseRobots(res.body, this.o.userAgent)
+    // 401/403 на robots.txt: сайт не пускає роботів узагалі, тож нічого не збираємо
+    else if (res.status === 401 || res.status === 403) throw new FetchError('robots', `Сайт відмовив у доступі до robots.txt (HTTP ${res.status}): роботів там не чекають, збір не починаємо`, res.status)
     else if (res.status >= 400 && res.status < 500) rules = ALLOW_ALL // файлу немає: обмежень немає
     else throw new FetchError('robots', `Не вдалося прочитати robots.txt (HTTP ${res.status}), збір зупинено`, res.status)
 

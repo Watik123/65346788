@@ -69,6 +69,12 @@ describe('PoliteFetcher: robots.txt', () => {
     expect((await fetcher.get(`${ORIGIN}/a`)).body).toBe('ok')
   })
 
+  it('якщо robots.txt закритий (403), збір не починається', async () => {
+    const { fetcher, calls } = setup({ [`${ORIGIN}/robots.txt`]: [{ status: 403 }], [`${ORIGIN}/a`]: [{ body: 'ok' }] })
+    await expect(fetcher.get(`${ORIGIN}/a`)).rejects.toMatchObject({ kind: 'robots', status: 403 })
+    expect(pages(calls)).toEqual([])
+  })
+
   it('якщо robots.txt віддає помилку сервера, збір не починається', async () => {
     const { fetcher, calls } = setup({ [`${ORIGIN}/robots.txt`]: [{ status: 503 }], [`${ORIGIN}/a`]: [{ body: 'ok' }] })
     await expect(fetcher.get(`${ORIGIN}/a`)).rejects.toMatchObject({ kind: 'robots' })

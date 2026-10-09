@@ -15,7 +15,7 @@ on:
         options: [collect, probe, deep, dry-run]
         default: collect
       target:
-        description: 'collect і dry-run: slug магазину (ktc); probe: адреса сайту; deep: адреси через кому'
+        description: 'collect і dry-run: slug магазину (ktc); probe: сайти через кому; deep: адреси через кому'
         default: 'ktc'
       max:
         description: 'Скільки товарів максимум (dry-run)'
@@ -101,7 +101,7 @@ jobs:
         if: inputs.mode == 'probe'
         env:
           TARGET: ${{ inputs.target }}
-        run: npm run probe -- "$TARGET" --pages=6
+        run: npm run probe -- "--sites=$TARGET"
 
       - name: Глибока розвідка адрес
         if: inputs.mode == 'deep'
