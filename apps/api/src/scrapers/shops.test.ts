@@ -146,8 +146,8 @@ describe('Цитрус', () => {
     image: `/_next/image/?url=${encodeURIComponent(`https://cdn.citrus.ua/imgcache/size_180/uploads/shop/${o.id}-01.webp`)}&w=256&q=60`,
     isVitrina: o.vitrina ?? false,
   })
-  const page = (products: unknown[], links = '<a href="/smartfony/page_2/">2</a><a href="/smartfony/page_36/">36</a>') =>
-    `<html><body>${links}<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({ props: { pageProps: { data: { products } } } })}</script></body></html>`
+  const page = (products: unknown[], links = '<a href="/smartfony/page_2/">2</a><a href="/smartfony/page_36/">36</a>', counts?: unknown) =>
+    `<html><body>${links}<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({ props: { pageProps: { data: { products, counts } } } })}</script></body></html>`
 
   it('бере товари з вбудованого JSON: ціна, закреслена ціна, оцінка, справжня адреса фото', () => {
     const r = parseCitrusListing(page([item({ id: 752183, name: 'Apple iPhone 16 128GB Black (MYE73)', brand: 'Apple', price: 40499, old: 50999, rating: 4, comments: 6 })]), ref)
@@ -174,6 +174,15 @@ describe('Цитрус', () => {
   it('пропускає вітринні зразки, товари без наявності й без бренду', () => {
     const r = parseCitrusListing(page([item({ id: 1, name: 'A', price: 100, vitrina: true }), item({ id: 2, name: 'B', price: 100, status: 'OUT_OF_STOCK' }), item({ id: 3, name: 'C', price: 100, brand: null })]), ref)
     expect(skipsOf(r)).toEqual(['not_new', 'sold_out', 'missing_data'])
+  })
+
+  it('наступну сторінку бере з вбудованих даних, навіть коли блоку посилань у розмітці немає', () => {
+    const one = [item({ id: 1, name: 'Samsung Galaxy A27', price: 9999 })]
+    const counts = (url: string) => ({ itemCount: 1272, currentPage: 1, nextPage: { url, count: 47 } })
+    expect(parseCitrusListing(page(one, '', counts('/smartfony/page_2/')), ref).nextUrl).toBe('https://citrus.ua/smartfony/page_2/')
+    // Інший розділ або не наступна сторінка: не йдемо
+    expect(parseCitrusListing(page(one, '', counts('/televizory/page_2/')), ref).nextUrl).toBeNull()
+    expect(parseCitrusListing(page(one, '', counts('/smartfony/page_9/')), ref).nextUrl).toBeNull()
   })
 
   it('сторінки: page_2 → page_3, лише якщо на неї є посилання; немає JSON = немає товарів', () => {

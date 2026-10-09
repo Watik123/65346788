@@ -10,7 +10,8 @@ import { extractModelCode } from './model-code'
  *    props.pageProps.data.products): код, назва, бренд, ціна й закреслена ціна (prices.price/old),
  *    наявність (status.type = CAN_BUY), оцінка й кількість відгуків, ознака вітринного зразка;
  *  - є й розмітка ItemList, але без наявності та закресленої ціни, тому беремо JSON;
- *  - по 47 товарів на сторінку, наступні: /smartfony/page_2/ (без rel=next);
+ *  - по 47 товарів на сторінку, наступні: /smartfony/page_2/ (без rel=next); адресу наступної сайт
+ *    дає у вбудованих даних (counts.nextPage.url), а блок посилань у розмітці буває не завжди;
  *  - вживані товари мають окремі розділи (/b-u-smartfony/ тощо), ми їх не беремо.
  */
 export const BASE = 'https://citrus.ua'
@@ -111,7 +112,19 @@ export function parseCitrusListing(html: string, ref: ListingRef): ListingParse 
     const m = current.pathname.match(/^(.*\/)page_(\d+)\/?$/)
     const basePath = m ? (m[1] as string) : current.pathname.endsWith('/') ? current.pathname : `${current.pathname}/`
     const page = m ? Number(m[2]) : 1
-    nextUrl = linkedPage($, ref.url, `${basePath}page_${page + 1}/`)
+    // Наступна сторінка: сайт сам вказує її у вбудованих даних (counts.nextPage.url); блок посилань
+    // на сторінки в розмітці буває не щоразу. Беремо лише того самого розділу.
+    const fromData = str(at(data, 'props', 'pageProps', 'data', 'counts', 'nextPage', 'url'))
+    let candidate: string | null = null
+    if (fromData) {
+      try {
+        const u = new URL(fromData, ref.url)
+        if (u.origin === current.origin && u.pathname === `${basePath}page_${page + 1}/`) candidate = u.toString()
+      } catch {
+        candidate = null
+      }
+    }
+    nextUrl = candidate ?? linkedPage($, ref.url, `${basePath}page_${page + 1}/`)
   }
   return { outcomes, nextUrl }
 }
