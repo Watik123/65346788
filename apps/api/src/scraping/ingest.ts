@@ -29,6 +29,12 @@ export interface IngestOptions {
   decisions?: MatchDecisions
   /** Товари-кандидати в пам'яті, спільні для всього імпорту чи збору; без нього читаються з бази щоразу */
   candidates?: CandidateIndex
+  /**
+   * false — писати без транзакції. Для пакетного імпорту в чисту базу: адаптер libsql відкриває
+   * на кожну транзакцію новий дескриптор файла бази й не закриває його, і на 20+ тис. записів
+   * процес упирається в ліміт відкритих файлів (EMFILE).
+   */
+  transactional?: boolean
 }
 
 const NO_DECISIONS = new MatchDecisions()
@@ -65,7 +71,9 @@ export async function ingestProduct(
   const categoryId = categoryIds.get(p.categorySlug)
   if (categoryId === undefined) throw new IngestError('ingest', `Невідома категорія "${p.categorySlug}"`)
 
-  const { result, fields } = await prisma.$transaction(async (tx) => {
+  type Tx = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0]
+  const run = <T>(fn: (tx: Tx) => Promise<T>): Promise<T> => (opts.transactional === false ? fn(prisma as Tx) : prisma.$transaction(fn))
+  const { result, fields } = await run(async (tx) => {
     let offer = await tx.offer.findFirst({ where: { shopId, externalId: p.externalId } })
 
     if (offer && (p.price < offer.price / MAX_PRICE_JUMP || p.price > offer.price * MAX_PRICE_JUMP)) {

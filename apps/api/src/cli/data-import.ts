@@ -57,7 +57,7 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
         continue
       }
       try {
-        await ingestProduct(prisma, shopId, fromRecord(r), day, categoryIds, { now: day, shopSlug: f.shop, decisions, candidates })
+        await ingestProduct(prisma, shopId, fromRecord(r), day, categoryIds, { now: day, shopSlug: f.shop, decisions, candidates, transactional: false })
         summary.saved++
       } catch (err) {
         if (summary.errors.length < 200) {
