@@ -1,11 +1,14 @@
 # Збір цін на серверах GitHub (у контейнері розробки доступу до сайтів магазинів немає).
-#  - щодня о 05:17 UTC (08:17 за Києвом) збирає ціни всіх магазинів і зберігає їх у datastore/;
+#  - щодня збирає ціни всіх магазинів і зберігає їх у datastore/; запуск за розкладом двічі
+#    (04:17 і 08:17 за Києвом), бо GitHub часом запізнюється з ним на години; другий запуск
+#    нічого не збирає, якщо ціни дня вже є (позначка datastore/prices/<дата>/.complete);
 #  - вручну (вкладка Actions → «Збір цін» → Run workflow): збір, розвідка сайту або пробний збір.
 # Щоб зупинити щоденний збір: вкладка Actions → «Збір цін» → «…» → Disable workflow.
 name: Збір цін
 
 on:
   schedule:
+    - cron: '17 1 * * *'
     - cron: '17 5 * * *'
   workflow_dispatch:
     inputs:
@@ -52,10 +55,22 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Чи вже зібрано сьогодні
+        id: today
+        run: |
+          # Дивимось у свіжу гілку, а не лише в знімок на момент створення запуску
+          git fetch -q --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "${{ github.event_name }}" = "schedule" ] && git cat-file -e "FETCH_HEAD:datastore/prices/$(date -u +%F)/.complete" 2>/dev/null; then
+            echo "skip=1" >> "$GITHUB_OUTPUT"
+            echo "Ціни за $(date -u +%F) вже зібрано, повторно не збираємо"
+          fi
+
       - run: npm ci
+        if: steps.today.outputs.skip != '1'
 
       - name: Збір цін
         id: scrape
+        if: steps.today.outputs.skip != '1'
         env:
           # Щодня: усі магазини по черзі; вручну можна вказати один чи кілька через кому
           SHOPS: ${{ github.event_name == 'schedule' && 'all' || inputs.target }}
@@ -63,13 +78,21 @@ jobs:
           set +e
           npm run scrape -- "$SHOPS" --fresh --store="$GITHUB_WORKSPACE/datastore"
           echo "code=$?" >> "$GITHUB_OUTPUT"
+          # Повний збір дня зроблено (навіть якщо котрийсь магазин не відповів): пізніші запуски
+          # за розкладом не навантажують магазини вдруге
+          if [ "$SHOPS" = "all" ]; then
+            mkdir -p "datastore/prices/$(date -u +%F)"
+            date -u +%FT%TZ > "datastore/prices/$(date -u +%F)/.complete"
+          fi
 
       # Спершу зберегти зібране: якщо далі щось зламається, дані дня не пропадуть
       - name: Зберегти дані в репозиторій
+        if: steps.today.outputs.skip != '1'
         run: scripts/save-datastore.sh "Дані цін за $(date -u +%F)"
 
       - name: Статистика
         id: stats
+        if: steps.today.outputs.skip != '1'
         continue-on-error: true
         timeout-minutes: 30
         env:
@@ -85,13 +108,13 @@ jobs:
         run: scripts/save-datastore.sh "Статистика цін за $(date -u +%F)"
 
       - name: Статистика не порахувалась
-        if: steps.stats.outcome != 'success'
+        if: steps.today.outputs.skip != '1' && steps.stats.outcome != 'success'
         run: |
           echo "Дані збережено, але статистика не порахувалась; подробиці в кроці «Статистика»"
           exit 1
 
       - name: Збір завершився з помилкою
-        if: steps.scrape.outputs.code != '0'
+        if: steps.today.outputs.skip != '1' && steps.scrape.outputs.code != '0'
         run: |
           echo "Збір завершився з кодом ${{ steps.scrape.outputs.code }}; подробиці в кроці «Збір цін» і в datastore/runs/"
           exit 1
