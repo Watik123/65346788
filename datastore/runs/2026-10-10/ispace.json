@@ -1,0 +1,16 @@
+{
+  "shop": "ispace",
+  "date": "2026-10-10",
+  "startedAt": "2026-10-10T06:48:45.996Z",
+  "finishedAt": "2026-10-10T06:49:06.607Z",
+  "status": "completed",
+  "found": 81,
+  "saved": 81,
+  "skipped": 73,
+  "skippedByReason": {
+    "sold_out": 73
+  },
+  "errors": 0,
+  "note": null,
+  "errorList": []
+}
