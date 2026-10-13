@@ -1,0 +1,51 @@
+# Сайт на GitHub Pages: збирається зі сховища datastore/ після кожного збору цін і вручну.
+# Потрібно один раз: Settings → Pages → Build and deployment → Source: GitHub Actions
+# (Pages безкоштовні для публічного репозиторію).
+name: Сайт
+
+on:
+  workflow_run:
+    workflows: ['Збір цін']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    # Після успішного запуску «Збору цін» (і пробні запуски теж: сайт просто збереться ще раз)
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # Свіжі дані, а не знімок на момент запуску збору
+          ref: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run site:build
+      - name: Сторінка й дані
+        run: |
+          mkdir -p _site
+          cp apps/web/dist-site/index.html _site/index.html
+          cp -r apps/web/dist-site/data _site/data
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
