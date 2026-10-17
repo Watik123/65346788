@@ -1,0 +1,18 @@
+{
+  "shop": "foxtrot",
+  "date": "2026-10-17",
+  "startedAt": "2026-10-17T05:38:35.171Z",
+  "finishedAt": "2026-10-17T05:40:33.728Z",
+  "status": "completed",
+  "found": 2376,
+  "saved": 2376,
+  "skipped": 290,
+  "skippedByReason": {
+    "missing_data": 1,
+    "not_a_product": 34,
+    "not_new": 255
+  },
+  "errors": 0,
+  "note": null,
+  "errorList": []
+}
