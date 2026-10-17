@@ -1,35 +1,35 @@
-# Статистика цін на 2026-10-16
+# Статистика цін на 2026-10-17
 
-Історія: 8 днів. Пропозицій магазинів сьогодні: **12062**, у наявності: 11999, різних товарів: 6887.
+Історія: 9 днів. Пропозицій магазинів сьогодні: **12275**, у наявності: 12156, різних товарів: 7005.
 
 ## Магазини
 
 | Магазин | Товарів | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Ябко | 2509 | 2509 | 1697 (68%) | −10% |
-| Foxtrot | 2390 | 2390 | 807 (34%) | −15% |
-| Цитрус | 2060 | 2060 | 665 (32%) | −15% |
-| MOYO | 1522 | 1522 | 708 (47%) | −14% |
-| KTC | 1512 | 1449 | 474 (31%) | −14% |
-| Artline | 880 | 880 | 5 (1%) | −8% |
-| TTT | 769 | 769 | 113 (15%) | −11% |
-| Vencon | 339 | 339 | 33 (10%) | −10% |
-| iSpace | 81 | 81 | 21 (26%) | −17% |
+| Ябко | 2559 | 2559 | 1669 (65%) | −10% |
+| Foxtrot | 2376 | 2376 | 808 (34%) | −15% |
+| Цитрус | 2057 | 2057 | 674 (33%) | −15% |
+| MOYO | 1707 | 1707 | 818 (48%) | −14% |
+| KTC | 1505 | 1386 | 459 (30%) | −14% |
+| Artline | 891 | 891 | 42 (5%) | −8% |
+| TTT | 767 | 767 | 120 (16%) | −11% |
+| Vencon | 334 | 334 | 35 (10%) | −11% |
+| iSpace | 79 | 79 | 21 (27%) | −17% |
 
 ## Категорії
 
 | Категорія | Пропозицій | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Ноутбуки | 5635 | 5601 | 1773 (31%) | −9% |
-| Смартфони | 2268 | 2239 | 843 (37%) | −10% |
-| Пилососи | 1806 | 1806 | 946 (52%) | −23% |
-| Телевізори | 1296 | 1296 | 739 (57%) | −12% |
-| Холодильники | 649 | 649 | 92 (14%) | −7% |
-| Пральні машини | 408 | 408 | 130 (32%) | −8% |
+| Ноутбуки | 5660 | 5618 | 1772 (31%) | −9% |
+| Смартфони | 2309 | 2282 | 921 (40%) | −10% |
+| Пилососи | 1830 | 1783 | 972 (53%) | −23% |
+| Телевізори | 1282 | 1279 | 718 (56%) | −12% |
+| Холодильники | 714 | 714 | 108 (15%) | −7% |
+| Пральні машини | 480 | 480 | 155 (32%) | −8% |
 
 ## Знижки, які показує магазин
 
-Закреслена ціна є в **4523** з 12062 пропозицій (37%). Медіанна заявлена знижка: −8%.
+Закреслена ціна є в **4646** з 12275 пропозицій (38%). Медіанна заявлена знижка: −8%.
 
 Найбільші заявлені знижки (перевіримо їх, щойно буде 14 днів історії):
 
@@ -41,14 +41,14 @@
 | [Робот-пилосос AENO RC3S ARC0003S](https://citrus.ua/roboty-uborshhiki/robot-pylesos-aeno-rc3s-704002.html) | Цитрус | 4 999 ₴ | 17 599 ₴ | −72% |
 | [Робот-пилосос AENO RC3S ARC0003S](https://www.moyo.ua/ua/robot-pylosos_aeno_rc3s_arc0003s/794202.html) | MOYO | 4 999 ₴ | 17 599 ₴ | −72% |
 | [Робот-пилосос AENO RC3S](https://www.foxtrot.com.ua/uk/shop/robotiy_piylesosiy_aeno_rc3s.html) | Foxtrot | 4 999 ₴ | 17 599 ₴ | −72% |
-| [Робот-пилосос DREAME X50 Ultra Complete White](https://jabko.ua/roboti-pilesosi/robot-pylosos-dreame-x50-ultra-complete-white-eu) | Ябко | 43 399 ₴ | 120 649 ₴ | −64% |
 | [Робот-пилосос AENO RC7S (ARC0007S)](https://citrus.ua/roboty-uborshhiki/robot-pylesos-aeno-rc7s-761480.html) | Цитрус | 5 799 ₴ | 15 999 ₴ | −64% |
 | [Робот-пилосос AENO RC7S (ARC0007S)](https://www.moyo.ua/ua/robot-pylosos_myyuchyy_aeno_rc7s_arc0007s/790042.html) | MOYO | 5 799 ₴ | 15 999 ₴ | −64% |
 | [Робот-пилосос AENO RC7S](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-aeno-rc7s.html) | Foxtrot | 5 799 ₴ | 15 999 ₴ | −64% |
+| [Пилосос Roborock H60](https://citrus.ua/ruchnye-pylesosy/pilosos-roborock-h60-794610.html) | Цитрус | 4 999 ₴ | 12 999 ₴ | −62% |
 
 ## Один товар у кількох магазинах
 
-Знайдено в 2+ магазинах: **2182** товарів, у 3+: 1378. Схожих пар, які треба перевірити вручну: 499.
+Знайдено в 2+ магазинах: **2198** товарів, у 3+: 1399. Схожих пар, які треба перевірити вручну: 503.
 
 Найсхожіші пари на перевірку (`npm run match:review`):
 
@@ -70,34 +70,34 @@
 | Товар | Дешевше | Дорожче | Різниця |
 |---|---:|---:|---:|
 | Телевізор TCL 43 43S51K (Standard) | [13 999 ₴](https://ktc.ua/goods/televizor_tcl_43s51k.html) KTC | [568 437 ₴](https://www.foxtrot.com.ua/uk/shop/televizoriy-tcl-43s51k.html) Foxtrot | −98% |
+| Робот-пилосос Electrolux PI92-4ANM | [10 954 ₴](https://www.ttt.ua/ua/shop/product/robot-pylesos-electrolux-pi92-4anm) TTT | [28 199 ₴](https://ktc.ua/goods/robot_pilosos_electrolux_pi92_4anm_shale_grey.html) KTC | −61% |
 | Робот-пилосос ECOVACS DEEBOT T10 White (DBX33) | [5 999 ₴](https://citrus.ua/roboty-uborshhiki/robot-pylesos-ecovacs-deebot-t10-white-dbx33-708351.html) Цитрус | [14 999 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy_piylesosiy_ecovacs_deebot_t10.html) Foxtrot | −60% |
-| Ноутбук ASUS Vivobook 14 X1407QA-LY034W (90NB1601-M00440) | [25 999 ₴](https://www.moyo.ua/ua/noutbuk_asus_vivobook_14_x1407qa-ly034w_90nb1601-m00440_/650165.html) MOYO | [58 571 ₴](https://www.foxtrot.com.ua/uk/shop/noutbuki-asus-vivobook-14-x1407qa-ly034w-90nb1601-m00440.html) Foxtrot | −56% |
 | Робот-пилосос DREAME Bot X40 Ultra Complete White | [41 599 ₴](https://jabko.ua/roboti-pilesosi/robot-pylosos-dreame-bot-x40-ultra-complete-white) Ябко | [89 999 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-bot-x40-ultra-complete-white.html) Foxtrot | −54% |
+| Робот-пилосос миючий Dreame Bot L40 Ultra CE Black | [32 599 ₴](https://citrus.ua/roboty-uborshhiki/robot-pilosos-miyuchiy-dreame-bot-l40-ultra-ce-black-776983.html) Цитрус | [58 399 ₴](https://jabko.ua/product/robot-pylosos-dreame-bot-l40-ultra-ce-black-eu) Ябко | −44% |
 | Телевізор LG 100QNED87B6 | [199 999 ₴](https://citrus.ua/televizory/100qned87b6-lg-795908.html) Цитрус | [349 999 ₴](https://www.moyo.ua/ua/televizor_lg_qned_evo_mini_led_100qned83_100qned87b6/774110.html) MOYO | −43% |
 | Пилосос Electrolux EP83HB25UV | [17 599 ₴](https://jabko.ua/product/akumulyatornyi-pylosos-electrolux-ep83hb25uv-white) Ябко | [29 699 ₴](https://vencon.ua/ua/products/electrolux-ep83hb25uv) Vencon | −41% |
 | Телевізор Samsung 55" Neo QLED 4K QE55QN85FAUXUA MiniLED Vision AI | [39 999 ₴](https://jabko.ua/product/televizor-samsung-55-qe55qn85fauxua-ua) Ябко | [66 999 ₴](https://citrus.ua/televizory/qe55qn85fauxua-samsung-766707.html) Цитрус | −40% |
 | Робот-пилосос DREAME Bot MatriX 10 Ultra Black | [45 299 ₴](https://jabko.ua/product/robot-pylosos-dreame-bot-matrix-10-ultra-black-eu) Ябко | [74 799 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-bot-matrix-10-ultra-black.html) Foxtrot | −39% |
-| Робот-пилосос миючий Dreame Bot L40 Ultra CE Black | [32 599 ₴](https://citrus.ua/roboty-uborshhiki/robot-pilosos-miyuchiy-dreame-bot-l40-ultra-ce-black-776983.html) Цитрус | [53 099 ₴](https://jabko.ua/product/robot-pylosos-dreame-bot-l40-ultra-ce-black-eu) Ябко | −39% |
-| Пилосос акумуляторний Electrolux EP71AB14UG | [9 099 ₴](https://ktc.ua/goods/ruchnij_bezdrotovij_pilosos_electrolux_700_cordless_cleaner__ep71ab14ug.html) KTC | [14 799 ₴](https://www.ttt.ua/ua/shop/product/pylesos-electrolux-ep71ab14ug) TTT | −39% |
+| Пилосос акумуляторний Electrolux EP71B14WET | [10 255 ₴](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-electrolux-ep71b14wet) TTT | [16 799 ₴](https://citrus.ua/ruchnye-pylesosy/pylesos-akkumulyatornyy-electrolux-ep71b14wet-753128.html) Цитрус | −39% |
 
 ## Зміни за добу
 
-Подешевшало: **1399**, подорожчало: **125**, без змін: 10538.
+Подешевшало: **1680**, подорожчало: **113**, без змін: 10482.
 
 | Товар | Було | Стало | Зміна |
 |---|---:|---:|---:|
-| [Пилосос акумуляторний NARWAL V50 Grey (YJHV001)](https://www.foxtrot.com.ua/uk/shop/piylesosiy-narwal-v50-grey-yjhv001.html) | 24 375 ₴ | 15 599 ₴ | −36,0% |
-| [Робот-пилосос NARWAL Freo S White (YJCC032)](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-narwal-freo-s-white-yjcc032.html) | 19 500 ₴ | 12 999 ₴ | −33,3% |
-| [Ноутбук ASUS V16 V3607VH-TK124 Matte Black (90NB16L1-M00AD0)](https://www.foxtrot.com.ua/uk/shop/noutbuki-asus-v3607vh-tk124.html) | 86 999 ₴ | 59 999 ₴ | −31,0% |
-| [Ноутбук Asus ROG Strix G16 G614FM 16,1\](https://jabko.ua/product/notubuk-asus-rog-strix-g16-g614fm-161-amd-ryzen-916gb1tb-ssdrtx-5060-g614fm-ws94-standard) | 113 999 ₴ | 86 899 ₴ | −23,8% |
-| [Робот-пилосос Mova Z60 Ultra Roller Complete (Black)](https://jabko.ua/product/robot-pylosos-mova-z60-ultra-roller-complete-black) | 42 099 ₴ | 32 399 ₴ | −23,0% |
-| [Ноутбук HP Omen Transcend 14-fb1043dx 14\](https://jabko.ua/product/noutbuk-hp-omen-transcend-14-fb1043dx-14-intel-core-ultra-716gb1tbrtx-5060-d8km3ua) | 97 799 ₴ | 77 399 ₴ | −20,9% |
-| [Ноутбук ASUS Vivobook Go 15 E1504FA-BQ2835 Cool Silver (90NB0ZR1-M04KB0)](https://www.foxtrot.com.ua/uk/shop/noutbuki-asus-e1504fa-bq2835.html) | 47 999 ₴ | 37 999 ₴ | −20,8% |
-| [Ноутбук ASUS Vivobook S16 M3607HA-SH231 Matte Gray (90NB16F1-M00JJ0)](https://www.foxtrot.com.ua/uk/shop/noutbuki-asus-m3607ha-sh231.html) | 52 999 ₴ | 41 999 ₴ | −20,8% |
-| [Робот-пилосос NARWAL Flow 2 Compact Dock Black (YJCC036)](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-narwal-flow-2-compact-dock-black-yjcc036.html) | 87 750 ₴ | 69 999 ₴ | −20,2% |
-| [Ноутбук ASUS V16 V3607VP-TK083 (90NB16R1-M005C0)](https://www.moyo.ua/ua/noutbuk_asus_v16_v3607vp-tk083_90nb16r1-m005c0/790963.html) | 103 599 ₴ | 82 999 ₴ | −19,9% |
+| [Робот-пилосос Electrolux PI92-4ANM](https://www.ttt.ua/ua/shop/product/robot-pylesos-electrolux-pi92-4anm) | 28 199 ₴ | 10 954 ₴ | −61,2% |
+| [Пилосос акумуляторний Electrolux EP71B14WET](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-electrolux-ep71b14wet) | 16 799 ₴ | 10 255 ₴ | −39,0% |
+| [Пилосос Electrolux EP83HB25UV](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-electrolux-ep83hb25uv) | 29 699 ₴ | 19 472 ₴ | −34,4% |
+| [Пилосос акумуляторний Electrolux EP71AB14UG](https://www.ttt.ua/ua/shop/product/pylesos-electrolux-ep71ab14ug) | 14 799 ₴ | 9 918 ₴ | −33,0% |
+| [Пилосос акумуляторний Electrolux EP71UB14DB](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-electrolux-ep71ub14db) | 14 099 ₴ | 9 707 ₴ | −31,2% |
+| [Робот-пилосос Philips серії 5000 XU5100/10](https://www.moyo.ua/ua/robot-pylesos_philips_series_5000_h_29_2sm_vlazhnaya_uborka_kont_pyl_-0_26l_voda_-0_27l_avton_rab_do_200min_epa_1/659992.html) | 32 999 ₴ | 24 999 ₴ | −24,2% |
+| [Телевізор Dreame Aura Mini LED 4K TV 55S100](https://ktc.ua/goods/televizor_miniled_dreame_aura_55s100_smart_tv_wi_fi_3840x2160.html) | 42 299 ₴ | 32 130 ₴ | −24,0% |
+| [Пилосос для сухого прибирання Gorenje MVC72HGA](https://www.ttt.ua/ua/shop/product/ruchnii-pilosos-gorenje-mvc72hga) | 1 299 ₴ | 990 ₴ | −23,8% |
+| [Пилосос акумуляторний Electrolux EP71B14WET](https://ktc.ua/goods/ruchnij_bezdrotovij_pilosos_electrolux_ep71b14wet_700_cordless_cleaner.html) | 16 799 ₴ | 12 999 ₴ | −22,6% |
+| [Пилосос ROWENTA RY8561WH](https://www.foxtrot.com.ua/uk/shop/pylesosy_rowenta_ry8561wh.html) | 10 999 ₴ | 8 799 ₴ | −20,0% |
 
 ## Справжні й фальшиві знижки
 
-Для висновків потрібно щонайменше 14 днів історії, зараз 8 днів. До того всі товари мають статус «замало даних».
+Для висновків потрібно щонайменше 14 днів історії, зараз 9 днів. До того всі товари мають статус «замало даних».
 
