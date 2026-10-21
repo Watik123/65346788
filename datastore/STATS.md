@@ -1,35 +1,35 @@
-# Статистика цін на 2026-10-20
+# Статистика цін на 2026-10-21
 
-Історія: 12 днів. Пропозицій магазинів сьогодні: **11275**, у наявності: 11213, різних товарів: 6097.
+Історія: 13 днів. Пропозицій магазинів сьогодні: **11854**, у наявності: 11789, різних товарів: 6734.
 
 ## Магазини
 
 | Магазин | Товарів | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Foxtrot | 2269 | 2269 | 797 (35%) | −15% |
-| Цитрус | 2050 | 2050 | 667 (33%) | −15% |
-| Ябко | 1847 | 1847 | 401 (22%) | −13% |
-| MOYO | 1558 | 1558 | 738 (47%) | −14% |
-| KTC | 1505 | 1443 | 424 (28%) | −15% |
-| Artline | 859 | 859 | 41 (5%) | −8% |
-| TTT | 770 | 770 | 116 (15%) | −11% |
-| Vencon | 330 | 330 | 32 (10%) | −10% |
-| iSpace | 87 | 87 | 16 (18%) | −13% |
+| Ябко | 2371 | 2371 | 347 (15%) | −13% |
+| Foxtrot | 2324 | 2324 | 790 (34%) | −15% |
+| Цитрус | 2063 | 2063 | 691 (33%) | −15% |
+| MOYO | 1574 | 1574 | 719 (46%) | −14% |
+| KTC | 1484 | 1419 | 421 (28%) | −15% |
+| Artline | 857 | 857 | 37 (4%) | −8% |
+| TTT | 757 | 757 | 115 (15%) | −11% |
+| Vencon | 331 | 331 | 32 (10%) | −10% |
+| iSpace | 93 | 93 | 16 (17%) | −13% |
 
 ## Категорії
 
 | Категорія | Пропозицій | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Ноутбуки | 4775 | 4740 | 712 (15%) | −12% |
-| Смартфони | 2354 | 2327 | 658 (28%) | −9% |
-| Пилососи | 1721 | 1721 | 871 (51%) | −24% |
-| Телевізори | 1363 | 1363 | 757 (56%) | −12% |
-| Холодильники | 621 | 621 | 89 (14%) | −7% |
-| Пральні машини | 441 | 441 | 145 (33%) | −8% |
+| Ноутбуки | 5418 | 5380 | 672 (12%) | −12% |
+| Смартфони | 2330 | 2303 | 677 (29%) | −9% |
+| Пилососи | 1727 | 1727 | 880 (51%) | −24% |
+| Телевізори | 1294 | 1294 | 700 (54%) | −12% |
+| Холодильники | 640 | 640 | 99 (15%) | −7% |
+| Пральні машини | 445 | 445 | 140 (31%) | −8% |
 
 ## Знижки, які показує магазин
 
-Закреслена ціна є в **3232** з 11275 пропозицій (29%). Медіанна заявлена знижка: −10%.
+Закреслена ціна є в **3168** з 11854 пропозицій (27%). Медіанна заявлена знижка: −10%.
 
 Найбільші заявлені знижки (перевіримо їх, щойно буде 14 днів історії):
 
@@ -48,7 +48,7 @@
 
 ## Один товар у кількох магазинах
 
-Знайдено в 2+ магазинах: **2185** товарів, у 3+: 1368. Схожих пар, які треба перевірити вручну: 546.
+Знайдено в 2+ магазинах: **2176** товарів, у 3+: 1349. Схожих пар, які треба перевірити вручну: 551.
 
 Найсхожіші пари на перевірку (`npm run match:review`):
 
@@ -69,35 +69,35 @@
 
 | Товар | Дешевше | Дорожче | Різниця |
 |---|---:|---:|---:|
-| Робот-пилосос DREAME Bot X40 Ultra Complete White | [41 599 ₴](https://jabko.ua/roboti-pilesosi/robot-pylosos-dreame-bot-x40-ultra-complete-white) Ябко | [89 999 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-bot-x40-ultra-complete-white.html) Foxtrot | −54% |
+| Робот-пилосос DREAME Bot X40 Ultra Complete White | [41 899 ₴](https://jabko.ua/roboti-pilesosi/robot-pylosos-dreame-bot-x40-ultra-complete-white) Ябко | [89 999 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-bot-x40-ultra-complete-white.html) Foxtrot | −53% |
+| Ноутбук HP 15-fc0269ua (C78SKEA) | [28 199 ₴](https://citrus.ua/noutbuki-i-ultrabuki/hp-15-fc0269ua-c78skea-natural-silver-775405.html) Цитрус | [52 529 ₴](https://artline.ua/uk/product/noutbuk-hp-15-fc0269ua-c78skea) Artline | −46% |
 | Пилосос Electrolux EP83HB25UV | [17 599 ₴](https://jabko.ua/product/akumulyatornyi-pylosos-electrolux-ep83hb25uv-white) Ябко | [29 699 ₴](https://vencon.ua/ua/products/electrolux-ep83hb25uv) Vencon | −41% |
-| Телевізор Samsung 55" Neo QLED 4K QE55QN85FAUXUA MiniLED Vision AI | [39 999 ₴](https://jabko.ua/product/televizor-samsung-55-qe55qn85fauxua-ua) Ябко | [66 999 ₴](https://citrus.ua/televizory/qe55qn85fauxua-samsung-766707.html) Цитрус | −40% |
-| Робот-пилосос DREAME Bot MatriX 10 Ultra Black | [45 299 ₴](https://jabko.ua/product/robot-pylosos-dreame-bot-matrix-10-ultra-black-eu) Ябко | [74 799 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-bot-matrix-10-ultra-black.html) Foxtrot | −39% |
 | Пилосос акумуляторний Electrolux EP71AB14UG | [9 099 ₴](https://ktc.ua/goods/ruchnij_bezdrotovij_pilosos_electrolux_700_cordless_cleaner__ep71ab14ug.html) KTC | [14 799 ₴](https://www.ttt.ua/ua/shop/product/pylesos-electrolux-ep71ab14ug) TTT | −39% |
 | Акумуляторний пилосос PHILIPS XC8057/01 | [23 999 ₴](https://citrus.ua/ruchnye-pylesosy/pylesos-philips-xc805701-731532.html) Цитрус | [38 999 ₴](https://www.foxtrot.com.ua/uk/shop/piylesosiy_philips_xc805701.html) Foxtrot | −38% |
 | Пилосос акумуляторний Electrolux EP71B14WET | [10 499 ₴](https://jabko.ua/product/akumulyatornyi-pylosos-electrolux-ep71b14wet-blue) Ябко | [16 799 ₴](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-electrolux-ep71b14wet) TTT | −38% |
-| Робот-пилосос миючий Dreame Aqua 10 Ultra Track Complete White | [37 999 ₴](https://jabko.ua/product/robot-pylosos-dreame-aqua-10-ultra-track-complete-white-eu) Ябко | [59 799 ₴](https://citrus.ua/roboty-uborshhiki/robot-pilosos-miyuchiy-dreame-aqua-10-ultra-track-complete-white-777007.html) Цитрус | −36% |
-| Ноутбук Lenovo IdeaPad Slim 3 15AMN8 (82XQ01BHRM) | [24 299 ₴](https://jabko.ua/product/noutbuk-lenovo-ideapad-slim-3-15amn8-156-amd-ryzen-58gb512gb-ssdamd-radeon-610m-82xq01bgrm-standard) Ябко | [37 999 ₴](https://artline.ua/uk/product/noutbuk-lenovo-ideapad-slim-3-15amn8-82xq01bhrm) Artline | −36% |
 | Ноутбук ASUS Vivobook 18 M1807GA-S8005 (90NB17Y1-M000B0) | [45 999 ₴](https://artline.ua/uk/product/noutbuk-asus-vivobook-18-m1807ga-s8005-90nb17y1-m000b0) Artline | [69 999 ₴](https://www.ttt.ua/ua/shop/product/noutbuk-asus-vivobook-18-m1807ga-s8005-90nb17y1-m000b0-quiet-blue) TTT | −34% |
+| Робот-пилосос миючий Dreame Aqua 10 Ultra Track Complete White | [37 999 ₴](https://jabko.ua/product/robot-pylosos-dreame-aqua-10-ultra-track-complete-white-eu) Ябко | [57 199 ₴](https://citrus.ua/roboty-uborshhiki/robot-pilosos-miyuchiy-dreame-aqua-10-ultra-track-complete-white-777007.html) Цитрус | −34% |
+| Робот-пилосос Electrolux PI92-4ANM | [18 799 ₴](https://www.foxtrot.com.ua/uk/shop/roboti_pilesosi_electrolux_pi92-4anm.html) Foxtrot | [28 199 ₴](https://www.ttt.ua/ua/shop/product/robot-pylesos-electrolux-pi92-4anm) TTT | −33% |
+| Телевізор SAMSUNG QE75QN950FUXUA | [199 999 ₴](https://jabko.ua/product/televizor-samsung-75-qe75qn950fuxua) Ябко | [299 999 ₴](https://citrus.ua/televizory/qe75qn950fuxua-samsung-766759.html) Цитрус | −33% |
 
 ## Зміни за добу
 
-Подешевшало: **123**, подорожчало: **344**, без змін: 10808.
+Подешевшало: **283**, подорожчало: **555**, без змін: 11016.
 
 | Товар | Було | Стало | Зміна |
 |---|---:|---:|---:|
-| [Пилосос GRUNHELM GCVC-2001 HB](https://www.foxtrot.com.ua/uk/shop/piylesosiy-grunhelm-gcvc-2001-hb.html) | 2 759 ₴ | 1 999 ₴ | −27,5% |
-| [Телевізор Hisense 65UR9S](https://citrus.ua/televizory/65ur9s-hisense-795367.html) | 129 999 ₴ | 97 999 ₴ | −24,6% |
-| [Телевізор ERGO 40JFQ7500](https://jabko.ua/product/televizor-ergo-40-40jfq7500-ua) | 11 999 ₴ | 9 999 ₴ | −16,7% |
-| [Пилосос Grunhelm GAVC-2207 HR](https://www.foxtrot.com.ua/uk/shop/piylesosiy_grunhelm_gavc_2207_hr.html) | 5 389 ₴ | 4 499 ₴ | −16,5% |
-| [Пилосос аккумуляторний ELECTROLUX (Green, EP61CB21OG)](https://www.foxtrot.com.ua/uk/shop/piylesosiy-electrolux-ep61cb21og.html) | 8 999 ₴ | 7 674 ₴ | −14,7% |
-| [Samsung Galaxy A57 8/128GB (Awesome Navy) (Ultra)](https://jabko.ua/product/samsung-galaxy-a57-8128gb-awesome-navy-ultra) | 21 599 ₴ | 18 699 ₴ | −13,4% |
-| [Samsung Galaxy A57 8/128GB (Awesome Icyblue) (Ultra)](https://jabko.ua/product/samsung-galaxy-a57-8128gb-awesome-icyblue-ultra) | 21 599 ₴ | 18 699 ₴ | −13,4% |
-| [Samsung Galaxy A57 8/128GB (Awesome Gray) (Ultra)](https://jabko.ua/product/samsung-galaxy-a57-8128gb-awesome-gray-ultra) | 21 599 ₴ | 18 699 ₴ | −13,4% |
-| [Телевізор TCL 65 65P61K (Standard)](https://jabko.ua/product/televizor-tcl-65-65p61k-standard) | 33 399 ₴ | 29 199 ₴ | −12,6% |
-| [Телевізор TCL 65 65C89K (Standard)](https://jabko.ua/product/televizor-tcl-65-65c89k-standard) | 80 899 ₴ | 72 299 ₴ | −10,6% |
+| [Пилосос GRUNHELM GVCM244BO](https://www.foxtrot.com.ua/uk/shop/piylesosiy-grunhelm-gvcm244bo.html) | 6 059 ₴ | 3 999 ₴ | −34,0% |
+| [Телевізор Samsung 55" QLED 4K QE55Q8FAAUXUA Vision AI](https://ktc.ua/goods/televizor_qled_samsung_qe55q8faauxua_smart_tv_wi_fi_3840x2160.html) | 37 499 ₴ | 26 999 ₴ | −28,0% |
+| [Ноутбук Asus Vivobook 17 X1704VA-AU989 Cool Silver (90NB13X1-M00HH0)](https://www.ttt.ua/ua/shop/product/noutbuk-asus-vivobook-17-x1704va-au989-90nb13x1-m00hh0-cool-silver) | 61 499 ₴ | 47 999 ₴ | −22,0% |
+| [Робот-пилосос миючий Dreame MatriX 10 Ultra Black](https://citrus.ua/roboty-uborshhiki/robot-pilosos-miyuchiy-dreame-matrix-10-ultra-black-778251.html) | 74 799 ₴ | 59 499 ₴ | −20,5% |
+| [Робот-пилосос DREAME Bot MatriX 10 Ultra Black](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-dreame-bot-matrix-10-ultra-black.html) | 74 799 ₴ | 59 499 ₴ | −20,5% |
+| [Пилосос автомобільний BLACK&DECKER PV1200AV](https://vencon.ua/ua/products/black-decker-pv1200av) | 3 478 ₴ | 2 799 ₴ | −19,5% |
+| [Телевізор Samsung QLED 55Q60D (QE55Q60DAUXUA)](https://www.moyo.ua/ua/televizor_samsung_qled_55q60d_qe55q60dauxua_/581481.html) | 29 999 ₴ | 24 999 ₴ | −16,7% |
+| [Google Pixel 11 Pro Fold 16/256GB (Olive) (Ultra)](https://jabko.ua/product/google-pixel-11-pro-fold-16256gb-olive-ultra) | 102 999 ₴ | 85 999 ₴ | −16,5% |
+| [Телевізор Kivi 32 KidsTV (UA)](https://jabko.ua/product/televizor-kivi-32-kidstv-ua) | 11 099 ₴ | 9 399 ₴ | −15,3% |
+| [Телевізор Kivi 40F9000HB](https://jabko.ua/product/televizor-kivi-40-40f9000hb-ua) | 13 299 ₴ | 11 299 ₴ | −15,0% |
 
 ## Справжні й фальшиві знижки
 
-Для висновків потрібно щонайменше 14 днів історії, зараз 12 днів. До того всі товари мають статус «замало даних».
+Для висновків потрібно щонайменше 14 днів історії, зараз 13 днів. До того всі товари мають статус «замало даних».
 
