@@ -1,0 +1,50 @@
+{
+  "shop": "foxtrot",
+  "date": "2026-10-23",
+  "startedAt": "2026-10-23T06:04:20.003Z",
+  "finishedAt": "2026-10-23T06:04:30.832Z",
+  "status": "completed_with_errors",
+  "found": 0,
+  "saved": 0,
+  "skipped": 0,
+  "skippedByReason": {},
+  "errors": 7,
+  "note": null,
+  "errorList": [
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/led_televizory.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/noutbuki.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/mobilnye_telefony_smartfony.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/stiralki.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/holodilniki.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/pylesosy.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/roboti_pilesosi.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    }
+  ]
+}
