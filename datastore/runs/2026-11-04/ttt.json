@@ -1,0 +1,16 @@
+{
+  "shop": "ttt",
+  "date": "2026-11-04",
+  "startedAt": "2026-11-04T07:45:23.585Z",
+  "finishedAt": "2026-11-04T07:46:48.461Z",
+  "status": "completed",
+  "found": 713,
+  "saved": 713,
+  "skipped": 151,
+  "skippedByReason": {
+    "sold_out": 151
+  },
+  "errors": 0,
+  "note": null,
+  "errorList": []
+}
