@@ -6,7 +6,17 @@ import { marketSeries } from '../scoring'
 import { dayString, latestDataDay, loadShopRefs, parseReasons } from './common'
 
 /** Сторінка товару: знижка з поясненням, пропозиції магазинів, історія цін за HISTORY_DAYS діб. */
-export async function getProductDetail(prisma: PrismaClient, id: number): Promise<ProductDetailResponse | null> {
+export interface ProductDetailContext {
+  shops: Awaited<ReturnType<typeof loadShopRefs>>
+  endDay: Date | null
+}
+
+/** Спільне для всіх товарів: для вивантаження тисяч товарів рахується один раз, а не на кожен */
+export async function productDetailContext(prisma: PrismaClient): Promise<ProductDetailContext> {
+  return { shops: await loadShopRefs(prisma), endDay: await latestDataDay(prisma) }
+}
+
+export async function getProductDetail(prisma: PrismaClient, id: number, ctx?: ProductDetailContext): Promise<ProductDetailResponse | null> {
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
@@ -17,8 +27,7 @@ export async function getProductDetail(prisma: PrismaClient, id: number): Promis
   })
   if (!product) return null
 
-  const shops = await loadShopRefs(prisma)
-  const endDay = await latestDataDay(prisma)
+  const { shops, endDay } = ctx ?? (await productDetailContext(prisma))
   const points = endDay
     ? await prisma.pricePoint.findMany({
         where: {

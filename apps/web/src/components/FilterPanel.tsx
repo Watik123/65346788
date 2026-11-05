@@ -53,7 +53,9 @@ function CategoryRow({ node, depth, selected, onSelect }: { node: CategoryNodeDt
 /** Поле ціни: значення застосовується, коли користувач завершив введення, а не на кожну цифру */
 function PriceInput({ id, label, value, placeholder, onCommit }: { id: string; label: string; value: number | undefined; placeholder: string; onCommit: (v: number | undefined) => void }) {
   const [text, setText] = useState(value === undefined ? '' : String(value))
-  useEffect(() => setText(value === undefined ? '' : String(value)), [value])
+  useEffect(() => {
+    setText(value === undefined ? '' : String(value))
+  }, [value])
 
   const commit = () => {
     const digits = text.replace(/[^\d]/g, '')

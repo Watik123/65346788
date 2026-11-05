@@ -40,7 +40,7 @@ export interface IngestOptions {
 const NO_DECISIONS = new MatchDecisions()
 
 /** Ціна змінилась більш ніж у стільки разів: майже напевно помилка розбору, а не справжня зміна */
-const MAX_PRICE_JUMP = 5
+export const MAX_PRICE_JUMP = 5
 const MAX_RAW_BYTES = 20_000
 
 function rawJson(p: ParsedProduct): string {

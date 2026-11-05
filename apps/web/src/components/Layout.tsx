@@ -27,7 +27,11 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
 
 function ScrollToTop() {
   const { pathname } = useLocation()
-  useEffect(() => window.scrollTo(0, 0), [pathname])
+  // Без повернення значення: у нових Chrome scrollTo повертає проміс, а React прийняв би його
+  // за функцію прибирання й упав при переході на іншу сторінку
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
   return null
 }
 

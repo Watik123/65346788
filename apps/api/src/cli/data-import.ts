@@ -6,7 +6,7 @@ import { findScraper } from '../scrapers'
 import { CandidateIndex } from '../matching/candidates'
 import { MatchDecisions, readDecisions } from '../matching/decisions'
 import { fromRecord, listDayFiles, readDayFile } from '../scraping/datastore'
-import { IngestError, ingestProduct } from '../scraping/ingest'
+import { IngestError, MAX_PRICE_JUMP, ingestProduct } from '../scraping/ingest'
 import { isNotNew } from '../scrapers/listing-utils'
 import type { PrismaClient } from '../generated/prisma/client'
 
@@ -34,6 +34,41 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
   const shopIds = new Map<string, number>()
   const summary: ImportSummary = { days: new Set(files.map((f) => f.date)).size, files: files.length, records: 0, saved: 0, invalid: 0, notNew: 0, errors: [], lastDate: null }
 
+  // Відомі пропозиції магазину за кодом у магазині. Імпорт десятків днів по одному запису на запит
+  // не вкладався в запуск на GitHub; тепер повний шлях (пошук збігів) лише для нових пропозицій.
+  const offersByShop = new Map<number, Map<string, { offerId: number; productId: number; price: number }>>()
+  const knownOffers = async (shopId: number) => {
+    let m = offersByShop.get(shopId)
+    if (!m) {
+      m = new Map()
+      for (const o of await prisma.offer.findMany({ where: { shopId }, select: { id: true, externalId: true, productId: true, price: true } })) {
+        if (o.externalId) m.set(o.externalId, { offerId: o.id, productId: o.productId, price: o.price })
+      }
+      offersByShop.set(shopId, m)
+    }
+    return m
+  }
+  // Останній стан пропозицій записується наприкінці, одним пакетом
+  const pendingOffers = new Map<number, { price: number; inStock: boolean; url: string; rawData: string; lastSeenAt: Date }>()
+  // Поля товару, які доповнюються з інших магазинів (як у ingestProduct)
+  const products = new Map<number, { imageUrl: string | null; ean: string | null; modelCode: string | null; reviewCount: number }>()
+  const fillProduct = async (productId: number, r: { imageUrl: string | null; ean: string | null; modelCode: string | null; rating: number | null; reviewCount: number }) => {
+    let p = products.get(productId)
+    if (!p) {
+      p = await prisma.product.findUniqueOrThrow({ where: { id: productId }, select: { imageUrl: true, ean: true, modelCode: true, reviewCount: true } })
+      products.set(productId, p)
+    }
+    const data: Record<string, unknown> = {}
+    if (!p.imageUrl && r.imageUrl) data['imageUrl'] = p.imageUrl = r.imageUrl
+    if (!p.modelCode && r.modelCode) data['modelCode'] = p.modelCode = r.modelCode
+    if (r.reviewCount > p.reviewCount) {
+      data['ratingAvg'] = r.rating
+      data['reviewCount'] = p.reviewCount = r.reviewCount
+    }
+    if (!p.ean && r.ean && !(await prisma.product.findUnique({ where: { ean: r.ean }, select: { id: true } }))) data['ean'] = p.ean = r.ean
+    if (Object.keys(data).length > 0) await prisma.product.update({ where: { id: productId }, data })
+  }
+
   for (const f of files) {
     let shopId = shopIds.get(f.shop)
     if (shopId === undefined) {
@@ -50,22 +85,61 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
     const { records, invalid } = readDayFile(f)
     summary.invalid += invalid
     const day = parseDay(f.date)
+    const known = await knownOffers(shopId)
+    // Повторний імпорт того самого дня: ціни дня магазину пишемо наново
+    await prisma.pricePoint.deleteMany({ where: { shopId, date: day } })
+    const viaIngest = new Set<number>()
+    const points = new Map<number, { productId: number; shopId: number; date: Date; price: number; inStock: boolean; isPromo: boolean }>()
+
     for (const r of records) {
       summary.records++
       if (isNotNew(r.name)) {
         summary.notNew++
         continue
       }
+      const fail = (kind: string, message: string) => {
+        if (summary.errors.length < 200) summary.errors.push({ kind, message, date: f.date, shop: f.shop })
+      }
+      const o = known.get(r.externalId)
+      if (o) {
+        // Уже відома пропозиція: без пошуку збігів, ціна дня й стан пропозиції пишуться пакетом
+        if (r.price < o.price / MAX_PRICE_JUMP || r.price > o.price * MAX_PRICE_JUMP) {
+          fail('suspicious_price', `Ціна змінилась з ${o.price} до ${r.price} ₴, схоже на помилку розбору; запис пропущено`)
+          // Порівнюємо далі з новою ціною: якщо хибною була попередня, наступного дня ціна пройде
+          o.price = r.price
+          continue
+        }
+        o.price = r.price
+        if (!viaIngest.has(o.productId)) points.set(o.productId, { productId: o.productId, shopId, date: day, price: r.price, inStock: r.inStock, isPromo: r.oldPrice !== null && r.oldPrice > r.price })
+        pendingOffers.set(o.offerId, { price: r.price, inStock: r.inStock, url: r.url, rawData: JSON.stringify({ oldPrice: r.oldPrice, raw: null }), lastSeenAt: day })
+        await fillProduct(o.productId, r)
+        summary.saved++
+        continue
+      }
       try {
         await ingestProduct(prisma, shopId, fromRecord(r), day, categoryIds, { now: day, shopSlug: f.shop, decisions, candidates, transactional: false })
+        const offer = await prisma.offer.findFirst({ where: { shopId, externalId: r.externalId }, select: { id: true, productId: true, price: true } })
+        // Ціну дня цього товару вже записав ingestProduct (буває, коли магазин має той самий товар
+        // під двома кодами): пакетний запис її не дублює
+        if (offer) {
+          points.delete(offer.productId)
+          viaIngest.add(offer.productId)
+          known.set(r.externalId, { offerId: offer.id, productId: offer.productId, price: offer.price })
+          pendingOffers.delete(offer.id)
+          products.delete(offer.productId)
+        }
         summary.saved++
       } catch (err) {
-        if (summary.errors.length < 200) {
-          summary.errors.push({ kind: err instanceof IngestError ? err.kind : 'ingest', message: err instanceof Error ? err.message : String(err), date: f.date, shop: f.shop })
-        }
+        fail(err instanceof IngestError ? err.kind : 'ingest', err instanceof Error ? err.message : String(err))
       }
     }
+    const rows = [...points.values()]
+    for (let i = 0; i < rows.length; i += 1000) await prisma.pricePoint.createMany({ data: rows.slice(i, i + 1000) })
     summary.lastDate = f.date
+  }
+  const updates = [...pendingOffers]
+  for (let i = 0; i < updates.length; i += 500) {
+    await prisma.$transaction(updates.slice(i, i + 500).map(([id, data]) => prisma.offer.update({ where: { id }, data })))
   }
   return summary
 }

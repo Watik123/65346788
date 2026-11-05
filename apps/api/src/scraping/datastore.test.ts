@@ -98,6 +98,19 @@ describe('імпорт сховища в базу', () => {
     expect(await prisma.product.count()).toBe(2)
   })
 
+  it('хибна ціна одного дня пропускається, а наступного дня правильна ціна знову приймається', async () => {
+    const put = (date: string, price: number) => writeJsonl(path.join(dir, `prices/${date}/ktc.jsonl`), [toRecord(product({ price, oldPrice: null }), 'ktc', date)] as DayRecord[])
+    put('2026-10-07', 7999)
+    put('2026-10-08', 799900)
+    put('2026-10-09', 7899)
+    const s = await importDataStore(prisma, dir)
+    expect(s.errors.map((e) => e.kind)).toEqual(['suspicious_price', 'suspicious_price'])
+    put('2026-10-10', 7799)
+    await importDataStore(prisma, dir)
+    const points = await prisma.pricePoint.findMany({ orderBy: { date: 'asc' } })
+    expect(points.map((p) => p.price)).toEqual([7999, 7799])
+  })
+
   it('товар у невідомій категорії потрапляє в помилки, решта імпортується', async () => {
     writeJsonl(path.join(dir, 'prices/2026-10-09/ktc.jsonl'), [toRecord(product({ externalId: 'x1', categorySlug: 'navushnyky' }), 'ktc', '2026-10-09')] as DayRecord[])
     const s = await importDataStore(prisma, dir)
