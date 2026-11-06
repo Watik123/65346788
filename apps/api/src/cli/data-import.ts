@@ -1,4 +1,4 @@
-import { ensureCategories } from '../catalog/categories'
+import { REMOVED_CATEGORIES, ensureCategories } from '../catalog/categories'
 import { recomputeDeals } from '../jobs/recompute-deals'
 import { parseDay } from '../lib/dates'
 import { createPrisma } from '../lib/db'
@@ -18,6 +18,8 @@ export interface ImportSummary {
   invalid: number
   /** Вживані, уцінені, вітринні: у сховищі можуть бути зі старих зборів, у базу не беремо */
   notNew: number
+  /** Записи категорій, прибраних із сайту (ноутбуки) */
+  removed: number
   errors: { kind: string; message: string; date: string; shop: string }[]
   lastDate: string | null
 }
@@ -32,7 +34,7 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
   const candidates = new CandidateIndex()
   const categoryIds = await ensureCategories(prisma)
   const shopIds = new Map<string, number>()
-  const summary: ImportSummary = { days: new Set(files.map((f) => f.date)).size, files: files.length, records: 0, saved: 0, invalid: 0, notNew: 0, errors: [], lastDate: null }
+  const summary: ImportSummary = { days: new Set(files.map((f) => f.date)).size, files: files.length, records: 0, saved: 0, invalid: 0, notNew: 0, removed: 0, errors: [], lastDate: null }
 
   // Відомі пропозиції магазину за кодом у магазині. Імпорт десятків днів по одному запису на запит
   // не вкладався в запуск на GitHub; тепер повний шлях (пошук збігів) лише для нових пропозицій.
@@ -48,6 +50,9 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
     }
     return m
   }
+  // Категорія товару — за найсвіжішим записом: магазини переносять товари між розділами, а ми
+  // ділимо категорії дрібніше (роботи-пилососи окремо від пилососів)
+  const latestCategory = new Map<number, string>()
   // Останній стан пропозицій записується наприкінці, одним пакетом
   const pendingOffers = new Map<number, { price: number; inStock: boolean; url: string; rawData: string; lastSeenAt: Date }>()
   // Поля товару, які доповнюються з інших магазинів (як у ingestProduct)
@@ -89,12 +94,17 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
     // Повторний імпорт того самого дня: ціни дня магазину пишемо наново
     await prisma.pricePoint.deleteMany({ where: { shopId, date: day } })
     const viaIngest = new Set<number>()
+    const categorizedToday = new Set<number>()
     const points = new Map<number, { productId: number; shopId: number; date: Date; price: number; inStock: boolean; isPromo: boolean }>()
 
     for (const r of records) {
       summary.records++
       if (isNotNew(r.name)) {
         summary.notNew++
+        continue
+      }
+      if (REMOVED_CATEGORIES.has(r.category)) {
+        summary.removed++
         continue
       }
       const fail = (kind: string, message: string) => {
@@ -110,6 +120,10 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
           continue
         }
         o.price = r.price
+        // Товар буває і в загальному розділі, і у вужчому: перелік розділів магазину йде від вужчих,
+        // тож за день береться перша категорія
+        if (!categorizedToday.has(o.productId)) latestCategory.set(o.productId, r.category)
+        categorizedToday.add(o.productId)
         if (!viaIngest.has(o.productId)) points.set(o.productId, { productId: o.productId, shopId, date: day, price: r.price, inStock: r.inStock, isPromo: r.oldPrice !== null && r.oldPrice > r.price })
         pendingOffers.set(o.offerId, { price: r.price, inStock: r.inStock, url: r.url, rawData: JSON.stringify({ oldPrice: r.oldPrice, raw: null }), lastSeenAt: day })
         await fillProduct(o.productId, r)
@@ -124,6 +138,8 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
         if (offer) {
           points.delete(offer.productId)
           viaIngest.add(offer.productId)
+          categorizedToday.add(offer.productId)
+          latestCategory.set(offer.productId, r.category)
           known.set(r.externalId, { offerId: offer.id, productId: offer.productId, price: offer.price })
           pendingOffers.delete(offer.id)
           products.delete(offer.productId)
@@ -136,6 +152,15 @@ export async function importDataStore(prisma: PrismaClient, root: string): Promi
     const rows = [...points.values()]
     for (let i = 0; i < rows.length; i += 1000) await prisma.pricePoint.createMany({ data: rows.slice(i, i + 1000) })
     summary.lastDate = f.date
+  }
+  const byCategory = new Map<number, number[]>()
+  for (const [productId, slug] of latestCategory) {
+    const categoryId = categoryIds.get(slug)
+    if (categoryId === undefined) continue
+    byCategory.set(categoryId, [...(byCategory.get(categoryId) ?? []), productId])
+  }
+  for (const [categoryId, ids] of byCategory) {
+    for (let i = 0; i < ids.length; i += 500) await prisma.product.updateMany({ where: { id: { in: ids.slice(i, i + 500) }, categoryId: { not: categoryId } }, data: { categoryId } })
   }
   const updates = [...pendingOffers]
   for (let i = 0; i < updates.length; i += 500) {
@@ -154,7 +179,7 @@ async function main() {
   const prisma = createPrisma()
   try {
     const s = await importDataStore(prisma, root)
-    console.log(`Імпорт: днів ${s.days}, файлів ${s.files}, записів ${s.records}, збережено ${s.saved}, не нових ${s.notNew}, пошкоджених рядків ${s.invalid}, помилок ${s.errors.length}`)
+    console.log(`Імпорт: днів ${s.days}, файлів ${s.files}, записів ${s.records}, збережено ${s.saved}, не нових ${s.notNew}, прибраних категорій ${s.removed}, пошкоджених рядків ${s.invalid}, помилок ${s.errors.length}`)
     for (const e of s.errors.slice(0, 10)) console.log(`  ${e.date} ${e.shop} ${e.kind}: ${e.message}`)
     if (s.lastDate) {
       const deals = await recomputeDeals(prisma, { today: parseDay(s.lastDate) })

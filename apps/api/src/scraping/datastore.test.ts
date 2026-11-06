@@ -3,6 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { importDataStore } from '../cli/data-import'
+import { CATEGORIES } from '../catalog/categories'
 import type { PrismaClient } from '../generated/prisma/client'
 import { createTempDb } from '../test-utils/temp-db'
 import { fromRecord, listDayFiles, parseJsonl, toRecord, writeJsonl, type DayRecord } from './datastore'
@@ -75,13 +76,13 @@ describe('імпорт сховища в базу', () => {
 
   it('створює категорії, магазин, товари й історію за кожен день; повтор нічого не дублює', async () => {
     const day = (date: string, price: number, extra: Partial<ParsedProduct> = {}) =>
-      writeJsonl(path.join(dir, `prices/${date}/ktc.jsonl`), [toRecord(product({ price, ...extra }), 'ktc', date), toRecord(product({ externalId: '2', name: 'Ноутбук', categorySlug: 'noutbuky', price: 20000 }), 'ktc', date)])
+      writeJsonl(path.join(dir, `prices/${date}/ktc.jsonl`), [toRecord(product({ price, ...extra }), 'ktc', date), toRecord(product({ externalId: '2', name: 'Монітор', categorySlug: 'monitory', price: 20000 }), 'ktc', date)])
     day('2026-10-08', 8499)
     day('2026-10-09', 7999)
 
     const s = await importDataStore(prisma, dir)
     expect(s).toMatchObject({ days: 2, files: 2, records: 4, saved: 4, invalid: 0, lastDate: '2026-10-09' })
-    expect(await prisma.category.count()).toBe(8)
+    expect(await prisma.category.count()).toBe(CATEGORIES.length)
     expect((await prisma.shop.findUniqueOrThrow({ where: { slug: 'ktc' } })).name).toBeTruthy()
 
     const tv = await prisma.offer.findFirstOrThrow({ where: { externalId: '447594' } })
@@ -112,7 +113,7 @@ describe('імпорт сховища в базу', () => {
   })
 
   it('товар у невідомій категорії потрапляє в помилки, решта імпортується', async () => {
-    writeJsonl(path.join(dir, 'prices/2026-10-09/ktc.jsonl'), [toRecord(product({ externalId: 'x1', categorySlug: 'navushnyky' }), 'ktc', '2026-10-09')] as DayRecord[])
+    writeJsonl(path.join(dir, 'prices/2026-10-09/ktc.jsonl'), [toRecord(product({ externalId: 'x1', categorySlug: 'kaviari' }), 'ktc', '2026-10-09')] as DayRecord[])
     const s = await importDataStore(prisma, dir)
     expect(s.saved).toBe(0)
     expect(s.errors[0]?.message).toContain('Невідома категорія')

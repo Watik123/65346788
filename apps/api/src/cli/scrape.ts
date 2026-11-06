@@ -13,6 +13,7 @@ import type { PrismaClient } from '../generated/prisma/client'
 const USAGE = `Запуск: npm run scrape -- <магазин|магазин1,магазин2|all> [--max=N] [--dry-run] [--fresh] [--no-deals] [--store=папка]
 
   --max=N         обробити не більше N сторінок (для перевірки)
+  --pages=N       у кожному розділі не більше N сторінок (перевірка адрес розділів)
   --dry-run       лише завантажити й розібрати, нічого не писати в базу
   --fresh         не користуватись кешем завантажених сторінок
   --no-deals      не перераховувати знижки після збору
@@ -23,6 +24,7 @@ async function main() {
   const args = process.argv.slice(2)
   const flag = (name: string) => args.includes(`--${name}`)
   const max = args.find((a) => a.startsWith('--max='))?.slice(6)
+  const pages = args.find((a) => a.startsWith('--pages='))?.slice(8)
   const store = args.find((a) => a.startsWith('--store='))?.slice(8)
   const target = args.find((a) => !a.startsWith('--'))
 
@@ -46,7 +48,7 @@ async function main() {
       const scraper = findScraper(slug) as ShopScraper
       if (slugs.length > 1) console.log(`\n==================== ${scraper.name} ====================`)
       try {
-        const status = await collectShop(prisma, scraper, { flag, max, store })
+        const status = await collectShop(prisma, scraper, { flag, max, pages, store })
         if (status === 'aborted') failed.push(`${slug} (перервано)`)
       } catch (err) {
         console.error(`Збір ${scraper.name} не вдався: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`)
@@ -65,7 +67,7 @@ async function main() {
 async function collectShop(
   prisma: PrismaClient,
   scraper: ShopScraper,
-  { flag, max, store }: { flag: (name: string) => boolean; max: string | undefined; store: string | undefined },
+  { flag, max, pages, store }: { flag: (name: string) => boolean; max: string | undefined; pages: string | undefined; store: string | undefined },
 ): Promise<string> {
   const dataDir = path.join(REPO_ROOT, 'data')
   const fetcher = new PoliteFetcher({
@@ -81,6 +83,7 @@ async function collectShop(
   const summary = await runScraper(prisma, scraper, fetcher, {
     log: consoleLogger,
     maxProducts: max ? Number(max) : undefined,
+    maxPagesPerListing: pages ? Number(pages) : undefined,
     // У режимі сховища база не потрібна: товари збираються в пам'яті й пишуться у файли
     dryRun: flag('dry-run') || toStore,
   })

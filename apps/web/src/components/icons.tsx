@@ -50,15 +50,24 @@ export const LogoMark = ({ size = 28, ...rest }: IconProps) => (
 /* Значки категорій для заглушок замість фото */
 const CATEGORY_ICONS: Record<string, (p: IconProps) => ReactNode> = {
   televizory: (p) => <Icon {...p}><rect x="3" y="5" width="18" height="12" rx="2" /><path d="M8 21h8M12 17v4" /></Icon>,
-  noutbuky: (p) => <Icon {...p}><rect x="5" y="5" width="14" height="10" rx="1.5" /><path d="M2.5 19h19" /></Icon>,
+  planshety: (p) => <Icon {...p}><rect x="4.5" y="2.5" width="15" height="19" rx="2" /><path d="M11 18.5h2" /></Icon>,
   smartfony: (p) => <Icon {...p}><rect x="7" y="2.5" width="10" height="19" rx="2.2" /><path d="M11 18.5h2" /></Icon>,
   'pralni-mashyny': (p) => <Icon {...p}><rect x="4" y="3" width="16" height="18" rx="2" /><circle cx="12" cy="13.5" r="4" /><path d="M7.5 6.5h2M15.5 6.5h1" /></Icon>,
   kholodylnyky: (p) => <Icon {...p}><rect x="6" y="2.5" width="12" height="19" rx="2" /><path d="M6 10h12M9 5.5v2M9 12.5v3" /></Icon>,
   pylososy: (p) => <Icon {...p}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="3" /><path d="M12 3v3" /></Icon>,
 }
 
+/** Схожі категорії з тим самим значком */
+const ICON_ALIAS: Record<string, string> = {
+  monitory: 'televizory',
+  'roboty-pylososy': 'pylososy',
+  'sushylni-mashyny': 'pralni-mashyny',
+  'posudomyini-mashyny': 'pralni-mashyny',
+  'morozylni-kamery': 'kholodylnyky',
+}
+
 export function CategoryIcon({ slug, ...rest }: IconProps & { slug: string }) {
-  const render = CATEGORY_ICONS[slug]
+  const render = CATEGORY_ICONS[ICON_ALIAS[slug] ?? slug]
   if (render) return <>{render(rest)}</>
   return <Icon {...rest}><path d="M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8" /></Icon>
 }

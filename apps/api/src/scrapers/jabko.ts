@@ -16,12 +16,33 @@ import { extractModelCode } from './model-code'
 export const BASE = 'https://jabko.ua'
 
 export const JABKO_CATEGORIES: { path: string; slug: string }[] = [
-  { path: '/televizory/', slug: 'televizory' },
-  { path: '/noutbuki/', slug: 'noutbuky' },
   { path: '/smartfony/', slug: 'smartfony' },
+  { path: '/planshety/', slug: 'planshety' },
+  { path: '/televizory/', slug: 'televizory' },
+  { path: '/monitory/', slug: 'monitory' },
+  { path: '/navushnyky/', slug: 'navushnyky' },
+  { path: '/gadzheti-i-drugoe/smart-chasi/', slug: 'smart-hodynnyky' },
+  { path: '/igrovi-pristavky/', slug: 'ihrovi-konsoli' },
+  { path: '/tsyfrovi-fotoaparaty/', slug: 'fotoaparaty' },
+  { path: '/aksessuari/poverbanks/', slug: 'powerbanky' },
+  { path: '/kofemashini/', slug: 'kavovarky' },
+  { path: '/tehnika-dlja-kuhni/elektrochainyky/', slug: 'elektrochainyky' },
+  { path: '/tehnika-dlja-kuhni/blendery/', slug: 'blendery' },
+  { path: '/tehnika-dlja-kuhni/miksery/', slug: 'miksery' },
+  { path: '/tehnika-dlja-kuhni/kuhonni-kombainy/', slug: 'kukhonni-kombainy' },
+  { path: '/tehnika-dlja-kuhni/multypechi-aerohryli/', slug: 'aerohryli' },
+  { path: '/tehnika-dlja-kuhni/multyvarky/', slug: 'multivarky' },
+  { path: '/tehnika-dlja-kuhni/tostery/', slug: 'tostery' },
+  { path: '/sokovytyskachi/', slug: 'sokovyzhymalky' },
+  { path: '/roboti-pilesosi/', slug: 'roboty-pylososy' },
   { path: '/pylososy/', slug: 'pylososy' },
-  { path: '/roboti-pilesosi/', slug: 'pylososy' },
   { path: '/akkumuljatornie-pilesosi/', slug: 'pylososy' },
+  { path: '/prasky/', slug: 'prasky' },
+  { path: '/gadzheti-i-drugoe/tehnika-dlja-doma/vidparyuvachi/', slug: 'vidparyuvachi' },
+  { path: '/gadzheti-i-drugoe/tehnika-dlja-doma/parogeneratory/', slug: 'vidparyuvachi' },
+  { path: '/ventylyatory/', slug: 'ventyliatory' },
+  { path: '/gadzheti-i-drugoe/krasota-i-zdorove/feni-dlja-volossja/', slug: 'feny' },
+  { path: '/gadzheti-i-drugoe/krasota-i-zdorove/stajleri-dlja-volossja/', slug: 'feny' },
 ]
 
 function cardToOutcome(card: cheerio.Cheerio<AnyNode>, ref: ListingRef): ParseOutcome {
@@ -95,7 +116,7 @@ export const jabko: ListingScraper = {
   slug: 'jabko',
   name: 'Ябко',
   baseUrl: BASE,
-  maxPagesPerListing: 60,
+  maxPagesPerListing: 30,
   async *listings() {
     for (const c of JABKO_CATEGORIES) yield { url: `${BASE}${c.path}`, categorySlug: c.slug }
   },

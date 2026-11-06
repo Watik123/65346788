@@ -16,11 +16,26 @@ import { extractModelCode } from './model-code'
 export const BASE = 'https://ktc.ua'
 
 export const KTC_CATEGORIES: { path: string; slug: string }[] = [
-  { path: '/tv/', slug: 'televizory' },
-  { path: '/notebook/', slug: 'noutbuky' },
   { path: '/smartphone/', slug: 'smartfony' },
-  { path: '/robotic_vacuums/', slug: 'pylososy' },
+  { path: '/pad/', slug: 'planshety' },
+  { path: '/tv/', slug: 'televizory' },
+  { path: '/headphones/', slug: 'navushnyky' },
+  { path: '/smartwatch/', slug: 'smart-hodynnyky' },
+  { path: '/acoustics/', slug: 'portatyvna-akustyka' },
+  { path: '/power_bank/', slug: 'powerbanky' },
+  { path: '/wifi_router/', slug: 'routery' },
+  { path: '/robotic_vacuums/', slug: 'roboty-pylososy' },
   { path: '/cordless_vacuums/', slug: 'pylososy' },
+  { path: '/air_conditioners/', slug: 'kondytsionery' },
+  { path: '/coffee_machines/', slug: 'kavovarky' },
+  { path: '/airgrills/', slug: 'aerohryli' },
+  { path: '/grills/', slug: 'hryli' },
+  { path: '/steam_station/', slug: 'vidparyuvachi' },
+  { path: '/humidifiers/', slug: 'zvolozhuvachi' },
+  { path: '/hair_dryers/', slug: 'feny' },
+  { path: '/hair_stylers/', slug: 'feny' },
+  { path: '/trimmers/', slug: 'elektrobrytvy' },
+  { path: '/toothbrushes/', slug: 'zubni-shchitky' },
 ]
 
 type Json = Record<string, unknown>
@@ -144,7 +159,7 @@ export const ktc: ListingScraper = {
   slug: 'ktc',
   name: 'KTC',
   baseUrl: BASE,
-  maxPagesPerListing: 60,
+  maxPagesPerListing: 30,
   async *listings() {
     for (const c of KTC_CATEGORIES) yield { url: `${BASE}${c.path}`, categorySlug: c.slug }
   },

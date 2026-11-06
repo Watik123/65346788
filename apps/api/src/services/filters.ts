@@ -4,14 +4,18 @@ import type { PrismaClient } from '../generated/prisma/client'
 /** Дані для панелі фільтрів: категорії, магазини, межі цін. Рахуються по справжніх знижках. */
 export async function getFilters(prisma: PrismaClient): Promise<FiltersResponse> {
   const real = { status: 'real' }
-  const [categories, shops, byCategory, byShop, agg] = await Promise.all([
+  const [allCategories, used, shops, byCategory, byShop, agg] = await Promise.all([
     prisma.category.findMany({ orderBy: { id: 'asc' } }),
+    prisma.product.groupBy({ by: ['categoryId'], _count: { _all: true } }),
     prisma.shop.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } }),
     prisma.product.groupBy({ by: ['categoryId'], where: { deal: real }, _count: { _all: true } }),
     prisma.offer.groupBy({ by: ['shopId'], where: { inStock: true, product: { deal: real } }, _count: { _all: true } }),
     prisma.productDeal.aggregate({ where: real, _min: { bestPrice: true }, _max: { bestPrice: true, discountPercent: true } }),
   ])
 
+  // Лише категорії, де є товари (і батьківські для них): порожні розділи в панелі не потрібні
+  const hasProducts = new Set(used.map((u) => u.categoryId))
+  const categories = allCategories.filter((c) => hasProducts.has(c.id) || allCategories.some((ch) => ch.parentId === c.id && hasProducts.has(ch.id)))
   const ownCount = new Map(byCategory.map((c) => [c.categoryId, c._count._all]))
   const toNode = (id: number): CategoryNodeDto => {
     const c = categories.find((x) => x.id === id) as (typeof categories)[number]

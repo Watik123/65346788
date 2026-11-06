@@ -48,8 +48,8 @@ describe('buildReport', () => {
   })
 
   it('рахує товари, заявлені знижки і зміни за добу', async () => {
-    writeJsonl(path.join(dir, 'prices/2026-10-08/ktc.jsonl'), [p('a', 10000, null), p('b', 20000, null), p('c', 5000, null, 'noutbuky')].map((x) => toRecord(x, 'ktc', '2026-10-08')))
-    writeJsonl(path.join(dir, 'prices/2026-10-09/ktc.jsonl'), [p('a', 9000, 12000), p('b', 21000, null), p('c', 5000, 5500, 'noutbuky')].map((x) => toRecord(x, 'ktc', '2026-10-09')))
+    writeJsonl(path.join(dir, 'prices/2026-10-08/ktc.jsonl'), [p('a', 10000, null), p('b', 20000, null), p('c', 5000, null, 'monitory')].map((x) => toRecord(x, 'ktc', '2026-10-08')))
+    writeJsonl(path.join(dir, 'prices/2026-10-09/ktc.jsonl'), [p('a', 9000, 12000), p('b', 21000, null), p('c', 5000, 5500, 'monitory')].map((x) => toRecord(x, 'ktc', '2026-10-09')))
     await importDataStore(prisma, dir)
     const md = await buildReport(prisma)
 
@@ -58,7 +58,7 @@ describe('buildReport', () => {
     expect(md).toContain('| KTC | 3 | 3 | 2 (67%) | −17% |')
     expect(md).not.toContain('Один товар у кількох магазинах')
     expect(md).toContain('| Телевізори | 2 | 2 | 1 (50%) | −25% |')
-    expect(md).toContain('| Ноутбуки | 1 | 1 | 1 (100%) | −9% |')
+    expect(md).toContain('| Монітори | 1 | 1 | 1 (100%) | −9% |')
     expect(md).toContain('Закреслена ціна є в **2** з 3 пропозицій (67%)')
     expect(md).toContain('Подешевшало: **1**, подорожчало: **1**, без змін: 1.')
     expect(md).toContain('| 10 000 ₴ | 9 000 ₴ | −10,0% |')

@@ -8,7 +8,7 @@ import type { Fetcher } from '../scraping/fetcher'
 import { runScraper } from '../scraping/runner'
 import type { ParsedProduct } from '../scraping/types'
 import { createTempDb } from '../test-utils/temp-db'
-import { ktc, parseKtcListing } from './ktc'
+import { KTC_CATEGORIES, ktc, parseKtcListing } from './ktc'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const fixture = readFileSync(path.join(here, 'fixtures/ktc-listing.html'), 'utf8')
@@ -106,14 +106,9 @@ describe('збір KTC повністю (сайт підроблено, спра
     }
     const s = await runScraper(prisma, ktc, fetcher, { today: new Date('2026-10-09T00:00:00Z') })
 
-    expect(requested).toEqual([
-      'https://ktc.ua/tv/',
-      'https://ktc.ua/notebook/',
-      'https://ktc.ua/smartphone/',
-      'https://ktc.ua/smartphone/?page=2',
-      'https://ktc.ua/robotic_vacuums/',
-      'https://ktc.ua/cordless_vacuums/',
-    ])
+    // Усі розділи по черзі; другу сторінку має лише розділ смартфонів
+    const all = KTC_CATEGORIES.map((c) => `https://ktc.ua${c.path}`)
+    expect(requested).toEqual([...all.slice(0, 1), 'https://ktc.ua/smartphone/?page=2', ...all.slice(1)])
     expect(s).toMatchObject({ status: 'completed', found: 6, saved: 6, errors: 0, skippedByReason: { missing_data: 2, no_price: 2 } })
     const shop = await prisma.shop.findUniqueOrThrow({ where: { slug: 'ktc' } })
     expect(shop).toMatchObject({ name: 'KTC', baseUrl: 'https://ktc.ua' })
@@ -127,6 +122,6 @@ describe('збір KTC повністю (сайт підроблено, спра
     const fetcher: Fetcher = { async get(url) { requested.push(url); return { url, status: 200, body: fixture, fromCache: false } } }
     const s = await runScraper(prisma, ktc, fetcher, { dryRun: true, maxProducts: 2 })
     expect(s.found).toBe(2)
-    expect(requested).toEqual(['https://ktc.ua/tv/'])
+    expect(requested).toEqual([`https://ktc.ua${KTC_CATEGORIES[0]?.path}`])
   })
 })

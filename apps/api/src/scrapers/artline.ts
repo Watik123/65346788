@@ -16,8 +16,21 @@ import { extractModelCode } from './model-code'
 export const BASE = 'https://artline.ua'
 
 export const ARTLINE_CATEGORIES: { path: string; slug: string }[] = [
-  { path: '/uk/catalog/noutbuki', slug: 'noutbuky' },
   { path: '/uk/catalog/smartfony', slug: 'smartfony' },
+  { path: '/uk/catalog/planshety', slug: 'planshety' },
+  { path: '/uk/catalog/monitory', slug: 'monitory' },
+  { path: '/uk/catalog/smart-chasy', slug: 'smart-hodynnyky' },
+  { path: '/uk/catalog/igrovye-konsoli', slug: 'ihrovi-konsoli' },
+  { path: '/uk/catalog/fotoapparaty', slug: 'fotoaparaty' },
+  { path: '/uk/catalog/marshrutizatory', slug: 'routery' },
+  { path: '/uk/catalog/zaryadnye-stantsii', slug: 'zaryadni-stantsii' },
+  { path: '/uk/catalog/generatory', slug: 'heneratory' },
+  { path: '/uk/catalog/konditsionery', slug: 'kondytsionery' },
+  { path: '/uk/catalog/chayniki', slug: 'elektrochainyky' },
+  { path: '/uk/catalog/elektrogrili', slug: 'hryli' },
+  { path: '/uk/catalog/roboty-pylesosy', slug: 'roboty-pylososy' },
+  { path: '/uk/catalog/uvlazhniteli-vozdukha', slug: 'zvolozhuvachi' },
+  { path: '/uk/catalog/obogrevateli', slug: 'obihrivachi' },
 ]
 
 function cardToOutcome(card: cheerio.Cheerio<AnyNode>, ref: ListingRef): ParseOutcome {
@@ -93,7 +106,7 @@ export const artline: ListingScraper = {
   slug: 'artline',
   name: 'Artline',
   baseUrl: BASE,
-  maxPagesPerListing: 40,
+  maxPagesPerListing: 30,
   async *listings() {
     for (const c of ARTLINE_CATEGORIES) yield { url: `${BASE}${c.path}`, categorySlug: c.slug }
   },

@@ -17,9 +17,9 @@ export const BASE = 'https://ispace.ua'
 
 export const ISPACE_CATEGORIES: { path: string; slug: string }[] = [
   { path: '/category/iphone', slug: 'smartfony' },
-  { path: '/category/macbook-air', slug: 'noutbuky' },
-  { path: '/category/macbook-pro', slug: 'noutbuky' },
-  { path: '/category/macbook-neo', slug: 'noutbuky' },
+  { path: '/category/ipad', slug: 'planshety' },
+  { path: '/category/headsets', slug: 'navushnyky' },
+  { path: '/category/watch', slug: 'smart-hodynnyky' },
 ]
 
 /** «…-mtp73rx-a» у кінці адреси → «MTP73RX/A» */

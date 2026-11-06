@@ -17,7 +17,18 @@ export const BASE = 'https://vencon.ua'
 export const VENCON_CATEGORIES: { path: string; slug: string }[] = [
   { path: '/ua/catalog/stiralnye-mashiny', slug: 'pralni-mashyny' },
   { path: '/ua/catalog/holodilniki', slug: 'kholodylnyky' },
+  { path: '/ua/catalog/posudomoechnye-mashiny', slug: 'posudomyini-mashyny' },
+  { path: '/ua/catalog/duhovye-shkafy', slug: 'dukhovky' },
+  { path: '/ua/catalog/varochnye-poverhnosti', slug: 'varylni-poverkhni' },
+  { path: '/ua/catalog/bojlery', slug: 'boilery' },
+  { path: '/ua/catalog/mikrovolnovye-pechi', slug: 'mikrokhvylovi-pechi' },
   { path: '/ua/catalog/pylesosy', slug: 'pylososy' },
+  { path: '/ua/catalog/kondicionery-split-sistemy', slug: 'kondytsionery' },
+  { path: '/ua/catalog/obogrevateli', slug: 'obihrivachi' },
+  { path: '/ua/catalog/uvlazhniteli-vozduha', slug: 'zvolozhuvachi' },
+  { path: '/ua/catalog/ochistiteli-vozduha', slug: 'ochyshchuvachi' },
+  { path: '/ua/catalog/portativnye-zaryadnye-stancii', slug: 'zaryadni-stantsii' },
+  { path: '/ua/catalog/generatory', slug: 'heneratory' },
 ]
 
 /** «a:1;b:2» → { a: '1', b: '2' }; значення можуть містити двокрапку */
@@ -104,7 +115,7 @@ export const vencon: ListingScraper = {
   slug: 'vencon',
   name: 'Vencon',
   baseUrl: BASE,
-  maxPagesPerListing: 40,
+  maxPagesPerListing: 30,
   async *listings() {
     for (const c of VENCON_CATEGORIES) yield { url: `${BASE}${c.path}`, categorySlug: c.slug }
   },

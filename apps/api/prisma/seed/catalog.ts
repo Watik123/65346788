@@ -93,15 +93,15 @@ export const PRODUCTS: SeedProductDef[] = [
   p('televizory', 'Hisense', 'Телевізор Hisense 55" ULED 4K 55U7KQ', '55U7KQ', 29999, 4.7, 58, 3, short(9)),
 
   // Ноутбуки
-  p('noutbuky', 'Apple', 'Ноутбук Apple MacBook Air 13" M3 8/256GB', 'MRXN3', 47999, 4.9, 724, 6, genuine(0.11, 2)),
-  p('noutbuky', 'Lenovo', 'Ноутбук Lenovo IdeaPad Slim 3 15IAH8 16/512GB', '15IAH8', 25999, 4.5, 376, 5, stable),
-  p('noutbuky', 'ASUS', 'Ноутбук ASUS Vivobook 15 X1504ZA 16/512GB', 'X1504ZA', 21499, 4.4, 502, 6, fakeSpike),
-  p('noutbuky', 'ASUS', 'Ноутбук ASUS TUF Gaming F15 FX507ZC4 16/512GB', 'FX507ZC4', 36999, 4.7, 289, 4, genuine(0.15, 7, 2)),
-  p('noutbuky', 'Acer', 'Ноутбук Acer Aspire 5 A515-58M 16/512GB', 'A515-58M', 27499, 4.4, 233, 5, decline),
-  p('noutbuky', 'HP', 'Ноутбук HP 255 G10 8/512GB', '255 G10', 18999, 4.2, 121, 4, promo),
-  p('noutbuky', 'Dell', 'Ноутбук Dell Inspiron 15 3520 16/512GB', 'Inspiron 3520', 24999, 4.3, 144, 4, stable),
-  p('noutbuky', 'MSI', 'Ноутбук MSI Thin 15 B13UC 16/512GB', 'B13UC', 33999, 5.0, 2, 2, genuine(0.2, 4, 1)),
-  p('noutbuky', 'Lenovo', 'Ноутбук Lenovo LOQ 15IRX9 16/512GB', '15IRX9', 44999, 4.8, 188, 5, genuine(0.14, 12)),
+  p('monitory', 'Apple', 'Монітор Apple Studio Display 27" 5K', 'MK0U3', 47999, 4.9, 724, 6, genuine(0.11, 2)),
+  p('monitory', 'Lenovo', 'Монітор Lenovo L27i-40 27" IPS', '67ACKAC4UA', 25999, 4.5, 376, 5, stable),
+  p('monitory', 'ASUS', 'Монітор ASUS VA24EHF 23.8" IPS 100Hz', 'VA24EHF', 21499, 4.4, 502, 6, fakeSpike),
+  p('monitory', 'ASUS', 'Монітор ASUS TUF Gaming VG27AQ3A 27" 180Hz', 'VG27AQ3A', 36999, 4.7, 289, 4, genuine(0.15, 7, 2)),
+  p('monitory', 'Acer', 'Монітор Acer Nitro KG272M3 27" 180Hz', 'UM.HX2EE.302', 27499, 4.4, 233, 5, decline),
+  p('monitory', 'HP', 'Монітор HP Series 3 Pro 324pf 23.8"', '9U5B9AA', 18999, 4.2, 121, 4, promo),
+  p('monitory', 'Dell', 'Монітор Dell S2725H 27" IPS', '210-BMHH', 24999, 4.3, 144, 4, stable),
+  p('monitory', 'MSI', 'Монітор MSI MAG 275QF 27" 180Hz', 'MAG275QF', 33999, 5.0, 2, 2, genuine(0.2, 4, 1)),
+  p('monitory', 'Lenovo', 'Монітор Lenovo Legion R27qe 27" 180Hz', '67BEGAC1UA', 44999, 4.8, 188, 5, genuine(0.14, 12)),
 
   // Смартфони
   p('smartfony', 'Samsung', 'Смартфон Samsung Galaxy S24 8/256GB', 'SM-S921B', 28999, 4.8, 1180, 6, genuine(0.17, 6)),

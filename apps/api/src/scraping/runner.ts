@@ -11,6 +11,8 @@ export interface RunOptions {
   /** Нічого не пише в базу: лише завантажує й розбирає сторінки */
   dryRun?: boolean
   log?: Logger
+  /** Не більше стількох сторінок у кожному розділі (перевірка адрес розділів) */
+  maxPagesPerListing?: number
   /** Скільки невдалих завантажень поспіль вважати ознакою блокування і зупинитись */
   maxConsecutiveFailures?: number
 }
@@ -139,7 +141,7 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
   try {
     const ctx = { fetcher, log, maxProducts: opts.maxProducts }
     if (scraper.kind === 'listing') {
-      const maxPages = scraper.maxPagesPerListing ?? 200
+      const maxPages = Math.min(scraper.maxPagesPerListing ?? 200, opts.maxPagesPerListing ?? Infinity)
       outer: for await (const listing of scraper.listings(ctx)) {
         const visited = new Set<string>()
         let url: string | null = listing.url

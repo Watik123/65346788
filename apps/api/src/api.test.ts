@@ -118,7 +118,7 @@ describe('GET /api/feed', () => {
 
     const electronics = await feed('?category=elektronika&limit=60')
     expect(electronics.total).toBe(9)
-    expect(new Set(electronics.items.map((i) => i.category.slug))).toEqual(new Set(['televizory', 'noutbuky', 'smartfony']))
+    expect(new Set(electronics.items.map((i) => i.category.slug))).toEqual(new Set(['televizory', 'monitory', 'smartfony']))
 
     expect((await feed('?category=nonexistent')).total).toBe(0)
   })
@@ -232,9 +232,9 @@ describe('GET /api/filters', () => {
     const { status, body } = await get<FiltersResponse>('/api/filters')
     expect(status).toBe(200)
     expect(body.demo).toBe(true) // сид: вигадані магазини на example.com
-    expect(body.categories.map((c) => c.slug)).toEqual(['elektronika', 'pobutova-tekhnika'])
-    expect(body.categories.map((c) => c.dealCount)).toEqual([9, 8])
-    expect(body.categories[0]?.children.map((c) => c.slug)).toEqual(['televizory', 'noutbuky', 'smartfony'])
+    expect(body.categories.map((c) => c.slug)).toEqual(['elektronika', 'pobutova-tekhnika', 'dim'])
+    expect(body.categories.map((c) => c.dealCount)).toEqual([9, 5, 3])
+    expect(body.categories[0]?.children.map((c) => c.slug)).toEqual(['smartfony', 'televizory', 'monitory'])
     expect(body.shops.map((s) => s.name)).toEqual(['Магазин Альфа', 'Магазин Бета', 'Магазин Гама', 'Магазин Дельта', 'Магазин Епсілон', 'Магазин Зета'])
     expect(body.shops.every((s) => s.dealCount > 0)).toBe(true)
     expect(body.priceRange?.min).toBeLessThan(body.priceRange?.max ?? 0)
