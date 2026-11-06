@@ -49,7 +49,7 @@ jobs:
   # Які магазини збирати сьогодні (і чи збирати взагалі)
   plan:
     if: github.event_name == 'schedule' || inputs.mode == 'collect'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       shops: ${{ steps.plan.outputs.shops }}
       date: ${{ steps.plan.outputs.date }}
@@ -81,7 +81,7 @@ jobs:
   collect:
     needs: plan
     if: needs.plan.outputs.shops != '[]'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 150
     strategy:
       fail-fast: false
@@ -111,7 +111,7 @@ jobs:
   save:
     needs: [plan, collect]
     if: always() && needs.plan.outputs.shops != '[]' && needs.plan.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:
       contents: write
@@ -169,7 +169,7 @@ jobs:
 
   inspect:
     if: github.event_name == 'workflow_dispatch' && inputs.mode != 'collect'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
