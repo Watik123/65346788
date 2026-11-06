@@ -29,6 +29,9 @@ on:
       json_path:
         description: 'deep: шлях у вбудованому JSON (напр. props.pageProps.data), показати його поля'
         default: ''
+      links:
+        description: 'deep: регулярний вираз; показати всі посилання сторінки, що йому відповідають (розділи каталогу)'
+        default: ''
 
 permissions:
   contents: read
@@ -143,7 +146,8 @@ jobs:
           TARGET: ${{ inputs.target }}
           SELECT: ${{ inputs.select }}
           JSON_PATH: ${{ inputs.json_path }}
-        run: npm run probe -- "--deep=$TARGET" "--select=$SELECT" "--json-path=$JSON_PATH"
+          LINKS: ${{ inputs.links }}
+        run: npm run probe -- "--deep=$TARGET" "--select=$SELECT" "--json-path=$JSON_PATH" "--links=$LINKS"
 
       - name: Пробний збір (без запису)
         if: inputs.mode == 'dry-run'

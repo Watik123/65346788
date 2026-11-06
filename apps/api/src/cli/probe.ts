@@ -127,11 +127,24 @@ function jsonProductArrays(value: unknown, at = '$', out: string[] = [], depth =
   return out
 }
 
-async function deep(fetcher: PoliteFetcher, urls: string[], selectors: string[], jsonPath?: string) {
+async function deep(fetcher: PoliteFetcher, urls: string[], selectors: string[], jsonPath?: string, linksRe?: RegExp) {
   for (const url of urls) {
     const res = await fetcher.get(url)
     const $ = cheerio.load(res.body)
     console.log(`\n######## ${url}\nHTTP ${res.status}, розмір ${res.body.length}`)
+    // --links=регулярний вираз: усі посилання сторінки (адреса й підпис), що йому відповідають, без повторів
+    if (linksRe) {
+      const seen = new Set<string>()
+      $('a[href]').each((_, a) => {
+        const href = $(a).attr('href') ?? ''
+        const text = $(a).text().replace(/\s+/g, ' ').trim()
+        if (!linksRe.test(href) || seen.has(href)) return
+        seen.add(href)
+        console.log(`  посилання: ${short(text, 50)} → ${href}`)
+      })
+      console.log(`посилань: ${seen.size}`)
+      continue
+    }
     console.log(`класи: ${classHistogram($)}`)
     for (const sel of selectors) {
       try {
@@ -296,7 +309,8 @@ async function main() {
     const selectors = selectArg ? selectArg.slice(9).split(';;').map((s) => s.trim()).filter(Boolean) : []
     const fetcher = new PoliteFetcher({ shop: 'probe', userAgent: UA, minDelayMs: 2000, jitterMs: 800, retries: 1 })
     console.log(`Глибока розвідка (${urls.length} адрес)\nUser-Agent: ${UA}`)
-    await deep(fetcher, urls, selectors, process.argv.find((a) => a.startsWith('--json-path='))?.slice(12) || undefined)
+    const links = process.argv.find((a) => a.startsWith('--links='))?.slice(8)
+    await deep(fetcher, urls, selectors, process.argv.find((a) => a.startsWith('--json-path='))?.slice(12) || undefined, links ? new RegExp(links, 'i') : undefined)
     return
   }
   const target = process.argv.slice(2).find((a) => !a.startsWith('--'))
