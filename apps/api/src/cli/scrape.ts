@@ -75,6 +75,7 @@ async function collectShop(
     userAgent: process.env.SCRAPER_USER_AGENT ?? `ZnyzhkyBot/0.1 (+${process.env.SCRAPER_CONTACT ?? 'contact: not set'})`,
     cacheDir: flag('fresh') ? undefined : path.join(dataDir, 'cache', scraper.slug),
     rawDir: path.join(dataDir, 'raw', scraper.slug),
+    ...(scraper.minDelayMs ? { minDelayMs: scraper.minDelayMs } : {}),
   })
 
   const toStore = store !== undefined && !flag('dry-run')

@@ -4,7 +4,7 @@ import { createTempDb } from '../test-utils/temp-db'
 import { FetchError, type Fetcher } from './fetcher'
 import { parseProductPage } from './from-schema-org'
 import { runScraper } from './runner'
-import type { PageScraper, ProductRef, ShopScraper } from './types'
+import type { ListingScraper, PageScraper, ProductRef, ShopScraper } from './types'
 
 const DAY1 = new Date('2026-10-03T00:00:00Z')
 const DAY2 = new Date('2026-10-04T00:00:00Z')
@@ -212,6 +212,42 @@ describe('runScraper: збої', () => {
     const s = await runScraper(prisma, shop, site({ [u('a', 1)]: page({ sku: 'A1' }), [u('a', 2)]: page({ sku: 'A2' }) }).fetcher, { today: DAY1 })
     expect(s).toMatchObject({ saved: 1, errors: 1 })
     expect((await prisma.scrapeError.findFirstOrThrow()).kind).toBe('parse')
+  })
+})
+
+describe('runScraper: перевантажений сайт', () => {
+  it('після 3 відповідей 503 поспіль робить паузу й пробує ту саму сторінку знову, а не зупиняє збір', async () => {
+    const listingShop: ListingScraper = {
+      kind: 'listing',
+      slug: 'l',
+      name: 'Л',
+      baseUrl: 'https://l.example',
+      async *listings() {
+        for (const n of [1, 2, 3, 4]) yield { url: `https://l.example/c${n}`, categorySlug: 'smartfony' }
+      },
+      parseListing: (html, ref) => ({
+        outcomes: [{ kind: 'product', product: { externalId: ref.url, url: ref.url, name: html, brand: 'B', modelCode: null, ean: null, categorySlug: 'smartfony', imageUrl: null, price: 1000, oldPrice: null, inStock: true, rating: null, reviewCount: 0, raw: null } }],
+        nextUrl: null,
+      }),
+    }
+    let failuresLeft = 3
+    const requested: string[] = []
+    const fetcher: Fetcher = {
+      async get(url) {
+        requested.push(url)
+        if (url.endsWith('c2') || url.endsWith('c3') || url.endsWith('c4')) {
+          if (failuresLeft-- > 0) return { url, status: 503, body: '', fromCache: false }
+        }
+        return { url, status: 200, body: `Товар ${url.slice(-2)}`, fromCache: false }
+      },
+    }
+    const pauses: number[] = []
+    const s = await runScraper(prisma, listingShop, fetcher, { dryRun: true, cooldownMs: 60_000, sleep: async (ms) => void pauses.push(ms) })
+    expect(pauses).toEqual([60_000])
+    expect(s.status).not.toBe('aborted')
+    // c2 і c3 не відповіли (пропали), c4 не відповіла третьою — після паузи її взято знову
+    expect(requested).toEqual(['https://l.example/c1', 'https://l.example/c2', 'https://l.example/c3', 'https://l.example/c4', 'https://l.example/c4'])
+    expect(s.products.map((p) => p.name)).toEqual(['Товар c1', 'Товар c4'])
   })
 })
 

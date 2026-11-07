@@ -13,6 +13,9 @@ export interface RunOptions {
   log?: Logger
   /** Не більше стількох сторінок у кожному розділі (перевірка адрес розділів) */
   maxPagesPerListing?: number
+  /** Перепочинок, коли сайт кілька разів поспіль не відповів (перевантажений), мс; типово 3 хв */
+  cooldownMs?: number
+  sleep?: (ms: number) => Promise<void>
   /** Скільки невдалих завантажень поспіль вважати ознакою блокування і зупинитись */
   maxConsecutiveFailures?: number
 }
@@ -75,6 +78,13 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
 
   let processed = 0
   let consecutiveFailures = 0
+  // Сайт відповідає «перевантажений» (503) кілька разів поспіль: чекаємо й пробуємо ту саму сторінку
+  // знову, не більше COOLDOWNS разів за збір; далі звичайна зупинка після maxFailures
+  const COOL_AFTER = 3
+  const COOLDOWNS = 3
+  let cooldowns = 0
+  const cooldownMs = opts.cooldownMs ?? 180_000
+  const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)))
   let aborted = false
 
   const handle = async (ref: ProductRef): Promise<void> => {
@@ -149,6 +159,14 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
           visited.add(url)
           const html = await load(url)
           processed++
+          if (html === null && consecutiveFailures >= COOL_AFTER && cooldowns < COOLDOWNS) {
+            cooldowns++
+            log.warn(`Сайт не відповідає (${consecutiveFailures} невдач поспіль): пауза ${Math.round(cooldownMs / 60_000)} хв, потім та сама сторінка знову`)
+            await sleep(cooldownMs)
+            consecutiveFailures = 0
+            visited.delete(url)
+            continue
+          }
           if (consecutiveFailures >= maxFailures) {
             aborted = true
             summary.note = `Зупинено: ${maxFailures} невдалих завантажень поспіль. Схоже, сайт блокує збір або недоступний.`

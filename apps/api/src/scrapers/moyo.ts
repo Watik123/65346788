@@ -174,6 +174,8 @@ export function parseMoyoListing(html: string, ref: ListingRef): ListingParse {
 export const moyo: ListingScraper = {
   kind: 'listing',
   slug: 'moyo',
+  // Після ~60 сторінок підряд з паузою 1,5 с MOYO почав відповідати 503 (перевантаження)
+  minDelayMs: 4000,
   name: 'MOYO',
   baseUrl: BASE,
   maxPagesPerListing: 30,

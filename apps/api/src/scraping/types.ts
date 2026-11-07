@@ -70,6 +70,8 @@ interface ScraperMeta {
   readonly slug: string
   readonly name: string
   readonly baseUrl: string
+  /** Пауза між запитами до цього магазину, мс (якщо сайт просить повільніше; типово 1500) */
+  readonly minDelayMs?: number
 }
 
 /** Спосіб 1: кожна сторінка товару окремо (знайти адреси → завантажити й прочитати кожну) */
