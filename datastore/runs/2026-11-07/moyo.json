@@ -1,58 +1,17 @@
 {
   "shop": "moyo",
   "date": "2026-11-07",
-  "startedAt": "2026-11-07T07:12:08.890Z",
-  "finishedAt": "2026-11-07T07:16:22.562Z",
-  "status": "aborted",
-  "found": 1485,
-  "saved": 1485,
-  "skipped": 219,
+  "startedAt": "2026-11-07T22:23:36.303Z",
+  "finishedAt": "2026-11-07T22:45:04.786Z",
+  "status": "completed",
+  "found": 5367,
+  "saved": 5367,
+  "skipped": 1796,
   "skippedByReason": {
-    "not_new": 71,
-    "sold_out": 148
+    "not_new": 79,
+    "sold_out": 1717
   },
-  "errors": 8,
-  "note": "Зупинено: 8 невдалих завантажень поспіль. Схоже, сайт блокує збір або недоступний.",
-  "errorList": [
-    {
-      "kind": "fetch",
-      "url": "https://www.moyo.ua/ua/acsessor/ipod_headphones/?page=11",
-      "message": "HTTP 503"
-    },
-    {
-      "kind": "fetch",
-      "url": "https://www.moyo.ua/ua/gadgets/smart_chasy/",
-      "message": "HTTP 503"
-    },
-    {
-      "kind": "fetch",
-      "url": "https://www.moyo.ua/ua/gadgets/fit_trekery_i_brasl/",
-      "message": "HTTP 503"
-    },
-    {
-      "kind": "fetch",
-      "url": "https://www.moyo.ua/ua/foto_video/audio/portativnaj_akystika/",
-      "message": "HTTP 503"
-    },
-    {
-      "kind": "fetch",
-      "url": "https://www.moyo.ua/ua/foto_video/audio/home_cinema/",
-      "message": "HTTP 503"
-    },
-    {
-      "kind": "fetch",
-      "url": "https://www.moyo.ua/ua/game_zone/game_console/",
-      "message": "HTTP 503"
-    },
-    {
-      "kind": "fetch",
-      "url": "https://www.moyo.ua/ua/foto_video/photo_video/cameras/",
-      "message": "HTTP 503"
-    },
-    {
-      "kind": "fetch",
-      "url": "https://www.moyo.ua/ua/comp-and-periphery/network_equip/routers/",
-      "message": "HTTP 503"
-    }
-  ]
+  "errors": 0,
+  "note": null,
+  "errorList": []
 }
