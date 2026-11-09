@@ -1,77 +1,77 @@
-# Статистика цін на 2026-11-08
+# Статистика цін на 2026-11-09
 
-Історія: 31 день. Пропозицій магазинів сьогодні: **34713**, у наявності: 34601, різних товарів: 23686.
+Історія: 32 дні. Пропозицій магазинів сьогодні: **35195**, у наявності: 35100, різних товарів: 24028.
 
 ## Магазини
 
 | Магазин | Товарів | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Foxtrot | 10993 | 10993 | 3259 (30%) | −17% |
-| Цитрус | 5478 | 5478 | 1825 (33%) | −16% |
-| MOYO | 5341 | 5341 | 2353 (44%) | −16% |
-| KTC | 3619 | 3507 | 1139 (31%) | −17% |
-| Ябко | 3351 | 3351 | 1284 (38%) | −13% |
-| Vencon | 2737 | 2737 | 503 (18%) | −11% |
-| TTT | 2282 | 2282 | 145 (6%) | −14% |
-| Artline | 751 | 751 | 163 (22%) | −7% |
+| Foxtrot | 11475 | 11475 | 3362 (29%) | −17% |
+| Цитрус | 5464 | 5464 | 1825 (33%) | −16% |
+| MOYO | 5297 | 5297 | 2343 (44%) | −16% |
+| KTC | 3659 | 3564 | 1178 (32%) | −17% |
+| Ябко | 3401 | 3401 | 1340 (39%) | −13% |
+| Vencon | 2713 | 2713 | 488 (18%) | −11% |
+| TTT | 2279 | 2279 | 139 (6%) | −13% |
+| Artline | 746 | 746 | 161 (22%) | −7% |
 | iSpace | 161 | 161 | 24 (15%) | −13% |
 
 ## Категорії
 
 | Категорія | Пропозицій | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Навушники | 3888 | 3881 | 1430 (37%) | −18% |
-| Монітори | 2371 | 2371 | 288 (12%) | −6% |
-| Смартфони | 2198 | 2167 | 725 (33%) | −9% |
-| Кондиціонери | 1757 | 1757 | 349 (20%) | −10% |
-| Смарт-годинники і браслети | 1668 | 1635 | 368 (22%) | −17% |
-| Фени й стайлери | 1545 | 1545 | 589 (38%) | −20% |
-| Телевізори | 1368 | 1368 | 681 (50%) | −12% |
-| Пилососи | 1338 | 1338 | 548 (41%) | −22% |
-| Бойлери й водонагрівачі | 1320 | 1320 | 155 (12%) | −13% |
-| Витяжки | 1119 | 1119 | 578 (52%) | −14% |
-| Електрочайники | 1051 | 1051 | 322 (31%) | −17% |
-| Wi-Fi роутери | 1026 | 1026 | 110 (11%) | −8% |
-| Павербанки | 875 | 865 | 116 (13%) | −19% |
-| Кавоварки й кавомашини | 821 | 810 | 337 (41%) | −23% |
-| Планшети | 818 | 798 | 220 (27%) | −8% |
-| Варильні поверхні | 782 | 782 | 268 (34%) | −10% |
-| Блендери | 782 | 782 | 235 (30%) | −19% |
-| Холодильники | 742 | 742 | 154 (21%) | −6% |
-| Портативна акустика | 736 | 736 | 141 (19%) | −16% |
-| Духові шафи | 545 | 545 | 183 (34%) | −9% |
-| Праски | 528 | 528 | 245 (46%) | −17% |
-| Мультипечі й аерогрилі | 527 | 527 | 260 (49%) | −29% |
-| Пральні машини | 517 | 517 | 177 (34%) | −7% |
-| Роботи-пилососи | 497 | 497 | 329 (66%) | −29% |
-| Тостери | 492 | 492 | 152 (31%) | −18% |
-| Кухонні комбайни | 454 | 454 | 123 (27%) | −18% |
-| Електробритви й тримери | 426 | 426 | 208 (49%) | −21% |
-| Міксери | 393 | 393 | 101 (26%) | −16% |
-| Мікрохвильові печі | 372 | 372 | 163 (44%) | −12% |
-| Вентилятори | 366 | 366 | 114 (31%) | −24% |
-| Плити | 356 | 356 | 116 (33%) | −8% |
-| Фотоапарати | 280 | 280 | 92 (33%) | −11% |
-| Генератори | 279 | 279 | 44 (16%) | −13% |
-| Зволожувачі повітря | 278 | 278 | 57 (21%) | −21% |
-| Обігрівачі | 249 | 249 | 41 (16%) | −15% |
-| Електричні зубні щітки | 215 | 215 | 117 (54%) | −25% |
-| Зарядні станції | 207 | 207 | 37 (18%) | −14% |
-| Електрогрилі | 204 | 204 | 74 (36%) | −26% |
-| Морозильні камери | 176 | 176 | 41 (23%) | −5% |
-| Соковижималки | 170 | 170 | 34 (20%) | −14% |
-| Мультиварки | 169 | 169 | 71 (42%) | −14% |
-| Відпарювачі й парогенератори | 167 | 167 | 121 (72%) | −16% |
-| Очищувачі повітря | 159 | 159 | 48 (30%) | −21% |
-| Саундбари | 155 | 155 | 61 (39%) | −13% |
-| Посудомийні машини | 140 | 140 | 26 (19%) | −8% |
-| Хлібопічки | 69 | 69 | 19 (28%) | −13% |
-| Сушильні машини | 61 | 61 | 22 (36%) | −6% |
-| Ігрові консолі | 57 | 57 | 5 (9%) | −6% |
+| Навушники | 3922 | 3922 | 1425 (36%) | −18% |
+| Монітори | 2364 | 2364 | 282 (12%) | −6% |
+| Смартфони | 2196 | 2165 | 736 (34%) | −9% |
+| Кондиціонери | 1761 | 1761 | 343 (19%) | −10% |
+| Смарт-годинники і браслети | 1695 | 1662 | 385 (23%) | −17% |
+| Фени й стайлери | 1546 | 1546 | 590 (38%) | −20% |
+| Телевізори | 1432 | 1432 | 764 (53%) | −12% |
+| Пилососи | 1333 | 1333 | 542 (41%) | −22% |
+| Бойлери й водонагрівачі | 1314 | 1314 | 157 (12%) | −13% |
+| Витяжки | 1301 | 1301 | 652 (50%) | −15% |
+| Електрочайники | 1082 | 1082 | 330 (30%) | −18% |
+| Wi-Fi роутери | 1032 | 1032 | 149 (14%) | −7% |
+| Павербанки | 894 | 894 | 117 (13%) | −19% |
+| Портативна акустика | 884 | 884 | 173 (20%) | −17% |
+| Планшети | 830 | 810 | 215 (26%) | −8% |
+| Кавоварки й кавомашини | 813 | 802 | 328 (40%) | −23% |
+| Блендери | 800 | 800 | 242 (30%) | −19% |
+| Варильні поверхні | 770 | 770 | 220 (29%) | −10% |
+| Холодильники | 739 | 739 | 147 (20%) | −6% |
+| Мультипечі й аерогрилі | 564 | 564 | 274 (49%) | −29% |
+| Духові шафи | 557 | 557 | 170 (31%) | −9% |
+| Праски | 524 | 524 | 243 (46%) | −17% |
+| Пральні машини | 515 | 515 | 171 (33%) | −7% |
+| Роботи-пилососи | 493 | 493 | 326 (66%) | −28% |
+| Тостери | 484 | 484 | 152 (31%) | −18% |
+| Кухонні комбайни | 457 | 457 | 126 (28%) | −18% |
+| Електробритви й тримери | 417 | 417 | 202 (48%) | −21% |
+| Міксери | 380 | 380 | 100 (26%) | −16% |
+| Мікрохвильові печі | 366 | 366 | 156 (43%) | −12% |
+| Вентилятори | 365 | 365 | 114 (31%) | −24% |
+| Плити | 360 | 360 | 116 (32%) | −8% |
+| Фотоапарати | 306 | 306 | 100 (33%) | −11% |
+| Генератори | 286 | 286 | 44 (15%) | −13% |
+| Зволожувачі повітря | 277 | 277 | 57 (21%) | −22% |
+| Обігрівачі | 259 | 259 | 48 (19%) | −14% |
+| Електричні зубні щітки | 215 | 215 | 116 (54%) | −25% |
+| Електрогрилі | 196 | 196 | 74 (38%) | −27% |
+| Зарядні станції | 179 | 179 | 40 (22%) | −11% |
+| Морозильні камери | 173 | 173 | 38 (22%) | −5% |
+| Відпарювачі й парогенератори | 165 | 165 | 120 (73%) | −16% |
+| Очищувачі повітря | 164 | 164 | 48 (29%) | −21% |
+| Соковижималки | 157 | 157 | 34 (22%) | −13% |
+| Саундбари | 154 | 154 | 58 (38%) | −13% |
+| Мультиварки | 153 | 153 | 68 (44%) | −12% |
+| Посудомийні машини | 136 | 136 | 24 (18%) | −8% |
+| Хлібопічки | 67 | 67 | 19 (28%) | −13% |
+| Сушильні машини | 60 | 60 | 21 (35%) | −7% |
+| Ігрові консолі | 58 | 58 | 4 (7%) | −7% |
 
 ## Знижки, які показує магазин
 
-Закреслена ціна є в **10695** з 34713 пропозицій (31%). Медіанна заявлена знижка: −13%.
+Закреслена ціна є в **10860** з 35195 пропозицій (31%). Медіанна заявлена знижка: −13%.
 
 Найбільші заявлені знижки (перевіримо їх, щойно буде 14 днів історії):
 
@@ -80,7 +80,7 @@
 | [Робот-пилосос CECOTEC Conga 7690 Immortal Max Home (A01_EU01_107140)](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-cecotec-conga-7690-immortal-max-home.html) | Foxtrot | 9 999 ₴ | 1 599 900 ₴ | −99% |
 | [Робот-пилосос DEERMA X70 (DEM-X70)](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-deerma-x70-dem-x70.html) | Foxtrot | 17 999 ₴ | 2 599 900 ₴ | −99% |
 | [Робот-пилосос Cecotec Conga 9590 Spin Revolution Ultra Power Home A01_EU01_100146](https://www.foxtrot.com.ua/uk/shop/robotiy-piylesosiy-cecotec-conga-9590-spin-revolution-ultra-power-home.html) | Foxtrot | 13 999 ₴ | 1 999 900 ₴ | −99% |
-| [Портативний вентилятор Proove Carlson (White)](https://jabko.ua/product/portatyvnyi-ventylyator-proove-carlson-white) | Ябко | 599 ₴ | 43 949 ₴ | −99% |
+| [Портативний вентилятор Proove Carlson (White)](https://jabko.ua/product/portatyvnyi-ventylyator-proove-carlson-white) | Ябко | 599 ₴ | 44 049 ₴ | −99% |
 | [Навушники Philips The Ringo (Black)](https://jabko.ua/product/navushnyky-philips-the-ringo-black) | Ябко | 1 199 ₴ | 8 999 ₴ | −87% |
 | [Навушники Philips The Ringo (Turquoise)](https://jabko.ua/product/navushnyky-philips-the-ringo-turquoise) | Ябко | 1 199 ₴ | 8 999 ₴ | −87% |
 | [Навушники Philips The Ringo (White)](https://jabko.ua/product/navushnyky-philips-the-ringo-white) | Ябко | 1 199 ₴ | 8 999 ₴ | −87% |
@@ -90,7 +90,7 @@
 
 ## Один товар у кількох магазинах
 
-Знайдено в 2+ магазинах: **6326** товарів, у 3+: 2872. Схожих пар, які треба перевірити вручну: 1219.
+Знайдено в 2+ магазинах: **6423** товарів, у 3+: 2898. Схожих пар, які треба перевірити вручну: 1224.
 
 Найсхожіші пари на перевірку (`npm run match:review`):
 
@@ -119,33 +119,33 @@
 | Гарнітура A4TECH Bloody M320 Black | [649 ₴](https://ktc.ua/goods/garnitura_a4tech_hu_10_black.html) KTC | [2 499 ₴](https://www.foxtrot.com.ua/uk/shop/naushniki_a4tech_bloody_m320_black.html) Foxtrot | −74% |
 | Гарнітура BELKIN Soundform Bolt True Wireless Lavender (AUC009BTLV) | [849 ₴](https://www.moyo.ua/ua/naushniki_belkin_soundform_bolt_true_wireless_lavender_auc009btlv_/543328.html) MOYO | [3 199 ₴](https://ktc.ua/goods/navushniki_belkin_soundform_bolt_true_lavender__auc009btlv.html) KTC | −73% |
 | Робот-пилосос ECOVACS DEEBOT T10 White (DBX33) | [5 999 ₴](https://citrus.ua/roboty-uborshhiki/robot-pylesos-ecovacs-deebot-t10-white-dbx33-708351.html) Цитрус | [22 463 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy_piylesosiy_ecovacs_deebot_t10.html) Foxtrot | −73% |
-| Iнтернет роутер Asus ZenWiFi BD4 BE3600, 2x2,5GE WAN/LAN, 2мод, білий | [3 577 ₴](https://www.moyo.ua/ua/marshrutyzator_asus_rt-be3600e_be3600_3xge_lan_2_5xge_wan_mesh/778588.html) MOYO | [12 499 ₴](https://citrus.ua/wi-fi-routery/internet-router-asus-zenwifi-bd4-be3600-2x25ge-wanlan-2mod-biliy-780718.html) Цитрус | −71% |
 | Смарт-годинник KOSPET PULSE 2 Silver | [1 199 ₴](https://www.foxtrot.com.ua/uk/shop/smart-chasiy-kospet-pulse-silver.html) Foxtrot | [3 999 ₴](https://citrus.ua/smart-chasy/smart-godinnik-kospet-pulse-2-silver-802101.html) Цитрус | −70% |
+| Батарея універсальна Choetech B659 10000mAh Black/Orange (B659-OR) | [889 ₴](https://ktc.ua/goods/batareya_universalna_choetech_b659_10000mah_blackorange_b659_or.html) KTC | [2 849 ₴](https://www.moyo.ua/ua/paverbank_choetech_10000mah_2usb-a_1xusb-c_black-orange/839443.html) MOYO | −69% |
 
 ## Зміни за добу
 
-Подешевшало: **490**, подорожчало: **101**, без змін: 34122.
+Подешевшало: **454**, подорожчало: **1379**, без змін: 33362.
 
 | Товар | Було | Стало | Зміна |
 |---|---:|---:|---:|
-| [Міксер планетарний ZELMER ZKR9050 Kitchen Connect (70307146P)](https://www.foxtrot.com.ua/uk/shop/kuhonniye-mashiniy-i-kombajniy-zelmer-zkr9050-kitchen-connect.html) | 25 999 ₴ | 11 199 ₴ | −56,9% |
-| [Мультипіч ZELMER ZAF 8650](https://www.foxtrot.com.ua/uk/shop/multivarki-zelmer-zaf-8650.html) | 8 799 ₴ | 4 799 ₴ | −45,5% |
-| [Блендер NEOR JUICY 3ML35 WT](https://www.foxtrot.com.ua/uk/shop/blenderiy-neor-juicy-3ml35-wt.html) | 1 299 ₴ | 715 ₴ | −45,0% |
-| [Праска POLARIS PIR 3015 SG AA Blue/Graphite](https://www.foxtrot.com.ua/uk/shop/utyugi-polaris-pir-3015-sg-aa-3m-sinijgrafit.html) | 4 499 ₴ | 2 599 ₴ | −42,2% |
-| [Саундбар NEOR SR50 Plus](https://www.foxtrot.com.ua/uk/shop/saundbariy_neor_sr50_plus.html) | 2 995 ₴ | 1 797 ₴ | −40,0% |
-| [Відпарювач GRUNHELM GHS-1006](https://www.foxtrot.com.ua/uk/shop/utyugi_grunhelm_ghs_1006.html) | 1 509 ₴ | 919 ₴ | −39,1% |
-| [Зволожувач повітря NEOR HUMI 4ML8 WT (22301017)](https://www.foxtrot.com.ua/uk/shop/uvlazhniteli_vozduha_neor_humi_4ml8_wt.html) | 2 795 ₴ | 1 817 ₴ | −35,0% |
-| [Мультипіч ZELMER ZAF 8800](https://www.foxtrot.com.ua/uk/shop/multivarki-zelmer-zaf-8800.html) | 9 359 ₴ | 6 199 ₴ | −33,8% |
-| [Тример GRUNHELM GTR-03U](https://www.foxtrot.com.ua/uk/shop/mashinki-dlya-strizhki-grunhelm-trimer-nabir-gtr03u.html) | 745 ₴ | 499 ₴ | −33,0% |
-| [Powerbank PISEN MagiPi Wireless 10000mAh Black (TP-D101_Black)](https://ktc.ua/goods/batareya_universalna_pisen_magipi_10000mah_30w_qi_15w_black_tp_d101_black.html) | 2 979 ₴ | 2 179 ₴ | −26,9% |
+| [Навушники Anker SoundCore R60i White (D1202G21)](https://ktc.ua/goods/navushniki_anker_soundcore_r60i_white_d1202g21.html) | 4 888 ₴ | 2 869 ₴ | −41,3% |
+| [Батарея універсальна Silicon Power MP10 10000mAh 20W Qi 15W Built-in 2xType-C Cable Pure White (SP10KMAPBKMP101W)](https://ktc.ua/goods/batareya_universalna_silicon_power_mp10_10000mah_20w_qi_15w_built_in_2xtype_c_cable_pure_white_sp10kmapbkmp101w.html) | 2 479 ₴ | 1 709 ₴ | −31,1% |
+| [Вентилятор ARCTIC Summair 2Go Dark Blue](https://www.foxtrot.com.ua/uk/shop/ventilyatoriy-arctic-summair-2go-dark-blue.html) | 999 ₴ | 704 ₴ | −29,5% |
+| [Навушники HyperX Cloud Stinger 3 Wired White (BS1T6AA)](https://ktc.ua/goods/garnitura_hyperx_cloud_stinger_3_white_bs1t6aa.html) | 3 599 ₴ | 2 699 ₴ | −25,0% |
+| [Навушники HyperX CloudX Stinger 3 Wired Black for Xbox (BS1T7AA)](https://ktc.ua/goods/garnitura_hyperx_cloud_stinger_3_xbox_black_bs1t7aa.html) | 3 599 ₴ | 2 699 ₴ | −25,0% |
+| [Мультипіч LIBERTON LAF-3217](https://www.foxtrot.com.ua/uk/shop/multivarki-liberton-multipich-gril-laf-3217.html) | 3 999 ₴ | 2 999 ₴ | −25,0% |
+| [Навушники HyperX Cloud Stinger 3 Wireless White (BS1T9AA)](https://ktc.ua/goods/garnitura_hyperx_cloud_stinger_3_white_bs1t9aa.html) | 5 999 ₴ | 4 499 ₴ | −25,0% |
+| [Гарнітура Canyon Ego GH-16 Black (CND-SGHS16B)](https://ktc.ua/goods/garnitura_canyon_ego_gh_16_black__cnd_sghs16b.html) | 2 299 ₴ | 1 737 ₴ | −24,4% |
+| [Навушники HyperX CloudX Stinger 3 Wireless Black for Xbox (BS1U0AA)](https://ktc.ua/goods/garnitura_hyperx_cloud_stinger_3_xbox_wireless_black_bs1u0aa.html) | 5 899 ₴ | 4 499 ₴ | −23,7% |
+| [Гарнітура PROOVE Kids LumiCat White/Pink (HPLC0001AP25)](https://ktc.ua/goods/navushniki_proove_kids_lumicat_app_whitepink_hplc0001ap25.html) | 1 699 ₴ | 1 299 ₴ | −23,5% |
 
 ## Справжні й фальшиві знижки
 
-Справжніх знижок: **157**, фальшивих: **853**, без знижки: 2411, замало даних: 20188.
+Справжніх знижок: **146**, фальшивих: **816**, без знижки: 2473, замало даних: 20526.
 
 | Товар | Ціна | Типова | Знижка | Скор |
 |---|---:|---:|---:|---:|
-| [Пилосос SHARK PowerPro IZ380EUT](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-shark-powerpro-iz380eut) | 9 574 ₴ | 14 949 ₴ | −36,0% | 21.55 |
+| [Телевізор SAMSUNG QE115QN90FUXUA](https://jabko.ua/product/televizor-samsung-98-qe115qn90fuxua) | 477 799 ₴ | 799 999 ₴ | −40,3% | 18.66 |
 | [Смартфон Samsung Galaxy A17 4/128GB (SM-A175FZKBEUC) Black (lifecell)](https://www.ttt.ua/ua/shop/product/smartfon-samsung-galaxy-a17-4-128gb-sm-a175fzkbeuc-black-lifecell) | 9 899 ₴ | 13 999 ₴ | −29,3% | 16.53 |
 | [Робот пилосос Samsung VR3MB77312K/UK](https://citrus.ua/roboty-uborshhiki/robot-pylesos-samsung-vr3mb77312kuk-733728.html) | 6 999 ₴ | 9 999 ₴ | −30,0% | 14.44 |
 | [Пилосос Adler AD 7044](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-adler-ad-7044) | 4 899 ₴ | 6 564 ₴ | −25,4% | 13.8 |
