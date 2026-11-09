@@ -22,6 +22,8 @@ export interface DealInput {
   shopsCount: number
   /** Закреслена («стара») ціна, яку показує магазин із найкращою ціною */
   claimedOldPrice: number | null
+  /** Скільки діб ми бачимо товар у магазині з найкращою ціною (разом із сьогоднішньою); не задано — не перевіряється */
+  bestShopDays?: number
 }
 
 export interface DealResult {

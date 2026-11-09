@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
-import type { CompareQueryParams } from '@znyzhky/shared'
+import type { CatalogQueryParams, CompareQueryParams } from '@znyzhky/shared'
 import { toApiParams, type FeedFilters } from './feed-params'
 
 export const useFeed = (filters: FeedFilters) =>
@@ -18,3 +18,6 @@ export const useProduct = (id: number) => useQuery({ queryKey: ['product', id], 
 
 export const useCompare = (q: CompareQueryParams) =>
   useQuery({ queryKey: ['compare', q], queryFn: () => api.compare(q), placeholderData: keepPreviousData })
+
+export const useCatalog = (q: CatalogQueryParams) =>
+  useQuery({ queryKey: ['catalog', q], queryFn: () => api.catalog(q), placeholderData: keepPreviousData })

@@ -70,6 +70,28 @@ export const CATEGORIES: CategoryDef[] = [
   { slug: 'zubni-shchitky', name: 'Електричні зубні щітки', parent: 'krasa' },
 ]
 
+/**
+ * Суміжні категорії, між якими шукаємо той самий товар: магазини кладуть його в різні розділи
+ * (планетарний міксер то в «Міксери», то в «Кухонні комбайни», відпарювач то окремо, то серед прасок).
+ */
+const MATCH_GROUPS: string[][] = [
+  ['miksery', 'kukhonni-kombainy', 'blendery'],
+  ['prasky', 'vidparyuvachi'],
+  ['pylososy', 'roboty-pylososy'],
+  ['multivarky', 'aerohryli', 'hryli'],
+  ['kholodylnyky', 'morozylni-kamery'],
+  ['plyty', 'varylni-poverkhni', 'dukhovky', 'mikrokhvylovi-pechi'],
+  ['pralni-mashyny', 'sushylni-mashyny'],
+  ['obihrivachi', 'ventyliatory', 'kondytsionery'],
+  ['zvolozhuvachi', 'ochyshchuvachi'],
+  ['portatyvna-akustyka', 'saundbary'],
+  ['powerbanky', 'zaryadni-stantsii'],
+]
+const GROUP_OF = new Map(MATCH_GROUPS.flatMap((g) => g.map((slug) => [slug, g[0] as string] as const)))
+
+/** Група категорій, у межах якої товари різних магазинів можуть бути тим самим товаром */
+export const matchGroup = (slug: string): string => GROUP_OF.get(slug) ?? slug
+
 /** Категорії, яких на сайті більше немає: їхні записи в сховищі пропускаються під час імпорту */
 export const REMOVED_CATEGORIES: ReadonlySet<string> = new Set(['noutbuky'])
 

@@ -1,4 +1,4 @@
-import { COMPARE_SORTS, SORT_OPTIONS } from '@znyzhky/shared'
+import { CATALOG_SORTS, COMPARE_SORTS, SORT_OPTIONS } from '@znyzhky/shared'
 import { z } from 'zod'
 import { ApiError } from './errors'
 
@@ -39,6 +39,16 @@ export const compareQuerySchema = z.object({
     .enum(['1', '0', 'true', 'false'])
     .optional()
     .transform((v) => v === '1' || v === 'true'),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(60).default(24),
+})
+
+const catalogSortKeys = CATALOG_SORTS.map((o) => o.value) as [string, ...string[]]
+
+export const catalogQuerySchema = z.object({
+  category: z.string().min(1).optional(),
+  q: z.string().max(100).optional(),
+  sort: z.enum(catalogSortKeys).default('popular'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(60).default(24),
 })

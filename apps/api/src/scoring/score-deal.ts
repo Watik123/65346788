@@ -14,7 +14,8 @@ const DAY_MS = 86_400_000
  *   1. вона не менша за поріг (minDiscountPercent);
  *   2. історії достатньо (minHistoryDays);
  *   3. ціна не стрибала нещодавно вгору-вниз (нестабільна історія);
- *   4. ціна зараз на «дні»: не вища за мінімум періоду більш ніж на atLowTolerance.
+ *   4. ціна зараз на «дні»: не вища за мінімум періоду більш ніж на atLowTolerance;
+ *   5. найдешевший магазин продає товар не перший день (minBestShopDays).
  *
  * Фейк = знижка, яку бачить покупець (порівняно з нещодавньою ціною чи
  * закресленою ціною магазину), але яка зникає порівняно з типовою ціною.
@@ -94,6 +95,11 @@ export function scoreDeal(input: DealInput, overrides: ScoringOverrides = {}): D
     }
     if (!atLow) {
       return result('none', { ...base, reasons: [reasons.aboveRecentLow(aboveLowPercent, cfg.baselineDays)] })
+    }
+
+    // Товар щойно з'явився в дешевшому магазині: це ще не «подешевшав», а новий продавець
+    if (input.bestShopDays !== undefined && input.bestShopDays < cfg.minBestShopDays) {
+      return result('insufficient_data', { ...base, reasons: [reasons.newOffer(input.bestShopDays, cfg.minBestShopDays)] })
     }
 
     const why: Reason[] = [reasons.belowTypical(percent, amount, basePrice, cfg.baselineDays)]

@@ -28,7 +28,7 @@ export interface CompareSource {
   rating: number | null
   reviewCount: number
   category: CategoryRefDto & { parent: CategoryRefDto | null }
-  offers: { shop: ShopRefDto; price: number; inStock: boolean; oldPrice: number | null }[]
+  offers: { shop: ShopRefDto; price: number; inStock: boolean; oldPrice: number | null; url: string }[]
 }
 
 export interface ComparePriceDto {
@@ -36,6 +36,8 @@ export interface ComparePriceDto {
   price: number
   /** Закреслена ціна магазину, якщо вона більша за поточну */
   oldPrice: number | null
+  /** Сторінка товару в магазині */
+  url: string
 }
 
 export interface PaperDiscountDto {
@@ -99,7 +101,7 @@ const byShopName = (a: { shop: ShopRefDto }, b: { shop: ShopRefDto }) => a.shop.
 export function toCompareItem(src: CompareSource): CompareItemDto | null {
   const prices: ComparePriceDto[] = src.offers
     .filter((o) => o.inStock && o.price > 0)
-    .map((o) => ({ shop: { slug: o.shop.slug, name: o.shop.name }, price: o.price, oldPrice: o.oldPrice !== null && o.oldPrice > o.price ? o.oldPrice : null }))
+    .map((o) => ({ shop: { slug: o.shop.slug, name: o.shop.name }, price: o.price, oldPrice: o.oldPrice !== null && o.oldPrice > o.price ? o.oldPrice : null, url: o.url }))
     .sort((a, b) => a.price - b.price || byShopName(a, b))
   if (new Set(prices.map((p) => p.shop.slug)).size < 2) return null
 

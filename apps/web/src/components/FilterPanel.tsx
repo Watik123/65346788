@@ -43,9 +43,12 @@ function CategoryRow({ node, depth, selected, onSelect }: { node: CategoryNodeDt
           <span className="tabular text-xs text-ink-3">{node.dealCount}</span>
         </button>
       </li>
-      {node.children.map((c) => (
-        <CategoryRow key={c.slug} node={c} depth={depth + 1} selected={selected} onSelect={onSelect} />
-      ))}
+      {/* Категорії без жодної знижки не показуємо: вибір такої дав би порожню стрічку. Усі категорії є в каталозі */}
+      {node.children
+        .filter((c) => c.dealCount > 0 || c.slug === selected)
+        .map((c) => (
+          <CategoryRow key={c.slug} node={c} depth={depth + 1} selected={selected} onSelect={onSelect} />
+        ))}
     </>
   )
 }
@@ -118,16 +121,20 @@ export function FilterPanel({ filters, data, onChange, onReset, activeCount, hid
               Усі категорії
             </button>
           </li>
-          {data?.categories.map((c) => (
-            <CategoryRow key={c.slug} node={c} depth={0} selected={filters.category} onSelect={(category) => onChange({ category })} />
-          ))}
+          {data?.categories
+            .filter((c) => c.dealCount > 0 || c.slug === filters.category || c.children.some((ch) => ch.slug === filters.category))
+            .map((c) => (
+              <CategoryRow key={c.slug} node={c} depth={0} selected={filters.category} onSelect={(category) => onChange({ category })} />
+            ))}
         </ul>
       </Section>
 
       <Section title="Магазин">
         <p className="mb-2 -mt-1 text-xs text-ink-3">Товар, що є в наявності в обраному магазині</p>
         <ul className="flex flex-col gap-0.5">
-          {data?.shops.map((s) => {
+          {data?.shops
+            .filter((s) => s.dealCount > 0 || filters.shops.includes(s.slug))
+            .map((s) => {
             const checked = filters.shops.includes(s.slug)
             return (
               <li key={s.slug}>

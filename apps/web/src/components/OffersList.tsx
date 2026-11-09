@@ -1,8 +1,8 @@
-import { formatPrice, formatRating, type OfferDto } from '@znyzhky/shared'
+import { formatDay, formatPrice, formatRating, type OfferDto } from '@znyzhky/shared'
 import { ExternalIcon, StarIcon } from './icons'
 
 /** Пропозиції всіх магазинів: від найдешевшої. На телефоні кожна це окрема картка, на ширших екранах таблиця. */
-export function OffersList({ offers }: { offers: OfferDto[] }) {
+export function OffersList({ offers, dataDay }: { offers: OfferDto[]; dataDay?: string | null }) {
   const cols = 'md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto]'
   return (
     <div>
@@ -18,6 +18,12 @@ export function OffersList({ offers }: { offers: OfferDto[] }) {
           <li key={o.shop.slug} className={`grid grid-cols-2 items-center gap-x-4 gap-y-2 border-b border-line px-4 py-4 last:border-b-0 md:gap-y-0 ${cols}`}>
             <div className="min-w-0">
               <p className="truncate font-semibold text-ink">{o.shop.name}</p>
+              {/* Назва в магазині: видно, що саме він продає під цією ціною */}
+              {o.title && (
+                <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-ink-3" title={o.title}>
+                  {o.title}
+                </p>
+              )}
               {o.shop.rating !== null && (
                 <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-ink-3" title="Рейтинг магазину">
                   <StarIcon size={12} /> Рейтинг {formatRating(o.shop.rating)}
@@ -47,7 +53,11 @@ export function OffersList({ offers }: { offers: OfferDto[] }) {
                   В наявності
                 </span>
               ) : (
-                <span className="text-ink-3">Немає в наявності</span>
+                <span className="text-ink-3">
+                  Немає в наявності
+                  {/* Магазин перестав показувати товар: кажемо, коли ми бачили цю ціну востаннє */}
+                  {dataDay && o.lastSeenAt.slice(0, 10) < dataDay && <span className="block text-xs">ціна від {formatDay(o.lastSeenAt.slice(0, 10))}</span>}
+                </span>
               )}
             </div>
 

@@ -11,7 +11,14 @@ import { ApiRequestError } from '../api/client'
 import { useFilters, useProduct } from '../lib/queries'
 
 function PriceBlock({ deal }: { deal: DealDto | null }) {
-  if (!deal) return <p className="text-lg font-semibold text-ink-2">Зараз немає в наявності</p>
+  if (!deal) {
+    return (
+      <div>
+        <p className="text-lg font-semibold text-ink-2">Зараз немає в наявності</p>
+        <p className="mt-1 text-sm text-ink-3">Жоден із магазинів, за якими ми стежимо, зараз цей товар не продає. Нижче — останні відомі ціни та історія.</p>
+      </div>
+    )
+  }
   const real = deal.status === 'real'
   return (
     <div>
@@ -41,7 +48,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   )
 }
 
-function ProductBody({ product, shopOrder }: { product: ProductDetailResponse; shopOrder: string[] }) {
+function ProductBody({ product, shopOrder, dataDay }: { product: ProductDetailResponse; shopOrder: string[]; dataDay: string | null }) {
   const { deal } = product
   useEffect(() => {
     document.title = `${product.name}: справжні знижки`
@@ -51,7 +58,7 @@ function ProductBody({ product, shopOrder }: { product: ProductDetailResponse; s
     <>
       <nav aria-label="Навігація" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-3">
         <Link to="/" className="inline-flex items-center gap-1.5 font-medium text-ink-2 hover:text-ink">
-          <ArrowLeftIcon size={16} /> До стрічки
+          <ArrowLeftIcon size={16} /> Знижки
         </Link>
         <span aria-hidden="true">/</span>
         {product.category.parent && (
@@ -60,7 +67,7 @@ function ProductBody({ product, shopOrder }: { product: ProductDetailResponse; s
             <span aria-hidden="true">/</span>
           </>
         )}
-        <Link to={`/?category=${product.category.slug}`} className="hover:text-ink">
+        <Link to={`/catalog?category=${product.category.slug}`} className="hover:text-ink">
           {product.category.name}
         </Link>
       </nav>
@@ -99,7 +106,7 @@ function ProductBody({ product, shopOrder }: { product: ProductDetailResponse; s
         )}
 
         <div className="mt-6">
-          <PriceHistoryChart product={product} shopOrder={shopOrder} />
+          <PriceHistoryChart product={product} shopOrder={shopOrder} dataDay={dataDay} />
         </div>
       </section>
 
@@ -108,11 +115,11 @@ function ProductBody({ product, shopOrder }: { product: ProductDetailResponse; s
           Пропозиції магазинів
         </h2>
         <p className="mt-1 px-4 text-sm text-ink-2 sm:px-6">
-          {product.offers.length > 0 ? `${formatReviews(product.reviewCount)}${product.rating !== null ? `, середня оцінка ${formatRating(product.rating)}` : ''}. ` : ''}
-          Ціни й наявність оновлюються щодня.
+          {product.rating !== null && product.reviewCount > 0 ? `${formatReviews(product.reviewCount)}, середня оцінка ${formatRating(product.rating)}. ` : ''}
+          Ціни й наявність оновлюємо щодня; у магазині ціна могла змінитись після останнього оновлення.
         </p>
         <div className="mt-4 sm:px-2">
-          <OffersList offers={product.offers} />
+          <OffersList offers={product.offers} dataDay={dataDay} />
         </div>
       </section>
     </>
@@ -125,6 +132,7 @@ export function ProductPage() {
   const product = useProduct(productId)
   const filters = useFilters()
   const shopOrder = filters.data?.shops.map((s) => s.slug) ?? []
+  const dataDay = filters.data?.dataDay ?? null
 
   if (product.isPending) {
     return (
@@ -155,5 +163,5 @@ export function ProductPage() {
     )
   }
 
-  return <ProductBody product={product.data} shopOrder={shopOrder} />
+  return <ProductBody product={product.data} shopOrder={shopOrder} dataDay={dataDay} />
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { queryCompare, toCompareItem, type CompareItemDto, type CompareSource } from './compare'
 
 const shop = (slug: string, name = slug.toUpperCase()) => ({ slug, name })
-const product = (id: number, offers: CompareSource['offers'], category = { slug: 'pylososy', name: 'Пилососи', parent: { slug: 'pobutova-tekhnika', name: 'Побутова техніка' } }): CompareSource => ({
+const product = (id: number, offers: Omit<CompareSource['offers'][number], 'url'>[], category = { slug: 'pylososy', name: 'Пилососи', parent: { slug: 'pobutova-tekhnika', name: 'Побутова техніка' } }): CompareSource => ({
   id,
   name: `Товар ${id}`,
   brand: 'AENO',
@@ -10,7 +10,7 @@ const product = (id: number, offers: CompareSource['offers'], category = { slug:
   rating: null,
   reviewCount: 0,
   category,
-  offers,
+  offers: offers.map((o) => ({ ...o, url: `https://${o.shop.slug}.example/p/${id}` })),
 })
 
 describe('toCompareItem', () => {

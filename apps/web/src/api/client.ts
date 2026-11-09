@@ -1,9 +1,16 @@
 import {
+  decodeCatalog,
   decodeProduct,
   productBucket,
-  staticCompare,
+  queryCatalog,
+  queryCompare,
   staticFeed,
+  type CatalogItemDto,
+  type CatalogQueryParams,
+  type CatalogResponse,
+  type CompactCatalog,
   type CompactProduct,
+  type CompareItemDto,
   type CompareQueryParams,
   type CompareResponse,
   type FeedQueryParams,
@@ -11,12 +18,12 @@ import {
   type FiltersResponse,
   type ProductDetailResponse,
   type RejectedResponse,
-  type StaticIndex,
+  type StaticIndexFile,
 } from '@znyzhky/shared'
 
 /**
  * Збірка для сайту без сервера (npm run site:build): дані лежать файлами поруч зі сторінкою
- * (data/index.json і data/p/<кошик>.json), сайт їх довантажує. Звичайна збірка ходить в API.
+ * (data/index.json, compare.json, catalog.json, img/<категорія>.json і p/<кошик>.json), сайт довантажує їх за потреби. Звичайна збірка ходить в API.
  */
 export const isStaticMode = import.meta.env.VITE_STATIC === '1'
 
@@ -69,7 +76,30 @@ function loadOnce<T>(path: string): Promise<T> {
   }
   return p
 }
-const loadIndex = () => loadOnce<StaticIndex>('data/index.json')
+const loadIndex = () => loadOnce<StaticIndexFile>('data/index.json')
+
+/** Каталог без фото розбирається один раз; фото довантажуються по категоріях лише для видимої сторінки */
+let catalogItems: Promise<CatalogItemDto[]> | undefined
+function loadCatalog(): Promise<CatalogItemDto[]> {
+  catalogItems ??= loadOnce<CompactCatalog>('data/catalog.json').then(decodeCatalog)
+  catalogItems.catch(() => (catalogItems = undefined))
+  return catalogItems
+}
+
+async function withImages(res: CatalogResponse): Promise<CatalogResponse> {
+  const slugs = [...new Set(res.items.map((i) => i.category.slug))]
+  const files = new Map<string, Record<string, string>>()
+  await Promise.all(
+    slugs.map(async (slug) => {
+      try {
+        files.set(slug, await loadOnce<Record<string, string>>(`data/img/${slug}.json`))
+      } catch {
+        // без фото каталог теж працює: покажемо заглушку
+      }
+    }),
+  )
+  return { ...res, items: res.items.map((i) => ({ ...i, imageUrl: files.get(i.category.slug)?.[String(i.id)] ?? null })) }
+}
 
 export const api = {
   feed: async (q: FeedQueryParams): Promise<FeedResponse> => (isStaticMode ? staticFeed(await loadIndex(), q) : getJson(feedPath(q))),
@@ -77,7 +107,7 @@ export const api = {
   filters: async (): Promise<FiltersResponse> => (isStaticMode ? (await loadIndex()).filters : getJson('/api/filters')),
 
   compare: async (q: CompareQueryParams): Promise<CompareResponse> => {
-    if (isStaticMode) return staticCompare(await loadIndex(), q)
+    if (isStaticMode) return queryCompare(await loadOnce<CompareItemDto[]>('data/compare.json'), q)
     const sp = new URLSearchParams()
     if (q.category) sp.set('category', q.category)
     sp.set('sort', q.sort)
@@ -85,6 +115,17 @@ export const api = {
     sp.set('page', String(q.page))
     sp.set('limit', String(q.limit))
     return getJson(`/api/compare?${sp}`)
+  },
+
+  catalog: async (q: CatalogQueryParams): Promise<CatalogResponse> => {
+    if (isStaticMode) return withImages(queryCatalog(await loadCatalog(), q))
+    const sp = new URLSearchParams()
+    if (q.category) sp.set('category', q.category)
+    if (q.q) sp.set('q', q.q)
+    sp.set('sort', q.sort)
+    sp.set('page', String(q.page))
+    sp.set('limit', String(q.limit))
+    return getJson(`/api/catalog?${sp}`)
   },
 
   rejected: async (): Promise<RejectedResponse> => (isStaticMode ? (await loadIndex()).rejected : getJson('/api/rejected?limit=60')),

@@ -27,6 +27,11 @@ export interface ScoringConfig {
   claimOverstatedGap: number
   /** Ціна на поточному рівні не довше за стільки діб: «свіже зниження» */
   freshDays: number
+  /**
+   * Найдешевший магазин має продавати товар щонайменше стільки діб. Інакше «знижка» — це не зниження ціни,
+   * а новий продавець (або хибно зіставлений товар): чекаємо, чи втримається
+   */
+  minBestShopDays: number
   quality: {
     /** Середня оцінка по ринку, до якої «підтягуються» товари з малою кількістю відгуків */
     priorRating: number
@@ -58,6 +63,7 @@ export const DEFAULT_SCORING_CONFIG: ScoringConfig = {
   claimThresholdPercent: 10,
   claimOverstatedGap: 8,
   freshDays: 3,
+  minBestShopDays: 3,
   quality: { priorRating: 4.3, priorWeight: 50, floorRating: 3, topRating: 5, minFactor: 0.2 },
   popularity: { refShops: 6 },
 }

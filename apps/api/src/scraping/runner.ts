@@ -102,11 +102,19 @@ export async function runScraper(prisma: PrismaClient, scraper: ShopScraper, fet
     await accept(outcome, ref.url)
   }
 
+  // Той самий товар у двох розділах магазину (загальному й вужчому) записуємо один раз: першим,
+  // бо перелік розділів іде від вужчих до загальних
+  const seenIds = new Set<string>()
   const accept = async (outcome: ParseOutcome, url: string): Promise<void> => {
     if (outcome.kind === 'skip') {
       skip(outcome.reason)
       return
     }
+    if (seenIds.has(outcome.product.externalId)) {
+      skip('duplicate')
+      return
+    }
+    seenIds.add(outcome.product.externalId)
     summary.found++
     if (dryRun) {
       summary.products.push(outcome.product)

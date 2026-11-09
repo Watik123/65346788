@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router'
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router'
 import { isStaticMode } from './api/client'
 import { Layout } from './components/Layout'
+import { CatalogPage } from './pages/CatalogPage'
 import { ComparePage } from './pages/ComparePage'
 import { FeedPage } from './pages/FeedPage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -16,10 +17,11 @@ const queryClient = new QueryClient({
 })
 
 /**
- * Збірка без сервера живе на сторінці, де адреса не наша, тому там маршрути тримаються
- * в пам'яті; звичайний сайт використовує адресу браузера.
+ * Збірка без сервера (GitHub Pages) тримає маршрут у частині адреси після «#»: сторінку товару можна
+ * оновити, відкрити за посиланням чи повернутись до неї кнопкою «Назад», а серверу для цього нічого
+ * не треба вміти. Звичайний сайт використовує адресу браузера.
  */
-const Router = isStaticMode ? MemoryRouter : BrowserRouter
+const Router = isStaticMode ? HashRouter : BrowserRouter
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
@@ -29,6 +31,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
           <Route element={<Layout />}>
             <Route index element={<FeedPage />} />
             <Route path="product/:id" element={<ProductPage />} />
+            <Route path="catalog" element={<CatalogPage />} />
             <Route path="compare" element={<ComparePage />} />
             <Route path="rejected" element={<RejectedPage />} />
             <Route path="*" element={<NotFoundPage />} />

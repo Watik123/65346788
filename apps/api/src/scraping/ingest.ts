@@ -113,7 +113,8 @@ export async function ingestProduct(
       const results = candidates
         .filter((c) => !c.offerKeys.some((k) => rejected.has(k)))
         .map((c) => ({ candidateId: c.id, result: compareProducts(incoming, c.attrs) }))
-      const same = results.find((r) => r.result.decision === 'same')
+      // Серед кількох підхожих товарів — найупевненіший збіг, а не перший-ліпший
+      const same = results.filter((r) => r.result.decision === 'same').sort((a, b) => b.result.score - a.result.score)[0]
       if (same) {
         productId = same.candidateId
         matchedBy = 'model'

@@ -1,9 +1,11 @@
 import { SORT_OPTIONS, type CategoryNodeDto, type FiltersResponse } from '@znyzhky/shared'
 import type { PrismaClient } from '../generated/prisma/client'
+import { dayString, latestDataDay } from './common'
 
 /** Дані для панелі фільтрів: категорії, магазини, межі цін. Рахуються по справжніх знижках. */
 export async function getFilters(prisma: PrismaClient): Promise<FiltersResponse> {
   const real = { status: 'real' }
+  const [dataDay, productCount] = await Promise.all([latestDataDay(prisma), prisma.product.count()])
   const [allCategories, used, shops, byCategory, byShop, agg] = await Promise.all([
     prisma.category.findMany({ orderBy: { id: 'asc' } }),
     prisma.product.groupBy({ by: ['categoryId'], _count: { _all: true } }),
@@ -46,6 +48,8 @@ export async function getFilters(prisma: PrismaClient): Promise<FiltersResponse>
     shops: shops.map((s) => ({ slug: s.slug, name: s.name, dealCount: shopCount.get(s.id) ?? 0 })),
     priceRange: agg._min.bestPrice !== null && agg._max.bestPrice !== null ? { min: agg._min.bestPrice, max: agg._max.bestPrice } : null,
     maxDiscountPercent: agg._max.discountPercent ?? 0,
+    dataDay: dataDay ? dayString(dataDay) : null,
+    productCount,
     sortOptions: SORT_OPTIONS,
   }
 }

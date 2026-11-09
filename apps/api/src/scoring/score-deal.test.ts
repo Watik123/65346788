@@ -232,3 +232,19 @@ describe('scoreDeal: скор і сортування', () => {
     expect(scoreDeal(input()).score).toBe(0)
   })
 })
+
+describe('scoreDeal: новий продавець — ще не знижка', () => {
+  it('найдешевший магазин щойно почав продавати товар: чекаємо, чи втримається ціна', () => {
+    const r = scoreDeal(withDrop(0.3, 1, { bestShopDays: 1 }))
+    expect(r.status).toBe('insufficient_data')
+    expect(codes(r)).toEqual(['new_offer'])
+    expect(r.score).toBe(0)
+    // Розмір зниження все одно видно на сторінці товару
+    expect(r.discountPercent).toBe(30)
+  })
+
+  it('за три дні та сама ціна вже справжня знижка; без відомостей про магазин правило не діє', () => {
+    expect(scoreDeal(withDrop(0.3, 3, { bestShopDays: 3 })).status).toBe('real')
+    expect(scoreDeal(withDrop(0.3, 1)).status).toBe('real')
+  })
+})

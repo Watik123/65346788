@@ -9,6 +9,8 @@ interface Props {
   product: ProductDetailResponse
   /** Магазини в порядку, що дає кожному постійний колір на всіх сторінках */
   shopOrder: string[]
+  /** Остання доба, за яку є ціни: якщо графік закінчується раніше, остання точка — не «сьогодні» */
+  dataDay?: string | null
 }
 
 type Row = { date: string } & Record<string, number | string | undefined>
@@ -18,7 +20,7 @@ const dayMs = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
 
 function shopColor(slug: string, order: string[]): string {
   const i = order.indexOf(slug)
-  return i >= 0 && i < 6 ? `var(--c-shop-${i + 1})` : 'var(--ink-3)'
+  return i >= 0 && i < 9 ? `var(--c-shop-${i + 1})` : 'var(--ink-3)'
 }
 
 /** Округлення меж осі до «круглих» значень, щоб підписи не були безладними */
@@ -57,7 +59,7 @@ function ChartTooltip({ active, label, payload, names }: TipProps) {
   )
 }
 
-export function PriceHistoryChart({ product, shopOrder }: Props) {
+export function PriceHistoryChart({ product, shopOrder, dataDay }: Props) {
   const [range, setRange] = useState<Range>(90)
   const [visibleShops, setVisibleShops] = useState<Set<string>>(new Set())
   const { market, shops } = product.history
@@ -104,7 +106,10 @@ export function PriceHistoryChart({ product, shopOrder }: Props) {
   const names = new Map<string, string>([['market', 'Найкраща ціна'], ...visible.map((s): [string, string] => [s.slug, s.name])])
   const lo = Math.min(...data.map((r) => r['market'] as number).filter((v) => typeof v === 'number'))
   const hi = Math.max(...data.map((r) => r['market'] as number).filter((v) => typeof v === 'number'))
-  const summary = `Графік найкращої ціни за ${range} днів: від ${formatPrice(lo)} до ${formatPrice(hi)}, зараз ${formatPrice(last.price)}`
+  // Товару вже ніде немає: графік закінчується днем, коли його бачили востаннє
+  const isToday = !dataDay || last.date >= dataDay
+  const lastLabel = isToday ? 'сьогодні' : `остання ціна, ${formatDay(last.date)}`
+  const summary = `Графік найкращої ціни за ${range} днів: від ${formatPrice(lo)} до ${formatPrice(hi)}, ${isToday ? 'зараз' : 'востаннє'} ${formatPrice(last.price)}`
 
   const toggleShop = (slug: string) =>
     setVisibleShops((cur) => {
@@ -231,7 +236,7 @@ export function PriceHistoryChart({ product, shopOrder }: Props) {
         </span>
         <span className="inline-flex items-center gap-2">
           <span className="size-2.5 rounded-full bg-accent" aria-hidden="true" />
-          сьогодні
+          {lastLabel}
         </span>
         {basePrice !== null && (
           <span className="inline-flex items-center gap-2">

@@ -1,19 +1,20 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { buildStaticIndex, splitProducts } from '@znyzhky/shared'
+import { buildStaticIndex, encodeCatalog, splitProducts, toCatalogItem } from '@znyzhky/shared'
 import { REPO_ROOT } from '../lib/database-url'
 import { createPrisma } from '../lib/db'
 import type { PrismaClient } from '../generated/prisma/client'
 import { buildSnapshot } from './export-snapshot'
 
 /**
- * Дані для сайту без сервера окремими файлами: data/index.json і data/p/<кошик>.json
+ * Дані для сайту без сервера окремими файлами: data/index.json, compare.json, catalog.json, img/<категорія>.json і p/<кошик>.json
  * (див. packages/shared/src/static.ts). Повертає перелік записаних файлів відносно outDir/..
  */
 export async function exportStatic(prisma: PrismaClient, outDir: string): Promise<{ files: string[]; bytes: number; products: number }> {
   const snapshot = await buildSnapshot(prisma)
   rmSync(outDir, { recursive: true, force: true })
   mkdirSync(path.join(outDir, 'p'), { recursive: true })
+  mkdirSync(path.join(outDir, 'img'), { recursive: true })
   const files: string[] = []
   let bytes = 0
   const write = (rel: string, data: unknown) => {
@@ -22,7 +23,13 @@ export async function exportStatic(prisma: PrismaClient, outDir: string): Promis
     files.push(path.posix.join(path.basename(outDir), rel))
     bytes += Buffer.byteLength(json)
   }
-  write('index.json', buildStaticIndex(snapshot))
+  // Головна сторінка довантажує лише index.json; порівняння й каталог — окремі файли на вимогу
+  const { compare, ...index } = buildStaticIndex(snapshot)
+  write('index.json', index)
+  write('compare.json', compare)
+  const { catalog, images } = encodeCatalog(snapshot.products.map(toCatalogItem))
+  write('catalog.json', catalog)
+  for (const [slug, file] of images) write(`img/${slug}.json`, file)
   for (const [bucket, products] of [...splitProducts(snapshot.products)].sort((a, b) => a[0] - b[0])) write(`p/${bucket}.json`, products)
   return { files, bytes, products: snapshot.products.length }
 }

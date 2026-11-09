@@ -54,7 +54,7 @@ export function linkedPage($: CheerioAPI, currentUrl: string, candidate: string)
 
 /** Не новий товар: вживаний, уцінений, відновлений, вітринний */
 export function isNotNew(name: string): boolean {
-  return /(^|[^\p{L}])(б\/в|б\/у|б\.в\.|вживан|уцінен|уцінка|уценен|відновлен|восстановлен|як нов|вітринн|refurbished|renewed)/iu.test(name)
+  return /(^|[^\p{L}])(б\/в|б\/у|б\.в\.|вживан|уцінен|уцінк|уценен|уценк|відновлен|восстановлен|як нов|вітринн|refurbished|renewed)/iu.test(name)
 }
 
 /** Ціле число з тексту: «28 відгуків» → 28 */

@@ -46,6 +46,12 @@ export const reasons = {
     text: `Замало даних: ціни відстежуємо ${days(span + 1)}, а для висновку потрібно щонайменше ${days(needed)}.`,
   }),
 
+  newOffer: (shopDays: number, needed: number): Reason => ({
+    code: 'new_offer',
+    tone: 'neutral',
+    text: `Найнижчу ціну дає магазин, у якому бачимо цей товар лише ${days(shopDays)}. Знижкою назвемо, якщо ціна протримається ${days(needed)}.`,
+  }),
+
   recentPriceSpike: (recentDays: number, peak: number, abovePercent: number): Reason => ({
     code: 'recent_price_spike',
     tone: 'negative',

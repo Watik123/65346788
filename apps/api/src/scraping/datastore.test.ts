@@ -6,7 +6,8 @@ import { importDataStore } from '../cli/data-import'
 import { CATEGORIES } from '../catalog/categories'
 import type { PrismaClient } from '../generated/prisma/client'
 import { createTempDb } from '../test-utils/temp-db'
-import { fromRecord, listDayFiles, parseJsonl, toRecord, writeJsonl, type DayRecord } from './datastore'
+import { recomputeDeals } from '../jobs/recompute-deals'
+import { fromRecord, listDayFiles, parseJsonl, toRecord, writeJson, writeJsonl, type DayRecord } from './datastore'
 import type { ParsedProduct } from './types'
 
 const product = (over: Partial<ParsedProduct> = {}): ParsedProduct => ({
@@ -110,6 +111,70 @@ describe('імпорт сховища в базу', () => {
     await importDataStore(prisma, dir)
     const points = await prisma.pricePoint.findMany({ orderBy: { date: 'asc' } })
     expect(points.map((p) => p.price)).toEqual([7999, 7799])
+  })
+
+  describe('товар зник із магазину', () => {
+    const tv = (shop: string, over: Partial<ParsedProduct> = {}) => product({ externalId: `${shop}-tv`, name: 'Телевізор Xiaomi TV A Pro 32 (L32MB-APME)', oldPrice: null, ...over })
+    const other = (shop: string, n: number) => product({ externalId: `${shop}-${n}`, name: `Монітор Xiaomi A${20 + n}i`, modelCode: `ELA${5000 + n}EU`, categorySlug: 'monitory', oldPrice: null })
+    const put = (date: string, shop: string, items: ParsedProduct[], status?: string) => {
+      writeJsonl(path.join(dir, `prices/${date}/${shop}.jsonl`), items.map((p) => toRecord(p, shop, date)))
+      if (status) writeJson(path.join(dir, `runs/${date}/${shop}.json`), { shop, date, status })
+    }
+    const offer = (shop: string) => prisma.offer.findFirstOrThrow({ where: { externalId: `${shop}-tv` }, include: { product: { include: { deal: true } } } })
+
+    it('магазин перестав показувати товар: пропозиція вже не в наявності, найкращу ціну дає інший магазин', async () => {
+      const rest = [1, 2, 3, 4].map((n) => other('ktc', n))
+      put('2026-10-08', 'ktc', [tv('ktc', { price: 6999 }), ...rest])
+      put('2026-10-08', 'moyo', [tv('moyo', { price: 7999 })])
+      put('2026-10-09', 'ktc', rest)
+      put('2026-10-09', 'moyo', [tv('moyo', { price: 7999 })])
+      const s = await importDataStore(prisma, dir)
+      expect(s.gone).toBe(1)
+      await recomputeDeals(prisma, { today: new Date('2026-10-09T00:00:00Z') })
+
+      const ktc = await offer('ktc')
+      expect(ktc).toMatchObject({ inStock: false, price: 6999 })
+      expect(ktc.lastSeenAt.toISOString().slice(0, 10)).toBe('2026-10-08')
+      // Той самий товар у MOYO: саме його ціна тепер найкраща, а не стара ціна KTC
+      expect((await offer('moyo')).productId).toBe(ktc.productId)
+      expect(ktc.product.deal).toMatchObject({ bestPrice: 7999, shopsCount: 1 })
+    })
+
+    it('перерваний збір бачив лише частину товарів: решта лишається чинною', async () => {
+      const full = [tv('ktc'), ...[1, 2, 3, 4, 5].map((n) => other('ktc', n))]
+      put('2026-10-08', 'ktc', full, 'completed')
+      put('2026-10-09', 'ktc', full.slice(1, 3), 'aborted')
+      expect((await importDataStore(prisma, dir)).gone).toBe(0)
+      expect((await offer('ktc')).inStock).toBe(true)
+
+      // Те саме без підсумку запуску: товарів набагато менше, ніж у попередньому повному зборі
+      put('2026-10-09', 'ktc', full.slice(1, 3))
+      rmSync(path.join(dir, 'runs'), { recursive: true, force: true })
+      expect((await importDataStore(prisma, dir)).gone).toBe(0)
+    })
+
+    it('магазин давно не збирався: його ціни вже не чинні', async () => {
+      put('2026-10-05', 'ktc', [tv('ktc')])
+      for (const date of ['2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09']) put(date, 'moyo', [tv('moyo')])
+      await importDataStore(prisma, dir)
+      expect((await offer('ktc')).inStock).toBe(false)
+      expect((await offer('moyo')).inStock).toBe(true)
+    })
+  })
+
+  it('бере лише останні дні сховища; номер товару між збираннями бази не змінюється', async () => {
+    const put = (date: string, price: number) => writeJsonl(path.join(dir, `prices/${date}/ktc.jsonl`), [toRecord(product({ price, oldPrice: null }), 'ktc', date)])
+    put('2026-10-07', 7999)
+    put('2026-10-08', 7899)
+    put('2026-10-09', 7799)
+    await importDataStore(prisma, dir)
+    const before = (await prisma.product.findFirstOrThrow()).id
+    expect(await prisma.pricePoint.count()).toBe(3)
+
+    const s = await importDataStore(prisma, dir, { days: 2 })
+    expect(s.days).toBe(2)
+    expect((await prisma.pricePoint.findMany({ orderBy: { date: 'asc' } })).map((p) => p.price)).toEqual([7899, 7799])
+    expect((await prisma.product.findFirstOrThrow()).id).toBe(before)
   })
 
   it('товар у невідомій категорії потрапляє в помилки, решта імпортується', async () => {

@@ -16,6 +16,7 @@ export type ReasonCode =
   | 'fresh_drop'
   | 'claim_overstated'
   | 'insufficient_history'
+  | 'new_offer'
   | 'recent_price_spike'
   | 'unstable_prices'
   | 'store_claim_not_confirmed'

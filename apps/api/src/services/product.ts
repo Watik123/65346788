@@ -1,6 +1,6 @@
 import { HISTORY_DAYS, type DealDto, type OfferDto, type PricePointDto, type ProductDetailResponse, type ShopHistoryDto } from '@znyzhky/shared'
 import type { PrismaClient } from '../generated/prisma/client'
-import { claimedOldPrice } from '../jobs/recompute-deals'
+import { claimedOldPrice, offerTitle } from '../jobs/recompute-deals'
 import { DAY_MS } from '../lib/dates'
 import { marketSeries } from '../scoring'
 import { dayString, latestDataDay, loadShopRefs, parseReasons } from './common'
@@ -50,6 +50,7 @@ export async function getProductDetail(prisma: PrismaClient, id: number, ctx?: P
         price: o.price,
         inStock: o.inStock,
         url: o.url,
+        title: offerTitle(o.rawData),
         oldPrice: claimedOldPrice(o.rawData),
         isBest: o.shopId === bestShopId && o.inStock,
         lastSeenAt: o.lastSeenAt.toISOString(),

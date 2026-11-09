@@ -17,7 +17,7 @@ export async function getCompare(prisma: PrismaClient, q: CompareQueryParams): P
       ratingAvg: true,
       reviewCount: true,
       category: { select: { slug: true, name: true, parent: { select: { slug: true, name: true } } } },
-      offers: { where: { shop: { isActive: true } }, select: { price: true, inStock: true, rawData: true, shop: { select: { slug: true, name: true } } } },
+      offers: { where: { shop: { isActive: true } }, select: { price: true, inStock: true, url: true, rawData: true, shop: { select: { slug: true, name: true } } } },
     },
     orderBy: { id: 'asc' },
   })
@@ -31,7 +31,7 @@ export async function getCompare(prisma: PrismaClient, q: CompareQueryParams): P
         rating: p.ratingAvg,
         reviewCount: p.reviewCount,
         category: p.category,
-        offers: p.offers.map((o) => ({ shop: o.shop, price: o.price, inStock: o.inStock, oldPrice: claimedOldPrice(o.rawData) })),
+        offers: p.offers.map((o) => ({ shop: o.shop, price: o.price, inStock: o.inStock, oldPrice: claimedOldPrice(o.rawData), url: o.url })),
       }),
     )
     .filter((i): i is CompareItemDto => i !== null)

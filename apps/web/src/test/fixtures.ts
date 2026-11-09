@@ -45,5 +45,7 @@ export const FILTERS: FiltersResponse = {
   ],
   priceRange: { min: 7299, max: 42099 },
   maxDiscountPercent: 22.2,
+  dataDay: '2026-11-09',
+  productCount: 120,
   sortOptions: SORT_OPTIONS,
 }

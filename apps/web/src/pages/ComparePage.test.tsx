@@ -17,8 +17,8 @@ const ITEMS = [
     reviewCount: 0,
     category,
     offers: [
-      { shop: { slug: 'citrus', name: 'Цитрус' }, price: 4999, inStock: true, oldPrice: 17599 },
-      { shop: { slug: 'ktc', name: 'KTC' }, price: 4999, inStock: true, oldPrice: null },
+      { shop: { slug: 'citrus', name: 'Цитрус' }, price: 4999, inStock: true, oldPrice: 17599, url: 'https://citrus.example/p' },
+      { shop: { slug: 'ktc', name: 'KTC' }, price: 4999, inStock: true, oldPrice: null, url: 'https://ktc.example/p' },
     ],
   }),
   toCompareItem({
@@ -30,8 +30,8 @@ const ITEMS = [
     reviewCount: 0,
     category,
     offers: [
-      { shop: { slug: 'ktc', name: 'KTC' }, price: 8999, inStock: true, oldPrice: null },
-      { shop: { slug: 'moyo', name: 'MOYO' }, price: 15199, inStock: true, oldPrice: null },
+      { shop: { slug: 'ktc', name: 'KTC' }, price: 8999, inStock: true, oldPrice: null, url: 'https://ktc.example/p' },
+      { shop: { slug: 'moyo', name: 'MOYO' }, price: 15199, inStock: true, oldPrice: null, url: 'https://moyo.example/p' },
     ],
   }),
 ] as CompareItemDto[]

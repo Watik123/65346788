@@ -251,6 +251,30 @@ describe('runScraper: перевантажений сайт', () => {
   })
 })
 
+describe('runScraper: товар у двох розділах', () => {
+  it('той самий товар у вужчому й загальному розділах записується один раз, з категорією першого', async () => {
+    const product = (id: string, categorySlug: string) => ({ kind: 'product' as const, product: { externalId: id, url: `https://l.example/p/${id}`, name: `Товар ${id}`, brand: 'B', modelCode: null, ean: null, categorySlug, imageUrl: null, price: 1000, oldPrice: null, inStock: true, rating: null, reviewCount: 0, raw: null } })
+    const shop: ListingScraper = {
+      kind: 'listing',
+      slug: 'l',
+      name: 'Л',
+      baseUrl: 'https://l.example',
+      async *listings() {
+        yield { url: 'https://l.example/roboty', categorySlug: 'roboty-pylososy' }
+        yield { url: 'https://l.example/pylososy', categorySlug: 'pylososy' }
+      },
+      parseListing: (_html, ref) => ({ outcomes: ref.categorySlug === 'roboty-pylososy' ? [product('r1', ref.categorySlug)] : [product('r1', ref.categorySlug), product('v1', ref.categorySlug)], nextUrl: null }),
+    }
+    const fetcher: Fetcher = { get: async (url) => ({ url, status: 200, body: 'ok', fromCache: false }) }
+    const s = await runScraper(prisma, shop, fetcher, { dryRun: true })
+    expect(s.products.map((p) => [p.externalId, p.categorySlug])).toEqual([
+      ['r1', 'roboty-pylososy'],
+      ['v1', 'pylososy'],
+    ])
+    expect(s.skippedByReason).toEqual({ duplicate: 1 })
+  })
+})
+
 describe('runScraper: захист даних', () => {
   it('не записує різкий стрибок ціни (імовірна помилка розбору) і залишає стару', async () => {
     const shop = shopOf('a', [u('a', 1)])

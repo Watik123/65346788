@@ -28,6 +28,17 @@ export function claimedOldPrice(rawData: string | null): number | null {
   }
 }
 
+/** Назва товару в магазині з сирих даних пропозиції, якщо імпорт її зберіг */
+export function offerTitle(rawData: string | null): string | null {
+  if (!rawData) return null
+  try {
+    const v = (JSON.parse(rawData) as { title?: unknown }).title
+    return typeof v === 'string' && v.trim() ? v : null
+  } catch {
+    return null
+  }
+}
+
 /**
  * Чиста функція без доступу до бази: з пропозицій та історії цін рахує знижку
  * для кожного товару, який зараз є в наявності хоча б в одному магазині.
@@ -54,10 +65,13 @@ export function computeDeals(src: DealSource, overrides: ScoringOverrides = {}):
     const best = inStock.reduce((a, b) => (b.price < a.price || (b.price === a.price && b.shopId < a.shopId) ? b : a))
     const shopsCount = new Set(inStock.map((o) => o.shopId)).size
 
+    const points = pointsByProduct.get(product.id) ?? []
+    const bestShopDays = new Set(points.filter((p) => p.shopId === best.shopId && p.date.getTime() <= src.today.getTime()).map((p) => p.date.getTime())).size
     const result = scoreDeal(
       {
         today: src.today,
-        series: marketSeries(pointsByProduct.get(product.id) ?? []),
+        series: marketSeries(points),
+        bestShopDays,
         currentPrice: best.price,
         rating: product.ratingAvg,
         reviewCount: product.reviewCount,

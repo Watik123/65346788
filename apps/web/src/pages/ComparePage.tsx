@@ -67,7 +67,9 @@ function CompareCard({ item }: { item: CompareItemDto }) {
         {item.prices.map((p, i) => (
           <li key={p.shop.slug} className="flex items-baseline justify-between gap-3 py-2">
             <span className={i === 0 && !same ? 'font-semibold text-ink' : 'text-ink-2'}>
-              {p.shop.name}
+              <a href={p.url} target="_blank" rel="noopener noreferrer nofollow" className="underline-offset-4 hover:underline" title={`Відкрити товар у магазині ${p.shop.name}`}>
+                {p.shop.name}
+              </a>
               {i === 0 && !same && <span className="ml-2 text-xs font-semibold text-accent">найдешевше</span>}
             </span>
             <span className="tabular flex items-baseline gap-2 whitespace-nowrap">
@@ -116,8 +118,8 @@ export function ComparePage() {
       <section className="max-w-3xl">
         <h1 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl">Порівняння цін</h1>
         <p className="mt-3 text-pretty text-lg text-ink-2">
-          Той самий товар у різних магазинах сьогодні. Поки історії цін замало для висновків про справжні знижки, тут видно, де дешевше і де магазин показує знижку,
-          якої немає в інших.
+          Той самий товар у різних магазинах сьогодні: де дешевше і де магазин показує знижку, якої немає в інших. Велика різниця буває й через те, що магазин
+          продає іншу версію товару, тож перед покупкою звірте назву на його сторінці.
         </p>
         {summary && summary.products > 0 && (
           <dl className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">

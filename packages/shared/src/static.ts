@@ -5,7 +5,9 @@ import { inStockShopSlugs, queryFeed, type Snapshot } from './snapshot'
 
 /**
  * Сайт без сервера, що читає дані з окремих файлів поруч зі сторінкою:
- *  - data/index.json — фільтри, стрічка, відсіяні, порівняння цін (усе для списків);
+ *  - data/index.json — фільтри, стрічка, відсіяні (те, що потрібно головній сторінці);
+ *  - data/compare.json — порівняння цін; data/catalog.json і data/img/<категорія>.json — каталог і пошук
+ *    (довантажуються, коли відкривають ці розділи: див. catalog.ts);
  *  - data/p/<кошик>.json — сторінки товарів, розкладені по PRODUCT_BUCKETS файлах за id.
  * Так сторінка не росте з історією цін: сторінку товару браузер довантажує, коли її відкривають.
  * Логіка запитів та сама, що й на сервері (queryFeed, queryCompare); тест у apps/api це перевіряє.
@@ -103,7 +105,10 @@ export function buildStaticIndex(snap: Snapshot): StaticIndex {
   }
 }
 
-export const staticFeed = (index: StaticIndex, q: FeedQueryParams): FeedResponse =>
+export const staticFeed = (index: Pick<StaticIndex, 'feed' | 'filters' | 'feedShops'>, q: FeedQueryParams): FeedResponse =>
   queryFeed(index.feed, index.filters.categories, q, (id) => index.feedShops[String(id)] ?? [])
 
-export const staticCompare = (index: StaticIndex, q: CompareQueryParams): CompareResponse => queryCompare(index.compare, q)
+export const staticCompare = (index: Pick<StaticIndex, 'compare'>, q: CompareQueryParams): CompareResponse => queryCompare(index.compare, q)
+
+/** Те, що лежить у data/index.json: порівняння цін винесене в окремий файл data/compare.json */
+export type StaticIndexFile = Omit<StaticIndex, 'compare'>

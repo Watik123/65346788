@@ -111,6 +111,10 @@ export interface FiltersResponse {
   shops: ShopFilterDto[]
   priceRange: { min: number; max: number } | null
   maxDiscountPercent: number
+  /** Остання доба, за яку є ціни, «РРРР-ММ-ДД»; null — даних ще немає */
+  dataDay: string | null
+  /** Скільки товарів відстежуємо всього */
+  productCount: number
   sortOptions: typeof SORT_OPTIONS
 }
 
@@ -119,6 +123,8 @@ export interface OfferDto {
   price: number
   inStock: boolean
   url: string
+  /** Назва товару в цьому магазині, якщо вона відома: видно, що саме магазин продає */
+  title: string | null
   /** Закреслена ціна, яку показує магазин */
   oldPrice: number | null
   isBest: boolean

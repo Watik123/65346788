@@ -48,7 +48,9 @@ export const JABKO_CATEGORIES: { path: string; slug: string }[] = [
 function cardToOutcome(card: cheerio.Cheerio<AnyNode>, ref: ListingRef): ParseOutcome {
   const title = card.find('a.catalog-product-item--title').first()
   const id = title.attr('data-id')?.trim()
-  const name = (title.attr('data-name') ?? title.text()).replace(/\s+/g, ' ').trim()
+  // У data-name сайт не екранує лапки («27\" Odyssey»), і атрибут обривається на діагоналі: тоді беремо текст посилання
+  const attrName = title.attr('data-name')
+  const name = (attrName && !attrName.trim().endsWith('\\') ? attrName : title.text() || attrName || '').replace(/\s+/g, ' ').trim()
   const brand = (title.attr('data-brand') ?? '').trim()
   const url = cleanUrl(title.attr('href'), ref.url)
   if (!id || !name || !url) return { kind: 'skip', reason: 'missing_data', detail: !id ? 'немає коду' : !name ? 'немає назви' : 'немає адреси' }
