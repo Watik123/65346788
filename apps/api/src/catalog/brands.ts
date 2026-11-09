@@ -9,9 +9,19 @@ const KNOWN = [
   'Kivi', 'Lenovo', 'LG', 'Liebherr', 'Miele', 'Motorola', 'MSI', 'Nothing', 'Nubia', 'OnePlus', 'OPPO', 'Panasonic', 'Philips', 'POCO',
   'realme', 'Roborock', 'Rowenta', 'Samsung', 'Sencor', 'Sharp', 'Siemens', 'Snaige', 'Sony', 'TCL', 'Tecno', 'Tefal', 'Thomas', 'Vivo',
   'Whirlpool', 'Xiaomi', 'Zelmer', 'ZTE', '2E',
+  // Бренди, які магазини пишуть по-різному («TP-LINK», «Tp-Link», «TP-Link»): одне написання для сайту
+  'A4Tech', 'AceFast', 'AOC', 'BenQ', 'Black+Decker', 'Bluetti', 'Cooper&Hunter', 'D-Link', "De'Longhi", 'DeWalt', 'EcoFlow', 'GenPower',
+  'GoPro', 'GravaStar', 'Harman Kardon', 'HiFuture', 'Hotpoint-Ariston', 'HyperX', 'iiyama', 'JBL', 'JLab', 'KitchenAid', 'Media-Tech',
+  'MikroTik', 'Mijia', 'Modecom', 'Neo Tools', 'OneOdio', 'PlayStation', 'PowerPlant', 'Real-El', 'RivaCase', 'SmartMi', 'SteelSeries',
+  'TP-Link', 'UFO', 'ViewSonic', 'Xtrike Me',
 ]
 const BY_KEY = new Map(KNOWN.map((b) => [key(b), b]))
-const ALIASES = new Map([['karcher', 'Kärcher']])
+const ALIASES = new Map([
+  ['karcher', 'Kärcher'],
+  ['blackdecker', 'Black+Decker'],
+  ['a4tech', 'A4Tech'],
+  ['dlink', 'D-Link'],
+])
 
 function key(brand: string): string {
   return brand.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '')

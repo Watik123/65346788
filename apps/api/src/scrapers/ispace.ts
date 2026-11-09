@@ -18,6 +18,8 @@ export const BASE = 'https://ispace.ua'
 export const ISPACE_CATEGORIES: { path: string; slug: string }[] = [
   { path: '/category/iphone', slug: 'smartfony' },
   { path: '/category/ipad', slug: 'planshety' },
+  { path: '/category/apple-watch', slug: 'smart-hodynnyky' },
+  { path: '/category/airpods', slug: 'navushnyky' },
   { path: '/category/headsets', slug: 'navushnyky' },
 ]
 
@@ -49,6 +51,7 @@ function cardToOutcome(card: cheerio.Cheerio<AnyNode>, ref: ListingRef): ParseOu
       externalId: slug,
       url,
       name,
+      // Бренд картка не каже; у розділі навушників є й чужі бренди, їх розрізняє normalizeRecord за назвою
       brand: 'Apple',
       modelCode: partNumberFromSlug(slug),
       ean: null,
