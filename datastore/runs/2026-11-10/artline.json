@@ -1,0 +1,17 @@
+{
+  "shop": "artline",
+  "date": "2026-11-10",
+  "startedAt": "2026-11-10T08:25:52.614Z",
+  "finishedAt": "2026-11-10T08:27:05.598Z",
+  "status": "completed",
+  "found": 739,
+  "saved": 739,
+  "skipped": 476,
+  "skippedByReason": {
+    "sold_out": 420,
+    "not_new": 56
+  },
+  "errors": 0,
+  "note": null,
+  "errorList": []
+}
