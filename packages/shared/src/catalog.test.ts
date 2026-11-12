@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { decodeCatalog, encodeCatalog, queryCatalog, searchKey, toCatalogItem, type CatalogItemDto } from './catalog'
+import { dayChange, decodeCatalog, encodeCatalog, queryCatalog, searchKey, toCatalogItem, type CatalogItemDto } from './catalog'
 
 const category = { slug: 'smartfony', name: 'Смартфони', parent: { slug: 'elektronika', name: 'Електроніка' } }
 const item = (id: number, name: string, over: Partial<CatalogItemDto> = {}): CatalogItemDto => ({
@@ -31,6 +31,30 @@ describe('queryCatalog', () => {
     expect(ids(queryCatalog(ALL, { ...q, sort: 'price_asc' }))).toEqual([1, 2, 4, 3])
     expect(ids(queryCatalog(ALL, { ...q, sort: 'price_desc' }))).toEqual([4, 2, 1, 3])
     expect(ids(queryCatalog(ALL, { ...q, sort: 'discount' }))[0]).toBe(2)
+  })
+
+  it('обране: лише вибрані товари; «подешевшали за добу» — від найбільшого падіння', () => {
+    expect(ids(queryCatalog(ALL, { ...q, ids: [4, 1, 999] }))).toEqual([4, 1])
+    const moved = ALL.map((i) => (i.id === 1 ? { ...i, dayChangePercent: -3 } : i.id === 4 ? { ...i, dayChangePercent: -12.5 } : i))
+    expect(ids(queryCatalog(moved, { ...q, sort: 'drop' })).slice(0, 2)).toEqual([4, 1])
+  })
+
+  it('зміна за добу рахується лише між останньою добою з даними і попередньою', () => {
+    const market = [
+      { date: '2026-11-08', price: 10000 },
+      { date: '2026-11-09', price: 9200 },
+    ]
+    expect(dayChange(market, '2026-11-09')).toBe(-8)
+    // Товару сьогодні вже немає, або вчора його не було: порівнювати нема з чим
+    expect(dayChange(market, '2026-11-10')).toBe(0)
+    expect(dayChange([{ date: '2026-11-07', price: 10000 }, { date: '2026-11-09', price: 9200 }], '2026-11-09')).toBe(0)
+    expect(dayChange([], '2026-11-09')).toBe(0)
+    // Найдешевший магазин учора товар не продавав: це повернувся продавець, а не знизилась ціна
+    expect(dayChange(market, '2026-11-09', [{ date: '2026-11-09', price: 9200 }])).toBe(0)
+    expect(dayChange(market, '2026-11-09', [{ date: '2026-11-08', price: 9900 }, { date: '2026-11-09', price: 9200 }])).toBe(-8)
+    const p = { id: 1, name: 'A', brand: 'B', imageUrl: null, category: { slug: 'c', name: 'C', parent: null }, deal: { status: 'none' as const, bestPrice: 9200, shopsCount: 1, discountPercent: 0 } }
+    expect(toCatalogItem({ ...p, history: { market }, dataDay: '2026-11-09' }).dayChangePercent).toBe(-8)
+    expect(toCatalogItem(p).dayChangePercent).toBe(0)
   })
 
   it('сторінки', () => {

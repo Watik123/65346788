@@ -1,8 +1,8 @@
-import { CATALOG_SORTS, DEAL_STATUS_LABELS, formatPercent, formatPrice, formatShops, pluralUk, type CatalogItemDto, type CatalogQueryParams, type CatalogSort, type FiltersResponse } from '@znyzhky/shared'
+import { CATALOG_SORTS, pluralUk, type CatalogQueryParams, type CatalogSort, type FiltersResponse } from '@znyzhky/shared'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { CloseIcon, SearchIcon } from '../components/icons'
-import { Media } from '../components/Media'
+import { CatalogCard } from '../components/CatalogCard'
+import { CategoryIcon, CloseIcon, SearchIcon } from '../components/icons'
 import { Pagination } from '../components/Pagination'
 import { useCatalog, useFilters } from '../lib/queries'
 
@@ -37,35 +37,42 @@ function categoryOptions(nodes: FiltersResponse['categories'], depth = 0): { slu
 
 const products = (n: number) => `${n.toLocaleString('uk-UA').replace(/ /g, ' ')} ${pluralUk(n, 'товар', 'товари', 'товарів')}`
 
-function CatalogCard({ item }: { item: CatalogItemDto }) {
-  const real = item.status === 'real'
+/** Плитки категорій: з них починають, коли ще нічого не шукали й не вибрали */
+function CategoryTiles({ categories }: { categories: FiltersResponse['categories'] }) {
   return (
-    <article className="relative flex min-w-0 gap-4 rounded-2xl border border-line bg-surface p-4 transition-shadow focus-within:shadow-md hover:shadow-md">
-      <Media imageUrl={item.imageUrl} alt={item.name} categorySlug={item.category.slug} brand={item.brand} className="size-24 shrink-0 rounded-xl" />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <p className="text-xs font-medium text-ink-3">{item.category.name}</p>
-        <h3 className="mt-0.5 line-clamp-2 text-[0.95rem] font-semibold leading-snug text-ink">
-          <Link to={`/product/${item.id}`} className="outline-offset-4 after:absolute after:inset-0 after:content-['']">
-            {item.name}
-          </Link>
-        </h3>
-        <div className="mt-auto flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-2">
-          {item.bestPrice !== null ? (
-            <>
-              <span className="tabular text-lg font-bold text-ink">{formatPrice(item.bestPrice)}</span>
-              <span className="text-xs text-ink-3">{formatShops(item.shopsCount)}</span>
-            </>
-          ) : (
-            <span className="text-sm font-medium text-ink-3">Зараз немає в наявності</span>
-          )}
-          {real ? (
-            <span className="tabular rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-ink">−{formatPercent(item.discountPercent)}</span>
-          ) : (
-            item.status === 'fake' && <span className="rounded-full bg-bad-weak px-2 py-0.5 text-xs font-semibold text-bad">{DEAL_STATUS_LABELS.fake}</span>
-          )}
-        </div>
-      </div>
-    </article>
+    <div className="flex flex-col gap-8">
+      {categories.map((group) => (
+        <section key={group.slug} aria-labelledby={`cat-${group.slug}`}>
+          <h2 id={`cat-${group.slug}`} className="text-lg font-bold">
+            <Link to={`/catalog?category=${group.slug}`} className="underline-offset-4 hover:underline">
+              {group.name}
+            </Link>
+            <span className="tabular ml-2 text-sm font-medium text-ink-3">{group.productCount.toLocaleString('uk-UA').replace(/\u00A0/g, ' ')}</span>
+          </h2>
+          <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {group.children.map((c) => (
+              <li key={c.slug}>
+                <Link
+                  to={`/catalog?category=${c.slug}`}
+                  className="flex h-full min-h-16 items-center gap-3 rounded-xl border border-line bg-surface px-3 py-2.5 transition-colors hover:border-ink-3"
+                >
+                  <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-surface-2 text-ink-2">
+                    <CategoryIcon slug={c.slug} size={22} strokeWidth={1.5} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block hyphens-auto text-sm font-semibold leading-tight text-ink [overflow-wrap:anywhere]">{c.name}</span>
+                    <span className="tabular block text-xs text-ink-3">
+                      {c.productCount.toLocaleString('uk-UA').replace(/\u00A0/g, ' ')}
+                      {c.dealCount > 0 && <span className="font-semibold text-accent"> · {c.dealCount} {pluralUk(c.dealCount, 'знижка', 'знижки', 'знижок')}</span>}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
   )
 }
 
@@ -73,7 +80,9 @@ function CatalogCard({ item }: { item: CatalogItemDto }) {
 export function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const q = useMemo(() => parseSearch(searchParams), [searchParams])
-  const catalog = useCatalog(q)
+  // Нічого не шукали й не вибрали: показуємо категорії, а не всі тисячі товарів підряд
+  const landing = !q.q && !q.category && q.sort === 'popular' && q.page === 1
+  const catalog = useCatalog(q, !landing)
   const filters = useFilters()
   const [text, setText] = useState(q.q ?? '')
 
@@ -82,7 +91,17 @@ export function CatalogPage() {
   }, [q.q])
   useEffect(() => setText(q.q ?? ''), [q.q])
 
-  const update = useCallback((patch: Partial<CatalogQueryParams>) => setSearchParams(toSearch({ ...q, page: 1, ...patch })), [q, setSearchParams])
+  const update = useCallback(
+    (patch: Partial<CatalogQueryParams>, opts: { replace?: boolean } = {}) => setSearchParams(toSearch({ ...q, page: 1, ...patch }), opts),
+    [q, setSearchParams],
+  )
+  // Пошук під час набору: за мить після останньої літери, без нового запису в історії на кожну літеру
+  useEffect(() => {
+    const next = text.trim() || undefined
+    if (next === q.q) return
+    const timer = setTimeout(() => update({ q: next }, { replace: true }), 350)
+    return () => clearTimeout(timer)
+  }, [text, q.q, update])
   const goToPage = useCallback(
     (page: number) => {
       setSearchParams(toSearch({ ...q, page }))
@@ -145,6 +164,19 @@ export function CatalogPage() {
         </button>
       </form>
 
+      {landing && filters.data ? (
+        <div className="mt-8">
+          <CategoryTiles categories={filters.data.categories} />
+          <p className="mt-8 text-sm text-ink-2">
+            Або перегляньте{' '}
+            <Link to="/catalog?sort=drop" className="font-medium text-accent underline-offset-4 hover:underline">
+              товари, що подешевшали за останню добу
+            </Link>
+            .
+          </p>
+        </div>
+      ) : (
+        <>
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <label htmlFor="catalog-category" className="sr-only">
           Категорія
@@ -221,6 +253,8 @@ export function CatalogPage() {
           )
         )}
       </div>
+        </>
+      )}
     </>
   )
 }

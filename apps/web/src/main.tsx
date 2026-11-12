@@ -6,6 +6,7 @@ import { isStaticMode } from './api/client'
 import { Layout } from './components/Layout'
 import { CatalogPage } from './pages/CatalogPage'
 import { ComparePage } from './pages/ComparePage'
+import { FavoritesPage } from './pages/FavoritesPage'
 import { FeedPage } from './pages/FeedPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { ProductPage } from './pages/ProductPage'
@@ -33,6 +34,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
             <Route path="product/:id" element={<ProductPage />} />
             <Route path="catalog" element={<CatalogPage />} />
             <Route path="compare" element={<ComparePage />} />
+            <Route path="favorites" element={<FavoritesPage />} />
             <Route path="rejected" element={<RejectedPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

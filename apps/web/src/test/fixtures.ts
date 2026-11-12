@@ -33,9 +33,10 @@ export const FILTERS: FiltersResponse = {
       slug: 'elektronika',
       name: 'Електроніка',
       dealCount: 5,
+      productCount: 120,
       children: [
-        { slug: 'televizory', name: 'Телевізори', dealCount: 3, children: [] },
-        { slug: 'smartfony', name: 'Смартфони', dealCount: 2, children: [] },
+        { slug: 'televizory', name: 'Телевізори', dealCount: 3, productCount: 70, children: [] },
+        { slug: 'smartfony', name: 'Смартфони', dealCount: 2, productCount: 50, children: [] },
       ],
     },
   ],

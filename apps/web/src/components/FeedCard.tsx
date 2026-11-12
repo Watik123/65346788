@@ -1,5 +1,6 @@
 import { formatPercent, formatPrice, formatShops, type FeedItemDto } from '@znyzhky/shared'
 import { Link } from 'react-router'
+import { FavoriteButton } from './FavoriteButton'
 import { Media } from './Media'
 import { Rating } from './Rating'
 import { Sparkline } from './Sparkline'
@@ -10,6 +11,7 @@ export function FeedCard({ item }: { item: FeedItemDto }) {
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-shadow focus-within:shadow-md hover:shadow-md">
       <div className="relative">
         <Media imageUrl={item.imageUrl} alt={item.name} categorySlug={item.category.slug} brand={item.brand} className="aspect-[16/10] w-full" />
+        <FavoriteButton id={item.id} price={item.bestPrice} className="absolute left-3 top-3" />
         <span className="absolute right-3 top-3 rounded-full bg-accent px-2.5 py-1 text-sm font-bold text-accent-ink tabular" aria-label={`Знижка ${formatPercent(item.discountPercent)}`}>
           −{formatPercent(item.discountPercent)}
         </span>

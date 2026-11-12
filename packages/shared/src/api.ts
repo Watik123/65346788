@@ -3,7 +3,7 @@ import type { DealStatus, Reason } from './deal'
 /** Типи відповідей API. Дати передаються рядками: «РРРР-ММ-ДД» для діб, ISO для моментів. */
 
 export const SORT_OPTIONS = [
-  { value: 'score', label: 'За скором', defaultOrder: 'desc' },
+  { value: 'score', label: 'Спершу найвигідніші', defaultOrder: 'desc' },
   { value: 'discount', label: 'За розміром знижки', defaultOrder: 'desc' },
   { value: 'price', label: 'За ціною', defaultOrder: 'asc' },
   { value: 'popularity', label: 'За популярністю', defaultOrder: 'desc' },
@@ -96,6 +96,8 @@ export interface CategoryNodeDto {
   name: string
   /** Кількість справжніх знижок у категорії (з урахуванням підкатегорій) */
   dealCount: number
+  /** Скільки товарів у категорії всього (з урахуванням підкатегорій) */
+  productCount: number
   children: CategoryNodeDto[]
 }
 

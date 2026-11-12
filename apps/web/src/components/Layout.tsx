@@ -1,7 +1,8 @@
 import { formatDay } from '@znyzhky/shared'
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
-import { LogoMark, MoonIcon, SearchIcon, SunIcon, SystemIcon } from './icons'
+import { HeartIcon, LogoMark, MoonIcon, SearchIcon, SunIcon, SystemIcon } from './icons'
+import { useFavorites } from '../lib/favorites'
 import { useFilters } from '../lib/queries'
 import { THEME_LABELS, useTheme } from '../lib/theme'
 
@@ -58,6 +59,27 @@ function HeaderSearch() {
         className="w-full min-w-0 bg-transparent text-sm text-ink outline-none placeholder:text-ink-3"
       />
     </form>
+  )
+}
+
+/** Обране: сердечко в шапці з кількістю збережених товарів */
+function FavoritesLink() {
+  const { ids } = useFavorites()
+  const label = ids.length > 0 ? `Обране: ${ids.length}` : 'Обране'
+  return (
+    <NavLink
+      to="/favorites"
+      title={label}
+      aria-label={label}
+      className={({ isActive }) => `relative grid size-9 shrink-0 place-items-center rounded-full transition-colors hover:bg-surface-2 hover:text-ink sm:size-10 ${isActive ? 'bg-surface-2 text-ink' : 'text-ink-2'}`}
+    >
+      <HeartIcon filled={ids.length > 0} className={ids.length > 0 ? 'text-accent' : ''} />
+      {ids.length > 0 && (
+        <span className="tabular absolute -right-0.5 -top-0.5 grid min-w-[1.1rem] place-items-center rounded-full bg-accent px-1 text-[0.65rem] font-bold leading-[1.1rem] text-accent-ink" aria-hidden="true">
+          {ids.length > 99 ? '99+' : ids.length}
+        </span>
+      )}
+    </NavLink>
   )
 }
 
@@ -118,7 +140,8 @@ export function Layout() {
             <Nav />
           </nav>
           <HeaderSearch />
-          <span className={pathname === '/catalog' ? 'ml-auto' : ''}>
+          <span className={`flex items-center ${pathname === '/catalog' ? 'ml-auto' : ''}`}>
+            <FavoritesLink />
             <ThemeToggle />
           </span>
         </div>

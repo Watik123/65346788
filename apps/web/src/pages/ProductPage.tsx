@@ -1,7 +1,8 @@
 import { formatPercent, formatPrice, formatRating, formatReviews, type DealDto, type ProductDetailResponse } from '@znyzhky/shared'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { ArrowLeftIcon } from '../components/icons'
+import { FavoriteButton } from '../components/FavoriteButton'
+import { ArrowLeftIcon, CheckIcon, LinkIcon } from '../components/icons'
 import { DealVerdict } from '../components/DealVerdict'
 import { Media } from '../components/Media'
 import { OffersList } from '../components/OffersList'
@@ -36,6 +37,26 @@ function PriceBlock({ deal }: { deal: DealDto | null }) {
         Найкраща пропозиція: {deal.bestShop.name}.
       </p>
     </div>
+  )
+}
+
+/** Скопіювати посилання на товар: ним можна поділитись, сторінка відкриється одразу на цьому товарі */
+function ShareButton() {
+  const [copied, setCopied] = useState(false)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // браузер не дав доступу до буфера обміну: адресу видно в рядку адреси
+    }
+  }
+  return (
+    <button type="button" onClick={copy} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:border-ink-3">
+      {copied ? <CheckIcon size={18} /> : <LinkIcon size={18} />}
+      <span aria-live="polite">{copied ? 'Скопійовано' : 'Скопіювати посилання'}</span>
+    </button>
   )
 }
 
@@ -86,6 +107,10 @@ function ProductBody({ product, shopOrder, dataDay }: { product: ProductDetailRe
           </div>
 
           <PriceBlock deal={deal} />
+          <div className="flex flex-wrap gap-2">
+            <FavoriteButton id={product.id} price={deal?.bestPrice ?? null} variant="full" />
+            <ShareButton />
+          </div>
           {deal && <DealVerdict deal={deal} />}
         </div>
       </div>

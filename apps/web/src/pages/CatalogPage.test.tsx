@@ -22,7 +22,7 @@ vi.mock('../api/client', () => ({
 
 import { CatalogPage } from './CatalogPage'
 
-function renderPage(url = '/catalog') {
+function renderPage(url = '/catalog?category=elektronika') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
     <QueryClientProvider client={client}>
@@ -62,6 +62,26 @@ describe('CatalogPage', () => {
     await userEvent.clear(screen.getByLabelText('Пошук товару'))
     await userEvent.type(screen.getByLabelText('Пошук товару'), 'пральна машина{Enter}')
     expect(await screen.findByText('Нічого не знайшлося')).toBeTruthy()
+  })
+
+  it('без запиту й категорії показує плитки категорій, а не всі товари; пошук із плиток працює', async () => {
+    renderPage('/catalog')
+    const tile = await screen.findByRole('link', { name: /Телевізори/ })
+    expect(tile.getAttribute('href')).toBe('/catalog?category=televizory')
+    expect(tile.textContent).toContain('70')
+    expect(tile.textContent).toContain('3 знижки')
+    expect(catalogMock).not.toHaveBeenCalled()
+
+    await userEvent.type(screen.getByLabelText('Пошук товару'), 'nokia')
+    expect(await screen.findByRole('link', { name: 'Смартфон Nokia 3310' })).toBeTruthy()
+    expect(lastQuery()).toMatchObject({ q: 'nokia' })
+  })
+
+  it('товар, що подешевшав за добу, має позначку', async () => {
+    catalogMock.mockImplementation(async (q: CatalogQueryParams) => queryCatalog([{ ...(ITEMS[0] as (typeof ITEMS)[number]), dayChangePercent: -8.2 }], q))
+    renderPage()
+    const card = (await screen.findByRole('link', { name: 'Apple iPhone 17 256GB Black (MG6J4)' })).closest('article') as HTMLElement
+    expect(card.textContent).toContain('8% за добу')
   })
 
   it('читає запит, категорію й сортування з посилання', async () => {

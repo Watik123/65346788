@@ -19,6 +19,7 @@ export async function getFilters(prisma: PrismaClient): Promise<FiltersResponse>
   const hasProducts = new Set(used.map((u) => u.categoryId))
   const categories = allCategories.filter((c) => hasProducts.has(c.id) || allCategories.some((ch) => ch.parentId === c.id && hasProducts.has(ch.id)))
   const ownCount = new Map(byCategory.map((c) => [c.categoryId, c._count._all]))
+  const ownProducts = new Map(used.map((c) => [c.categoryId, c._count._all]))
   const toNode = (id: number): CategoryNodeDto => {
     const c = categories.find((x) => x.id === id) as (typeof categories)[number]
     const children = categories.filter((x) => x.parentId === id).map((x) => toNode(x.id))
@@ -26,6 +27,7 @@ export async function getFilters(prisma: PrismaClient): Promise<FiltersResponse>
       slug: c.slug,
       name: c.name,
       dealCount: (ownCount.get(id) ?? 0) + children.reduce((sum, ch) => sum + ch.dealCount, 0),
+      productCount: (ownProducts.get(id) ?? 0) + children.reduce((sum, ch) => sum + ch.productCount, 0),
       children,
     }
   }

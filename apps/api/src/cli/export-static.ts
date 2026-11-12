@@ -27,7 +27,8 @@ export async function exportStatic(prisma: PrismaClient, outDir: string): Promis
   const { compare, ...index } = buildStaticIndex(snapshot)
   write('index.json', index)
   write('compare.json', compare)
-  const { catalog, images } = encodeCatalog(snapshot.products.map(toCatalogItem))
+  const dataDay = snapshot.filters.dataDay
+  const { catalog, images } = encodeCatalog(snapshot.products.map((p) => toCatalogItem({ ...p, dataDay })))
   write('catalog.json', catalog)
   for (const [slug, file] of images) write(`img/${slug}.json`, file)
   for (const [bucket, products] of [...splitProducts(snapshot.products)].sort((a, b) => a[0] - b[0])) write(`p/${bucket}.json`, products)

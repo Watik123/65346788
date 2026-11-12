@@ -1,4 +1,4 @@
-import { formatPrice, pluralUk, SORT_OPTIONS, type FiltersResponse, type SortKey } from '@znyzhky/shared'
+import { formatDay, formatNumber, formatPrice, pluralUk, SORT_OPTIONS, type FiltersResponse, type SortKey } from '@znyzhky/shared'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { FeedCard, FeedCardSkeleton } from '../components/FeedCard'
@@ -81,6 +81,15 @@ export function FeedPage() {
         <p className="mt-3 text-pretty text-ink-2 sm:text-lg">
           Порівнюємо ціну не із закресленою ціною магазину, а з типовою ціною ринку за 60 днів. Накручені «акції» відсіюємо.
         </p>
+        {filterData.data && filterData.data.productCount > 0 && (
+          <p className="mt-3 text-sm text-ink-3">
+            Стежимо за цінами на{' '}
+            <Link to="/catalog" className="font-medium text-ink-2 underline-offset-4 hover:underline">
+              {formatNumber(filterData.data.productCount)} {pluralUk(filterData.data.productCount, 'товар', 'товари', 'товарів')}
+            </Link>{' '}
+            у {filterData.data.shops.length} магазинах{filterData.data.dataDay ? ` · оновлено ${formatDay(filterData.data.dataDay)}` : ''}
+          </p>
+        )}
         <details className="group mt-3 text-sm text-ink-2">
           <summary className="inline-flex cursor-pointer list-none items-center gap-1 font-medium text-accent underline-offset-4 hover:underline [&::-webkit-details-marker]:hidden">
             Як ми перевіряємо знижки

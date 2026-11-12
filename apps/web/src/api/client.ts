@@ -122,6 +122,7 @@ export const api = {
     const sp = new URLSearchParams()
     if (q.category) sp.set('category', q.category)
     if (q.q) sp.set('q', q.q)
+    if (q.ids) sp.set('ids', q.ids.join(','))
     sp.set('sort', q.sort)
     sp.set('page', String(q.page))
     sp.set('limit', String(q.limit))

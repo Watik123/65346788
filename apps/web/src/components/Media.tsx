@@ -18,7 +18,8 @@ export function Media({ imageUrl, alt, categorySlug, brand, className = '' }: Pr
   if (imageUrl && failed !== imageUrl) {
     return (
       <div className={`overflow-hidden bg-surface-2 ${className}`}>
-        <img src={imageUrl} alt={alt} loading="lazy" className="size-full object-contain" onError={() => setFailed(imageUrl)} />
+        {/* Без адреси нашого сайту в запиті: частина магазинів не віддає фото «чужим» сторінкам */}
+        <img src={imageUrl} alt={alt} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="size-full object-contain" onError={() => setFailed(imageUrl)} />
       </div>
     )
   }

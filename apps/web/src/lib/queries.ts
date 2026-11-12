@@ -19,5 +19,5 @@ export const useProduct = (id: number) => useQuery({ queryKey: ['product', id], 
 export const useCompare = (q: CompareQueryParams) =>
   useQuery({ queryKey: ['compare', q], queryFn: () => api.compare(q), placeholderData: keepPreviousData })
 
-export const useCatalog = (q: CatalogQueryParams) =>
-  useQuery({ queryKey: ['catalog', q], queryFn: () => api.catalog(q), placeholderData: keepPreviousData })
+export const useCatalog = (q: CatalogQueryParams, enabled = true) =>
+  useQuery({ queryKey: ['catalog', q], queryFn: () => api.catalog(q), placeholderData: keepPreviousData, enabled })
