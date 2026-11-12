@@ -1,12 +1,11 @@
 import { formatDay, formatNumber, formatPrice, pluralUk, SORT_OPTIONS, type FiltersResponse, type SortKey } from '@znyzhky/shared'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { FeedCard, FeedCardSkeleton } from '../components/FeedCard'
 import { FilterPanel } from '../components/FilterPanel'
 import { CloseIcon, FilterIcon } from '../components/icons'
-import { Pagination } from '../components/Pagination'
 import { Sheet } from '../components/Sheet'
-import { activeFilterCount, DEFAULT_FILTERS, parseFeedSearch, toSearchParams, type FeedFilters } from '../lib/feed-params'
+import { activeFilterCount, DEFAULT_FILTERS, PAGE_SIZE, parseFeedSearch, toSearchParams, type FeedFilters } from '../lib/feed-params'
 import { useFeed, useFilters } from '../lib/queries'
 
 function flatCategoryName(nodes: FiltersResponse['categories'], slug: string): string | undefined {
@@ -47,16 +46,26 @@ export function FeedPage() {
     [filters, setSearchParams],
   )
   const reset = useCallback(() => setSearchParams(toSearchParams({ ...DEFAULT_FILTERS, sort: filters.sort })), [filters.sort, setSearchParams])
-  const goToPage = useCallback(
-    (page: number) => {
-      setSearchParams(toSearchParams({ ...filters, page }))
-      window.scrollTo({ top: 0 })
-    },
-    [filters, setSearchParams],
-  )
+  // Перша порція каже, скільки знижок усього; картки — з усіх довантажених порцій
+  const data = feed.data?.pages[0]
+  const items = useMemo(() => feed.data?.pages.flatMap((p) => p.items) ?? [], [feed.data])
+  const isRefetching = feed.isFetching && !feed.isPending && !feed.isFetchingNextPage
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = feed
 
-  const data = feed.data
-  const isRefetching = feed.isFetching && !feed.isPending
+  // Довантаження під час гортання: щойно кінець стрічки наближається до екрана
+  const sentinel = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = sentinel.current
+    if (!el || !hasNextPage || typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting) && !isFetchingNextPage) void fetchNextPage()
+      },
+      { rootMargin: '600px 0px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, items.length])
 
   const chips: { key: string; label: string; remove: () => void }[] = []
   if (filters.category) {
@@ -122,7 +131,6 @@ export function FeedPage() {
 
             <p className="text-sm text-ink-2" aria-live="polite">
               {data ? <span className="font-semibold text-ink">{plural(data.total)}</span> : 'Завантажуємо…'}
-              {data && data.total > 0 && data.pages > 1 && <span className="text-ink-3"> · сторінка {data.page} з {data.pages}</span>}
             </p>
 
             <div className="ml-auto flex items-center gap-2">
@@ -170,7 +178,7 @@ export function FeedPage() {
                   <FeedCardSkeleton key={i} />
                 ))}
               </div>
-            ) : data && data.items.length === 0 && count === 0 ? (
+            ) : data && items.length === 0 && count === 0 ? (
               // Фільтрів немає, а знижок нуль: збір лише почався, історії цін ще замало для висновків
               <div className="rounded-2xl border border-line bg-surface p-8 text-center">
                 <p className="font-semibold">Перевірених знижок поки немає</p>
@@ -182,7 +190,7 @@ export function FeedPage() {
                   Тим часом: порівняння цін у магазинах
                 </Link>
               </div>
-            ) : data && data.items.length === 0 ? (
+            ) : data && items.length === 0 ? (
               <div className="rounded-2xl border border-line bg-surface p-8 text-center">
                 <p className="font-semibold">За цими фільтрами нічого не знайшлося</p>
                 <p className="mt-1 text-sm text-ink-2">Спробуйте послабити умови: знизити мінімальну знижку або вибрати іншу категорію.</p>
@@ -194,11 +202,27 @@ export function FeedPage() {
               data && (
                 <>
                   <div className={`grid gap-4 sm:grid-cols-2 xl:grid-cols-3 ${isRefetching ? 'is-refetching' : ''}`}>
-                    {data.items.map((item) => (
+                    {items.map((item) => (
                       <FeedCard key={item.id} item={item} />
                     ))}
+                    {isFetchingNextPage && Array.from({ length: 3 }, (_, i) => <FeedCardSkeleton key={`more-${i}`} />)}
                   </div>
-                  <Pagination page={data.page} pages={data.pages} onChange={goToPage} />
+                  <div ref={sentinel} aria-hidden="true" />
+                  {hasNextPage ? (
+                    // Кнопка лишається для клавіатури й на випадок, якщо браузер не довантажив сам
+                    <div className="mt-6 text-center">
+                      <button
+                        type="button"
+                        onClick={() => void fetchNextPage()}
+                        disabled={isFetchingNextPage}
+                        className="min-h-11 rounded-full border border-line bg-surface px-5 text-sm font-semibold text-ink hover:border-ink-3 disabled:opacity-60"
+                      >
+                        {isFetchingNextPage ? 'Завантажуємо…' : `Показати ще (лишилось ${data.total - items.length})`}
+                      </button>
+                    </div>
+                  ) : (
+                    items.length > PAGE_SIZE && <p className="mt-8 text-center text-sm text-ink-3">Це всі знижки на сьогодні.</p>
+                  )}
                 </>
               )
             )}

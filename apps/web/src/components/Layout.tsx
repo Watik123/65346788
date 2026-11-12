@@ -1,8 +1,7 @@
 import { formatDay } from '@znyzhky/shared'
-import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
-import { HeartIcon, LogoMark, MoonIcon, SearchIcon, SunIcon, SystemIcon } from './icons'
-import { useFavorites } from '../lib/favorites'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router'
+import { LogoMark, MoonIcon, SearchIcon, SunIcon, SystemIcon } from './icons'
 import { useFilters } from '../lib/queries'
 import { THEME_LABELS, useTheme } from '../lib/theme'
 
@@ -62,27 +61,6 @@ function HeaderSearch() {
   )
 }
 
-/** Обране: сердечко в шапці з кількістю збережених товарів */
-function FavoritesLink() {
-  const { ids } = useFavorites()
-  const label = ids.length > 0 ? `Обране: ${ids.length}` : 'Обране'
-  return (
-    <NavLink
-      to="/favorites"
-      title={label}
-      aria-label={label}
-      className={({ isActive }) => `relative grid size-9 shrink-0 place-items-center rounded-full transition-colors hover:bg-surface-2 hover:text-ink sm:size-10 ${isActive ? 'bg-surface-2 text-ink' : 'text-ink-2'}`}
-    >
-      <HeartIcon filled={ids.length > 0} className={ids.length > 0 ? 'text-accent' : ''} />
-      {ids.length > 0 && (
-        <span className="tabular absolute -right-0.5 -top-0.5 grid min-w-[1.1rem] place-items-center rounded-full bg-accent px-1 text-[0.65rem] font-bold leading-[1.1rem] text-accent-ink" aria-hidden="true">
-          {ids.length > 99 ? '99+' : ids.length}
-        </span>
-      )}
-    </NavLink>
-  )
-}
-
 function Nav() {
   return (
     <>
@@ -102,13 +80,34 @@ function Nav() {
   )
 }
 
+/** Де людина зупинилась на кожній сторінці: щоб кнопка «Назад» повертала в те саме місце стрічки */
+const scrollPositions = new Map<string, number>()
+
 function ScrollToTop() {
-  const { pathname } = useLocation()
-  // Без повернення значення: у нових Chrome scrollTo повертає проміс, а React прийняв би його
+  const { pathname, key } = useLocation()
+  const type = useNavigationType()
+  const lastPath = useRef<string | null>(null)
+  // Позицію запам'ятовуємо під час гортання, а не в момент переходу: тоді сторінка вже інша.
+  // Саме layout-ефект: слухача треба зняти до того, як браузер перерахує прокручування нової сторінки
+  useLayoutEffect(() => {
+    const save = () => scrollPositions.set(key, window.scrollY)
+    window.addEventListener('scroll', save, { passive: true })
+    return () => window.removeEventListener('scroll', save)
+  }, [key])
+  // Без повернення результату scrollTo: у нових Chrome це проміс, а React прийняв би його
   // за функцію прибирання й упав при переході на іншу сторінку
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
+    const saved = scrollPositions.get(key)
+    if (type === 'POP' && saved !== undefined && lastPath.current !== null) {
+      // Повернулись назад: стрічка з уже довантаженими знижками на тому самому місці
+      requestAnimationFrame(() => {
+        window.scrollTo(0, saved)
+      })
+    } else if (lastPath.current !== pathname) {
+      window.scrollTo(0, 0)
+    }
+    lastPath.current = pathname
+  }, [pathname, key, type])
   return null
 }
 
@@ -140,8 +139,7 @@ export function Layout() {
             <Nav />
           </nav>
           <HeaderSearch />
-          <span className={`flex items-center ${pathname === '/catalog' ? 'ml-auto' : ''}`}>
-            <FavoritesLink />
+          <span className={pathname === '/catalog' ? 'ml-auto' : ''}>
             <ThemeToggle />
           </span>
         </div>

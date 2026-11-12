@@ -37,8 +37,6 @@ export interface CatalogItemDto {
 
 export interface CatalogQueryParams {
   category?: string | undefined
-  /** Лише ці товари (сторінка «Обране») */
-  ids?: number[] | undefined
   /** Пошук за назвою і брендом: усі слова запиту мають бути в назві */
   q?: string | undefined
   sort: CatalogSort
@@ -109,10 +107,6 @@ export function searchKey(s: string): string {
 /** Фільтр, пошук, сортування й сторінки каталогу */
 export function queryCatalog(all: CatalogItemDto[], q: CatalogQueryParams): CatalogResponse {
   let items = q.category === undefined ? all : all.filter((i) => i.category.slug === q.category || i.category.parentSlug === q.category)
-  if (q.ids !== undefined) {
-    const wanted = new Set(q.ids)
-    items = items.filter((i) => wanted.has(i.id))
-  }
   const words = searchKey(q.q ?? '').split(' ').filter(Boolean)
   if (words.length > 0) {
     items = items.filter((i) => {

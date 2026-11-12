@@ -33,8 +33,7 @@ describe('queryCatalog', () => {
     expect(ids(queryCatalog(ALL, { ...q, sort: 'discount' }))[0]).toBe(2)
   })
 
-  it('обране: лише вибрані товари; «подешевшали за добу» — від найбільшого падіння', () => {
-    expect(ids(queryCatalog(ALL, { ...q, ids: [4, 1, 999] }))).toEqual([4, 1])
+  it('«подешевшали за добу» — від найбільшого падіння', () => {
     const moved = ALL.map((i) => (i.id === 1 ? { ...i, dayChangePercent: -3 } : i.id === 4 ? { ...i, dayChangePercent: -12.5 } : i))
     expect(ids(queryCatalog(moved, { ...q, sort: 'drop' })).slice(0, 2)).toEqual([4, 1])
   })

@@ -1,14 +1,22 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
 import type { CatalogQueryParams, CompareQueryParams } from '@znyzhky/shared'
 import { toApiParams, type FeedFilters } from './feed-params'
 
-export const useFeed = (filters: FeedFilters) =>
-  useQuery({
-    queryKey: ['feed', toApiParams(filters)],
-    queryFn: () => api.feed(toApiParams(filters)),
+/**
+ * Стрічка, яку гортають: наступні знижки довантажуються порціями й додаються до вже показаних.
+ * Номер сторінки з посилання не використовується: стрічка завжди починається згори.
+ */
+export const useFeed = (filters: FeedFilters) => {
+  const params = { ...toApiParams(filters), page: 1 }
+  return useInfiniteQuery({
+    queryKey: ['feed', params],
+    queryFn: ({ pageParam }) => api.feed({ ...params, page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (last) => (last.page < last.pages ? last.page + 1 : undefined),
     placeholderData: keepPreviousData,
   })
+}
 
 export const useFilters = () => useQuery({ queryKey: ['filters'], queryFn: api.filters, staleTime: 5 * 60_000 })
 

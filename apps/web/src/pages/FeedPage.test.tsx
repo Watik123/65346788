@@ -44,7 +44,8 @@ describe('FeedPage', () => {
   it('читає фільтри з посилання', async () => {
     renderPage('/?category=televizory&shop=alfa&minDiscount=15&sort=price&page=2')
     await screen.findByText('17 знижок')
-    expect(lastQuery()).toMatchObject({ category: 'televizory', shop: ['alfa'], minDiscount: 15, sort: 'price', page: 2 })
+    // Номер сторінки зі старого посилання не важить: стрічка починається згори
+    expect(lastQuery()).toMatchObject({ category: 'televizory', shop: ['alfa'], minDiscount: 15, sort: 'price', page: 1 })
     expect(screen.getByRole('button', { name: 'Прибрати фільтр: Телевізори' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Прибрати фільтр: знижка від 15%' })).toBeTruthy()
   })
@@ -61,6 +62,20 @@ describe('FeedPage', () => {
     await screen.findByText('17 знижок')
     await userEvent.selectOptions(screen.getByLabelText('Сортувати'), 'price')
     await waitFor(() => expect(lastQuery()).toMatchObject({ sort: 'price', page: 1 }))
+  })
+
+  it('«Показати ще» довантажує наступні знижки й додає їх до показаних', async () => {
+    feedMock.mockImplementation(async (q: { page: number }) =>
+      q.page === 1 ? makeFeed([makeItem(1), makeItem(2)], { total: 3, pages: 2, page: 1 }) : makeFeed([makeItem(3)], { total: 3, pages: 2, page: 2 }),
+    )
+    renderPage()
+    await screen.findByRole('link', { name: 'Телевізор Samsung 2' })
+    expect(screen.queryByRole('link', { name: 'Телевізор Samsung 3' })).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: 'Показати ще (лишилось 1)' }))
+    expect(await screen.findByRole('link', { name: 'Телевізор Samsung 3' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Телевізор Samsung 1' })).toBeTruthy()
+    expect(lastQuery()).toMatchObject({ page: 2 })
+    await waitFor(() => expect(screen.queryByRole('button', { name: /Показати ще/ })).toBeNull())
   })
 
   it('вибір магазину додає його до фільтра', async () => {

@@ -1,7 +1,6 @@
 import { formatPercent, formatPrice, formatRating, formatReviews, type DealDto, type ProductDetailResponse } from '@znyzhky/shared'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { FavoriteButton } from '../components/FavoriteButton'
 import { ArrowLeftIcon, CheckIcon, LinkIcon } from '../components/icons'
 import { DealVerdict } from '../components/DealVerdict'
 import { Media } from '../components/Media'
@@ -107,8 +106,7 @@ function ProductBody({ product, shopOrder, dataDay }: { product: ProductDetailRe
           </div>
 
           <PriceBlock deal={deal} />
-          <div className="flex flex-wrap gap-2">
-            <FavoriteButton id={product.id} price={deal?.bestPrice ?? null} variant="full" />
+          <div>
             <ShareButton />
           </div>
           {deal && <DealVerdict deal={deal} />}

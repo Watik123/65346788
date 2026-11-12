@@ -48,12 +48,6 @@ const catalogSortKeys = CATALOG_SORTS.map((o) => o.value) as [string, ...string[
 export const catalogQuerySchema = z.object({
   category: z.string().min(1).optional(),
   q: z.string().max(100).optional(),
-  /** Номери товарів через кому: лише вони (сторінка «Обране») */
-  ids: z
-    .string()
-    .max(4000)
-    .optional()
-    .transform((s) => (s === undefined ? undefined : s.split(',').map(Number).filter((n) => Number.isInteger(n) && n > 0))),
   sort: z.enum(catalogSortKeys).default('popular'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(60).default(24),
