@@ -1,0 +1,100 @@
+{
+  "shop": "foxtrot",
+  "date": "2026-11-13",
+  "startedAt": "2026-11-13T07:58:31.492Z",
+  "finishedAt": "2026-11-13T08:07:54.474Z",
+  "status": "aborted",
+  "found": 0,
+  "saved": 0,
+  "skipped": 0,
+  "skippedByReason": {},
+  "errors": 17,
+  "note": "Зупинено: 8 невдалих завантажень поспіль. Схоже, сайт блокує збір або недоступний.",
+  "errorList": [
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/mobilnye_telefony_smartfony.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/planshety.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/led_televizory.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/led_televizory.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/gk-monitory.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/naushniki.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/naushniki.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/smart_chasi.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/smart_brasleti.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/smart_brasleti.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/portativnaia_akustika.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/domashnie_kinoteatry.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/igrovye_pristavki.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/fotoapparaty.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/marshrutizatory.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/portativnie_zariadnie_ustroistva.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    },
+    {
+      "kind": "robots",
+      "url": "https://www.foxtrot.com.ua/uk/shop/portativnye-zaryadnye-stancii.html",
+      "message": "Сайт відмовив у доступі до robots.txt (HTTP 403): роботів там не чекають, збір не починаємо"
+    }
+  ]
+}
