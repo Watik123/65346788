@@ -1,77 +1,76 @@
-# Статистика цін на 2026-11-12
+# Статистика цін на 2026-11-13
 
-Історія: 35 днів. Пропозицій магазинів сьогодні: **34149**, у наявності: 34002, різних товарів: 21333.
+Історія: 36 днів. Пропозицій магазинів сьогодні: **23483**, у наявності: 23328, різних товарів: 15342.
 
 ## Магазини
 
 | Магазин | Товарів | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Foxtrot | 10706 | 10706 | 3106 (29%) | −17% |
-| Цитрус | 5479 | 5479 | 1898 (35%) | −16% |
-| MOYO | 5398 | 5398 | 2328 (43%) | −16% |
-| KTC | 3721 | 3574 | 1201 (32%) | −17% |
-| Ябко | 3092 | 3092 | 1426 (46%) | −13% |
-| Vencon | 2516 | 2516 | 399 (16%) | −13% |
-| TTT | 2287 | 2287 | 137 (6%) | −12% |
-| Artline | 744 | 744 | 158 (21%) | −6% |
-| iSpace | 206 | 206 | 46 (22%) | −12% |
+| Цитрус | 5490 | 5490 | 1865 (34%) | −16% |
+| MOYO | 5430 | 5430 | 2302 (42%) | −16% |
+| KTC | 3740 | 3585 | 1186 (32%) | −17% |
+| Ябко | 3129 | 3129 | 1466 (47%) | −13% |
+| Vencon | 2564 | 2564 | 412 (16%) | −13% |
+| TTT | 2299 | 2299 | 136 (6%) | −13% |
+| Artline | 687 | 687 | 120 (17%) | −6% |
+| iSpace | 144 | 144 | 45 (31%) | −11% |
 
 ## Категорії
 
 | Категорія | Пропозицій | У наявності | Із закресленою ціною | Середня «знижка» магазину |
 |---|---:|---:|---:|---:|
-| Навушники | 3914 | 3914 | 1489 (38%) | −18% |
-| Монітори | 2343 | 2343 | 307 (13%) | −6% |
-| Смартфони | 1974 | 1944 | 729 (37%) | −9% |
-| Смарт-годинники і браслети | 1702 | 1625 | 381 (22%) | −16% |
-| Телевізори | 1495 | 1495 | 759 (51%) | −13% |
-| Кондиціонери | 1482 | 1482 | 276 (19%) | −11% |
-| Фени й стайлери | 1431 | 1431 | 577 (40%) | −20% |
-| Бойлери й водонагрівачі | 1381 | 1381 | 198 (14%) | −13% |
-| Пилососи | 1288 | 1288 | 554 (43%) | −21% |
-| Витяжки | 1219 | 1219 | 533 (44%) | −15% |
-| Wi-Fi роутери | 1110 | 1110 | 164 (15%) | −7% |
-| Електрочайники | 962 | 962 | 293 (30%) | −18% |
-| Павербанки | 890 | 890 | 102 (11%) | −20% |
-| Портативна акустика | 836 | 836 | 167 (20%) | −17% |
-| Кавоварки й кавомашини | 816 | 807 | 328 (40%) | −23% |
-| Планшети | 761 | 730 | 230 (30%) | −9% |
-| Блендери | 732 | 732 | 219 (30%) | −19% |
-| Варильні поверхні | 725 | 725 | 219 (30%) | −10% |
-| Холодильники | 717 | 717 | 140 (20%) | −6% |
-| Мультипечі й аерогрилі | 566 | 566 | 260 (46%) | −28% |
-| Роботи-пилососи | 548 | 548 | 382 (70%) | −26% |
-| Пральні машини | 536 | 536 | 157 (29%) | −8% |
-| Духові шафи | 536 | 536 | 169 (32%) | −10% |
-| Тостери | 477 | 477 | 153 (32%) | −18% |
-| Міксери | 423 | 423 | 87 (21%) | −15% |
-| Праски | 420 | 420 | 213 (51%) | −17% |
-| Електробритви й тримери | 396 | 396 | 191 (48%) | −22% |
-| Кухонні комбайни | 381 | 381 | 127 (33%) | −19% |
-| Плити | 358 | 358 | 91 (25%) | −8% |
-| Вентилятори | 347 | 347 | 112 (32%) | −23% |
-| Мікрохвильові печі | 337 | 337 | 137 (41%) | −12% |
-| Обігрівачі | 327 | 327 | 97 (30%) | −17% |
-| Фотоапарати | 266 | 266 | 87 (33%) | −11% |
-| Зволожувачі повітря | 264 | 264 | 58 (22%) | −21% |
-| Відпарювачі й парогенератори | 263 | 263 | 145 (55%) | −16% |
-| Генератори | 236 | 236 | 40 (17%) | −13% |
-| Електричні зубні щітки | 210 | 210 | 117 (56%) | −25% |
-| Електрогрилі | 202 | 202 | 73 (36%) | −26% |
-| Морозильні камери | 192 | 192 | 39 (20%) | −5% |
-| Зарядні станції | 182 | 182 | 45 (25%) | −11% |
-| Соковижималки | 169 | 169 | 39 (23%) | −14% |
-| Очищувачі повітря | 152 | 152 | 46 (30%) | −20% |
-| Саундбари | 148 | 148 | 55 (37%) | −13% |
-| Посудомийні машини | 142 | 142 | 23 (16%) | −7% |
-| Мультиварки | 120 | 120 | 48 (40%) | −12% |
-| Сушильні машини | 64 | 64 | 19 (30%) | −7% |
-| Хлібопічки | 63 | 63 | 18 (29%) | −14% |
-| Ігрові консолі | 46 | 46 | 6 (13%) | −6% |
+| Навушники | 2898 | 2875 | 1271 (44%) | −17% |
+| Монітори | 1924 | 1924 | 238 (12%) | −7% |
+| Смартфони | 1539 | 1509 | 517 (34%) | −8% |
+| Кондиціонери | 1354 | 1354 | 282 (21%) | −11% |
+| Смарт-годинники і браслети | 1278 | 1196 | 309 (24%) | −15% |
+| Телевізори | 1206 | 1206 | 560 (46%) | −13% |
+| Бойлери й водонагрівачі | 1074 | 1074 | 192 (18%) | −13% |
+| Фени й стайлери | 923 | 923 | 436 (47%) | −18% |
+| Пилососи | 866 | 866 | 402 (46%) | −20% |
+| Wi-Fi роутери | 833 | 833 | 149 (18%) | −7% |
+| Планшети | 586 | 575 | 156 (27%) | −8% |
+| Електрочайники | 562 | 562 | 172 (31%) | −17% |
+| Кавоварки й кавомашини | 541 | 532 | 223 (41%) | −21% |
+| Павербанки | 534 | 534 | 108 (20%) | −19% |
+| Портативна акустика | 488 | 488 | 127 (26%) | −14% |
+| Блендери | 473 | 473 | 131 (28%) | −17% |
+| Холодильники | 451 | 451 | 80 (18%) | −6% |
+| Витяжки | 397 | 397 | 91 (23%) | −14% |
+| Роботи-пилососи | 386 | 386 | 290 (75%) | −24% |
+| Варильні поверхні | 367 | 367 | 78 (21%) | −9% |
+| Пральні машини | 327 | 327 | 110 (34%) | −8% |
+| Духові шафи | 326 | 326 | 91 (28%) | −8% |
+| Мультипечі й аерогрилі | 320 | 320 | 151 (47%) | −26% |
+| Тостери | 300 | 300 | 99 (33%) | −19% |
+| Мікрохвильові печі | 266 | 266 | 96 (36%) | −11% |
+| Міксери | 261 | 261 | 63 (24%) | −12% |
+| Кухонні комбайни | 253 | 253 | 93 (37%) | −18% |
+| Електробритви й тримери | 226 | 226 | 120 (53%) | −21% |
+| Фотоапарати | 219 | 219 | 75 (34%) | −11% |
+| Електричні зубні щітки | 212 | 212 | 115 (54%) | −25% |
+| Обігрівачі | 201 | 201 | 67 (33%) | −16% |
+| Праски | 197 | 197 | 127 (64%) | −14% |
+| Відпарювачі й парогенератори | 193 | 193 | 122 (63%) | −15% |
+| Генератори | 177 | 177 | 14 (8%) | −10% |
+| Плити | 174 | 174 | 18 (10%) | −10% |
+| Зволожувачі повітря | 170 | 170 | 40 (24%) | −21% |
+| Вентилятори | 152 | 152 | 80 (53%) | −23% |
+| Посудомийні машини | 120 | 120 | 22 (18%) | −6% |
+| Зарядні станції | 106 | 106 | 34 (32%) | −10% |
+| Очищувачі повітря | 100 | 100 | 32 (32%) | −18% |
+| Електрогрилі | 94 | 94 | 46 (49%) | −25% |
+| Морозильні камери | 93 | 93 | 13 (14%) | −4% |
+| Соковижималки | 86 | 86 | 22 (26%) | −13% |
+| Мультиварки | 76 | 76 | 23 (30%) | −12% |
+| Саундбари | 64 | 64 | 27 (42%) | −12% |
+| Ігрові консолі | 41 | 41 | 6 (15%) | −6% |
+| Сушильні машини | 25 | 25 | 7 (28%) | −8% |
+| Хлібопічки | 24 | 24 | 7 (29%) | −16% |
 
 ## Знижки, які показує магазин
 
-Закреслена ціна є в **10699** з 34149 пропозицій (31%). Медіанна заявлена знижка: −13%.
+Закреслена ціна є в **7532** з 23483 пропозицій (32%). Медіанна заявлена знижка: −12%.
 
 Найбільші заявлені знижки (перевіримо їх, щойно буде 14 днів історії):
 
@@ -90,7 +89,7 @@
 
 ## Один товар у кількох магазинах
 
-Знайдено в 2+ магазинах: **6817** товарів, у 3+: 3415. Схожих пар, які треба перевірити вручну: 1190.
+Знайдено в 2+ магазинах: **4802** товарів, у 3+: 2175. Схожих пар, які треба перевірити вручну: 1221.
 
 Найсхожіші пари на перевірку (`npm run match:review`):
 
@@ -111,48 +110,48 @@
 
 | Товар | Дешевше | Дорожче | Різниця |
 |---|---:|---:|---:|
-| Навушники Defender Pulse 428 (Black) 63428 | [122 ₴](https://www.foxtrot.com.ua/uk/shop/garnitury_defender_63428pulse-428-black-red.html) Foxtrot | [2 599 ₴](https://citrus.ua/naushniki/naushniki-defender-pulse-428-black-727852.html) Цитрус | −95% |
+| Навушники Defender Pulse 428 (Black) 63428 | [129 ₴](https://www.moyo.ua/ua/garnitura_dlya_smartfoniv_defender_pulse_428_black/836058.html) MOYO | [2 599 ₴](https://citrus.ua/naushniki/naushniki-defender-pulse-428-black-727852.html) Цитрус | −95% |
 | Телевізор LG 50 50NANO90A6B (UA) | [21 999 ₴](https://www.ttt.ua/ua/shop/product/televizor-lg-50nano90a6b) TTT | [129 999 ₴](https://www.moyo.ua/ua/televizor_50_lg_nanocell_4k_60hz_smart_webos_black/647709.html) MOYO | −83% |
 | Гарнітура DEFENDER FreeMotion B480 White (63481) | [605 ₴](https://ktc.ua/goods/garnitura_defender_freemotion_b480_white_63481.html) KTC | [2 999 ₴](https://www.moyo.ua/ua/garnitura_defender_freemotion_b480_bluetooth_3_5mm_usb-c_white/834594.html) MOYO | −80% |
-| Гарнітура BELKIN Soundform Bolt True Wireless Lavender (AUC009BTLV) | [849 ₴](https://www.moyo.ua/ua/naushniki_belkin_soundform_bolt_true_wireless_lavender_auc009btlv_/543328.html) MOYO | [3 192 ₴](https://ktc.ua/goods/navushniki_belkin_soundform_bolt_true_lavender__auc009btlv.html) KTC | −73% |
-| Робот-пилосос ECOVACS DEEBOT T10 White (DBX33) | [5 999 ₴](https://citrus.ua/roboty-uborshhiki/robot-pylesos-ecovacs-deebot-t10-white-dbx33-708351.html) Цитрус | [22 463 ₴](https://www.foxtrot.com.ua/uk/shop/robotiy_piylesosiy_ecovacs_deebot_t10.html) Foxtrot | −73% |
+| Гарнітура BELKIN Soundform Bolt True Wireless Lavender (AUC009BTLV) | [849 ₴](https://www.moyo.ua/ua/naushniki_belkin_soundform_bolt_true_wireless_lavender_auc009btlv_/543328.html) MOYO | [3 178 ₴](https://ktc.ua/goods/navushniki_belkin_soundform_bolt_true_lavender__auc009btlv.html) KTC | −73% |
 | Навушники Defender Basic 603 (Black) 63603 | [106 ₴](https://www.moyo.ua/ua/navushnyky_defender_basic_603_black/834865.html) MOYO | [338 ₴](https://citrus.ua/naushniki/naushniki-defender-basic-603-black-727857.html) Цитрус | −69% |
-| Гарнітура 2E RainDrops Х True Wireless Waterproof Mic White (2E-EBTWRDXWH) | [329 ₴](https://www.moyo.ua/ua/naushniki_2e_raindrops_kh_true_wireless_waterproof_mic_white/501251.html) MOYO | [999 ₴](https://www.foxtrot.com.ua/uk/shop/naushniki_2e_raindrops_h_true_wireless_waterproof.html) Foxtrot | −67% |
-| Смарт-годинник Canyon Maveric SW-83 GPS Silver (CNS-SW83SS) | [999 ₴](https://www.foxtrot.com.ua/uk/shop/smart_chasiy_canyon_maveric_sw_83_gps_silver_cns_sw83ss.html) Foxtrot | [2 999 ₴](https://citrus.ua/smart-chasy/smart-godinnik-canyon-maveric-sw-83-gps-silver-cns-sw83ss-795151.html) Цитрус | −67% |
-| Смарт-годинник Canyon Easy SW-54 Black (CNS-SW54BB) | [599 ₴](https://www.foxtrot.com.ua/uk/shop/smart_chasiy_canyon_easy_sw_54_black_cns_sw54bb.html) Foxtrot | [1 699 ₴](https://citrus.ua/smart-chasy/smart-godinnik-canyon-easy-sw-54-black-cns-sw54bb-795149.html) Цитрус | −65% |
-| Смарт-годинник Canyon Chatter SW-58 BT-CALL Silver Red (CNS-SW58RR) | [749 ₴](https://www.foxtrot.com.ua/uk/shop/smart-chasiy-canyon-chatter-sw-58-bt-call-silver-red-cns-sw58rr.html) Foxtrot | [1 999 ₴](https://citrus.ua/smart-chasy/smart-godinnik-canyon-chatter-sw-58-bt-call-silver-red-cns-sw58rr-795135.html) Цитрус | −63% |
+| Кондиціонер спліт Cooper&Hunter CH-S12FTXAN-BL | [35 899 ₴](https://vencon.ua/ua/products/cooper-hunter-ch-s12ftxan-bl) Vencon | [110 399 ₴](https://citrus.ua/kondicionery/konditsioner-split-cooperhunter-ch-s12ftxan-bl-790365.html) Цитрус | −67% |
+| Смарт-годинник Canyon Maveric SW-83 GPS Silver (CNS-SW83SS) | [999 ₴](https://ktc.ua/goods/smart_godinnik_canyon_maverick_sw_83_silverblue__cns_sw83ss.html) KTC | [2 999 ₴](https://citrus.ua/smart-chasy/smart-godinnik-canyon-maveric-sw-83-gps-silver-cns-sw83ss-795151.html) Цитрус | −67% |
+| Кондиціонер спліт Cooper&Hunter CH-S12FTXAN-WP | [36 799 ₴](https://www.moyo.ua/ua/kondytsioner_cooper_hunter_nature_35m2_invertor_12000btu_3_51kvt_a_a_-25_s_wi-fi_r32_bilyy/684387.html) MOYO | [105 799 ₴](https://citrus.ua/kondicionery/konditsioner-split-cooperhunter-ch-s12ftxan-wp-790366.html) Цитрус | −65% |
+| Смарт-годинник Canyon Easy SW-54 Black (CNS-SW54BB) | [599 ₴](https://ktc.ua/goods/smart_godinnik_canyon_easy_sw_54_black__cns_sw54bb.html) KTC | [1 699 ₴](https://citrus.ua/smart-chasy/smart-godinnik-canyon-easy-sw-54-black-cns-sw54bb-795149.html) Цитрус | −65% |
+| Смарт-годинник Canyon Chatter SW-58 BT-CALL Silver Red (CNS-SW58RR) | [749 ₴](https://ktc.ua/goods/smart_godinnik_canyon_chatter_sw_58_red__cns_sw58rr.html) KTC | [1 999 ₴](https://citrus.ua/smart-chasy/smart-godinnik-canyon-chatter-sw-58-bt-call-silver-red-cns-sw58rr-795135.html) Цитрус | −63% |
 
 ## Зміни за добу
 
-Подешевшало: **1303**, подорожчало: **577**, без змін: 32269.
+Подешевшало: **658**, подорожчало: **565**, без змін: 22260.
 
 | Товар | Було | Стало | Зміна |
 |---|---:|---:|---:|
-| [Навушники Koss KPH7w On-Ear (White) 192865.101](https://www.moyo.ua/ua/naushniki_koss_kph7w_on-ear_white/493218.html) | 349 ₴ | 199 ₴ | −43,0% |
-| [Електрочайник TEFAL KO1E08E0](https://www.foxtrot.com.ua/uk/shop/elektrochajniki-tefal-ko1e08e0.html) | 1 699 ₴ | 999 ₴ | −41,2% |
-| [Фен POLARIS PHD 1111 Black](https://www.foxtrot.com.ua/uk/shop/feniy-polaris-phd-1111-chornij.html) | 2 399 ₴ | 1 499 ₴ | −37,5% |
-| [Робот-пилосос Roborock Saros 20 Sonic Complete (White)](https://jabko.ua/product/robot-pylosos-roborock-saros-20-sonic-complete-white) | 59 899 ₴ | 38 399 ₴ | −35,9% |
-| [Тример BABYLISS OT992E X-Blade Super-X Metal (BBS00571)](https://ktc.ua/goods/trimer_babyliss_ot992e_x_blade_super_x_metal.html) | 3 699 ₴ | 2 399 ₴ | −35,1% |
-| [Пилосос SHARK PowerPro IZ380EUT](https://www.moyo.ua/ua/akumulyatornyy_pylosos_shark_powerpro_iz380eut/883980.html) | 16 899 ₴ | 10 999 ₴ | −34,9% |
-| [Випрямляч волосся Babyliss ST914PE](https://ktc.ua/goods/vipryamlyach_volossya_babyliss_st914pe.html) | 2 898 ₴ | 1 999 ₴ | −31,0% |
-| [Навушники JBL T500 (JBLT500WHT) White](https://www.moyo.ua/ua/naushniki-jbl-t500-white/441157.html) | 699 ₴ | 499 ₴ | −28,6% |
-| [Фен BABYLISS 5914PE](https://www.moyo.ua/ua/fen_babyliss_stardust_shimmer_2000vt_3_rezhymy_ionizatsiya_khol_obduv_1_nasadka_bilyy/729827.html) | 2 509 ₴ | 1 799 ₴ | −28,3% |
-| [Тостер GRAEF TO 61](https://jabko.ua/product/toster-graef-to-61-ua) | 2 699 ₴ | 1 999 ₴ | −25,9% |
+| [Холодильник вбудований Electrolux ENA7CE19S](https://vencon.ua/ua/products/electrolux-ena7ce19s) | 49 399 ₴ | 28 999 ₴ | −41,3% |
+| [Робот-пилосос DREAME Aqua 10 Ultra Roller Complete White (RLH71DE-1-wh)](https://jabko.ua/product/robot-pylosos-dreame-aqua-10-ultra-roller-complete-white-eu) | 56 599 ₴ | 35 699 ₴ | −36,9% |
+| [Пилосос SHARK PowerPro IZ380EUT](https://citrus.ua/ruchnye-pylesosy/pilosos-ruchniy-dlya-domu-shark-powerpro-iz380eut-806897.html) | 16 899 ₴ | 10 999 ₴ | −34,9% |
+| [Навушники ANKER SoundСore R60i NC White](https://citrus.ua/naushniki/navushniki-anker-soundsore-r60i-nc-white-791852.html) | 3 499 ₴ | 2 299 ₴ | −34,3% |
+| [Колонки Real-EL S-50 Black/Red (EL121100008)](https://ktc.ua/goods/kolonki_real_el_s_50_blackred__el121100008.html) | 539 ₴ | 359 ₴ | −33,4% |
+| [Електрочайник Xiaomi Electric Kettle 2 EU](https://jabko.ua/product/elektrochainyk-xiaomi-electric-kettle-2-eu) | 2 199 ₴ | 1 599 ₴ | −27,3% |
+| [Електрочайник KitchenAid (Pistachio)](https://jabko.ua/product/elektrochainyk-kitchenaid-5kek1701ept-pistachio-ua) | 10 999 ₴ | 8 199 ₴ | −25,5% |
+| [Вентилятор настільний Philips CX3050/01](https://jabko.ua/product/ventylyator-philips-cx305001-black) | 4 999 ₴ | 3 799 ₴ | −24,0% |
+| [Телевізор Haier 50 H50K85FUX (UA)](https://www.moyo.ua/ua/televizor_haier_h50k85fux/862243.html) | 17 999 ₴ | 13 999 ₴ | −22,2% |
+| [Монітор VIEWSONIC 27" VA2708-2K-HD-2](https://jabko.ua/product/monitor-viewsonic-27-ips-75hz-va2708-2k-hd-2) | 7 699 ₴ | 5 999 ₴ | −22,1% |
 
 ## Справжні й фальшиві знижки
 
-Справжніх знижок: **149**, фальшивих: **663**, без знижки: 2106, замало даних: 18313.
+Справжніх знижок: **133**, фальшивих: **568**, без знижки: 1644, замало даних: 12894.
 
 | Товар | Ціна | Типова | Знижка | Скор |
 |---|---:|---:|---:|---:|
-| [Робот-пилосос Roborock Saros 20 Sonic Complete (White)](https://ktc.ua/goods/robot_pilosos_roborock_saros_20_sonic_complete_white_1205712.html) | 38 399 ₴ | 59 899 ₴ | −35,9% | 16.62 |
-| [Телевізор HISENSE 65A6S](https://ktc.ua/goods/televizor_hisense_65a6s_20018851.html) | 25 199 ₴ | 33 999 ₴ | −25,9% | 15.5 |
+| [Телевізор HISENSE 65A6S](https://citrus.ua/televizory/65a6s-hisense-795360.html) | 25 199 ₴ | 33 999 ₴ | −25,9% | 16.83 |
+| [Робот-пилосос Roborock Saros 20 Sonic Complete (White)](https://ktc.ua/goods/robot_pilosos_roborock_saros_20_sonic_complete_white_1205712.html) | 38 199 ₴ | 59 899 ₴ | −36,2% | 16.76 |
+| [Холодильник вбудований Electrolux ENA7CE19S](https://vencon.ua/ua/products/electrolux-ena7ce19s) | 28 999 ₴ | 49 399 ₴ | −41,3% | 15.16 |
 | [Пилосос Adler AD 7044](https://www.ttt.ua/ua/shop/product/akkumuliatornyi-pylesos-adler-ad-7044) | 4 899 ₴ | 6 564 ₴ | −25,4% | 13.8 |
 | [Телевізор Hisense 65U7S PRO](https://www.moyo.ua/ua/televizor_hisense_mini_led_65u7s_pro/824556.html) | 50 399 ₴ | 62 999 ₴ | −20,0% | 13.14 |
-| [Телевізор HISENSE 65E8S](https://jabko.ua/product/televizor-hisense-65-65e8s-ua) | 36 299 ₴ | 48 999 ₴ | −25,9% | 11.99 |
-| [Телевізор Hisense 65E7S](https://www.moyo.ua/ua/televizor_hisense_qled_65e7s/824518.html) | 29 499 ₴ | 35 999 ₴ | −18,1% | 11.76 |
 | [Пилосос ручний для дому Samsung VS80F28DGS/UK](https://ktc.ua/goods/ruchnij_bezdrotovij_pilosos_samsung_bespoke_ai_jet_lite_vs80f28dgsuk.html) | 27 999 ₴ | 33 999 ₴ | −17,6% | 11.47 |
-| [Пилосос без мішка Miele SKCF3 Blizzard CX1 технічний блакитний](https://www.foxtrot.com.ua/uk/shop/pylesosy_miele_skcf3-blizzard-cx1-siniy-tehno-parquet.html) | 20 580 ₴ | 26 670 ₴ | −22,8% | 10.56 |
+| [Телевізор Hisense 65E7S](https://www.moyo.ua/ua/televizor_hisense_qled_65e7s/824518.html) | 29 499 ₴ | 35 999 ₴ | −18,1% | 10.83 |
+| [Пилосос без мішка Miele SKCF3 Blizzard CX1 технічний блакитний](https://vencon.ua/ua/products/miele-skcf3-blizzard-cx1-41kcf332ua-tehnicheskij-goluboj) | 20 580 ₴ | 26 670 ₴ | −22,8% | 10.56 |
 | [Телевізор Hisense 55E8S](https://ktc.ua/goods/televizor_uled_miniled_hisense_55e8s_smart_tv_wi_fi_3840x2160.html) | 30 999 ₴ | 36 499 ₴ | −15,1% | 9.92 |
-| [Телевізор Hisense 75E8S](https://jabko.ua/product/televizor-hisense-75-75e8s-ua) | 52 299 ₴ | 65 999 ₴ | −20,8% | 9.63 |
+| [Телевізор Hisense 75E8S](https://www.ttt.ua/ua/shop/product/televizor-hisense-75e8s) | 52 299 ₴ | 65 999 ₴ | −20,8% | 9.63 |
 
