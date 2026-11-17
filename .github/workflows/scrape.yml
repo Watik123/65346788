@@ -1,7 +1,8 @@
 # Збір цін на серверах GitHub (у контейнері розробки доступу до сайтів магазинів немає).
 #  - щодня збирає ціни всіх магазинів і зберігає їх у datastore/; запуск за розкладом двічі
-#    (04:17 і 08:17 за Києвом), бо GitHub часом запізнюється з ним на години; другий запуск
-#    нічого не збирає, якщо ціни дня вже є (позначка datastore/prices/<дата>/.complete);
+#    (04:17 і 08:17 за Києвом), бо GitHub часом запізнюється з ним на години; якщо ціни дня вже є
+#    (позначка datastore/prices/<дата>/.complete), другий запуск повторює лише ті магазини,
+#    чий збір того дня перервався;
 #  - вручну (вкладка Actions → «Збір цін» → Run workflow): збір, розвідка сайту або пробний збір.
 # Щоб зупинити щоденний збір: вкладка Actions → «Збір цін» → «…» → Disable workflow.
 name: Збір цін
@@ -63,16 +64,28 @@ jobs:
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
           # Дивимось у свіжу гілку, а не лише в знімок на момент створення запуску
           git fetch -q --depth=1 origin "$GITHUB_REF_NAME"
-          if [ "${{ github.event_name }}" = "schedule" ] && git cat-file -e "FETCH_HEAD:datastore/prices/$DATE/.complete" 2>/dev/null; then
-            echo "Ціни за $DATE вже зібрано, повторно не збираємо"
-            echo 'shops=[]' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
           if [ "$TARGET" = "all" ]; then
             # Беремо зі списку scrapers у src/scrapers/index.ts, щоб новий магазин збирався без правок тут
             SHOPS=$(sed -n 's/^export const scrapers: ShopScraper\[\] = \[\(.*\)\]$/\1/p' apps/api/src/scrapers/index.ts | tr -d ' ' | tr ',' '\n')
           else
             SHOPS=$(echo "$TARGET" | tr -d ' ' | tr ',' '\n')
+          fi
+          if [ "${{ github.event_name }}" = "schedule" ] && git cat-file -e "FETCH_HEAD:datastore/prices/$DATE/.complete" 2>/dev/null; then
+            # День уже зібрано. Повторюємо лише магазини, чий збір сьогодні перервався
+            # (сайт не відповідав або відмовив): за кілька годин він часто знову доступний.
+            # Правила robots.txt перевіряються заново, тож відмова лишається відмовою.
+            RETRY=""
+            for S in $SHOPS; do
+              STATUS=$(git show "FETCH_HEAD:datastore/runs/$DATE/$S.json" 2>/dev/null | jq -r '.status // empty' || true)
+              if [ -z "$STATUS" ] || [ "$STATUS" = "aborted" ]; then RETRY="$RETRY $S"; fi
+            done
+            if [ -z "$RETRY" ]; then
+              echo "Ціни за $DATE вже зібрано, повторно не збираємо"
+              echo 'shops=[]' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Ціни за $DATE вже зібрано, крім:$RETRY — повторюємо лише їх"
+            SHOPS=$(echo $RETRY | tr ' ' '\n')
           fi
           echo "shops=$(echo "$SHOPS" | jq -R . | jq -sc 'map(select(length > 0))')" >> "$GITHUB_OUTPUT"
           echo "Магазини: $SHOPS"

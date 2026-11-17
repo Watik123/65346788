@@ -20,8 +20,10 @@ concurrency:
 
 jobs:
   deploy:
-    # Після успішного запуску «Збору цін» (і пробні запуски теж: сайт просто збереться ще раз)
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    # Після кожного завершеного «Збору цін», і успішного, і з помилкою: якщо котрийсь магазин
+    # не зібрався, ціни решти все одно збережено, і сайт має їх показати (пробні запуски теж:
+    # сайт просто збереться ще раз)
+    if: github.event_name == 'workflow_dispatch' || contains(fromJSON('["success","failure"]'), github.event.workflow_run.conclusion)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     environment:
