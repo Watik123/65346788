@@ -1,0 +1,18 @@
+{
+  "shop": "vencon",
+  "date": "2026-11-19",
+  "startedAt": "2026-11-19T08:49:18.922Z",
+  "finishedAt": "2026-11-19T08:51:17.313Z",
+  "status": "completed",
+  "found": 2605,
+  "saved": 2605,
+  "skipped": 1025,
+  "skippedByReason": {
+    "sold_out": 1015,
+    "not_new": 3,
+    "no_price": 7
+  },
+  "errors": 0,
+  "note": null,
+  "errorList": []
+}
