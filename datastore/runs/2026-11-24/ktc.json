@@ -1,0 +1,17 @@
+{
+  "shop": "ktc",
+  "date": "2026-11-24",
+  "startedAt": "2026-11-24T10:56:23.216Z",
+  "finishedAt": "2026-11-24T10:59:54.978Z",
+  "status": "completed",
+  "found": 3667,
+  "saved": 3667,
+  "skipped": 636,
+  "skippedByReason": {
+    "not_new": 122,
+    "no_price": 514
+  },
+  "errors": 0,
+  "note": null,
+  "errorList": []
+}
