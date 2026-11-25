@@ -1,0 +1,18 @@
+{
+  "shop": "moyo",
+  "date": "2026-11-25",
+  "startedAt": "2026-11-25T09:52:22.358Z",
+  "finishedAt": "2026-11-25T10:16:47.520Z",
+  "status": "completed",
+  "found": 6090,
+  "saved": 6090,
+  "skipped": 2045,
+  "skippedByReason": {
+    "not_new": 67,
+    "sold_out": 1938,
+    "duplicate": 40
+  },
+  "errors": 0,
+  "note": null,
+  "errorList": []
+}
