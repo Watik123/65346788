@@ -1,0 +1,19 @@
+{
+  "shop": "citrus",
+  "date": "2026-11-26",
+  "startedAt": "2026-11-26T09:32:30.944Z",
+  "finishedAt": "2026-11-26T09:40:35.406Z",
+  "status": "completed",
+  "found": 5807,
+  "saved": 5807,
+  "skipped": 5401,
+  "skippedByReason": {
+    "sold_out": 5070,
+    "duplicate": 8,
+    "not_new": 317,
+    "no_price": 6
+  },
+  "errors": 0,
+  "note": null,
+  "errorList": []
+}
